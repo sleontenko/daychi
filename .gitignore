@@ -1,0 +1,36 @@
+# Dependencies and build output
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.expo/
+dist/
+web-build/
+.DS_Store
+*.log
+*.xcarchive/
+*.ipa
+DerivedData/
+
+# Local configuration, credentials and private data
+.env*
+!.env.example
+*.session*
+*.p8
+*.p12
+*.pem
+*.key
+*.mobileprovision
+*.sqlite*
+*.db*
+data/
+knowledge/raw/
+.claude/
+.codex/
+.vscode/
+
+# Native projects are generated from Expo configuration
+apps/practice-app/ios/
+apps/practice-app/android/

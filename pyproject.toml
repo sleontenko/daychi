@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "practice-bot-spikes"
+version = "0.0.0"
+requires-python = ">=3.12"
+dependencies = [
+    "boto3>=1.40,<2",
+    "fastapi>=0.115,<1",
+    "faster-whisper==1.1.0",
+    "httpx2>=2.7,<3",
+    "pytest==8.3.4",
+    "python-dotenv>=1.0",
+    "requests>=2.32",
+    "telethon==1.37.0",
+    "uvicorn[standard]>=0.34,<1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[project.optional-dependencies]
+push = ["httpx2[http2]>=2.7,<3", "PyJWT[crypto]>=2.10,<3"]
+
+[tool.setuptools.packages.find]
+include = ["ingestion*", "practice_api*"]
+exclude = ["apps*", "data*", "spikes*", "tests*"]
