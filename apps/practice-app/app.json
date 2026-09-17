@@ -10,7 +10,7 @@
     "ios": {
       "icon": "./assets/images/quiet-practice-icon.png",
       "bundleIdentifier": "ai.mypraxis.quietpractice",
-      "buildNumber": "3",
+      "buildNumber": "4",
       "infoPlist": { "ITSAppUsesNonExemptEncryption": false }
     },
     "android": {

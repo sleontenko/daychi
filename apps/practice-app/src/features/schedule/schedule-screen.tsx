@@ -8,6 +8,7 @@ import { Organic as C, OrganicFonts as F } from '../prototype/theme';
 import { dayKey, type Occurrence } from './model';
 import { testReminder } from './local-reminders';
 import { useSchedule } from './use-schedule';
+import { classInfo, matchesFormat, type FormatFilter } from './class-info';
 
 type Tab = 'today' | 'schedule' | 'mine';
 const format = (value: string | number, options: Intl.DateTimeFormatOptions) =>
@@ -33,6 +34,7 @@ export default function ScheduleScreen() {
     FigtreeBold: require('../../../assets/fonts/Figtree-Bold.ttf') });
   const [tab, setTab] = useState<Tab>('today');
   const [view, setView] = useState<'day' | 'week' | 'calendar'>('week');
+  const [formatFilter, setFormatFilter] = useState<FormatFilter>('all');
   const [selectedDay, setSelectedDay] = useState(dayKey(now));
   const [detail, setDetail] = useState<string | null>(null);
   const [testState, setTestState] = useState('');
@@ -46,10 +48,12 @@ export default function ScheduleScreen() {
 
   const today = dayKey(now);
   const all = data?.occurrences ?? [];
+  const visible = all.filter(e => matchesFormat(e.title, formatFilter));
   const days = Array.from({ length: 14 }, (_, i) => new Date(Date.parse(`${today}T12:00:00Z`) + i * 86400000).toISOString().slice(0, 10));
   const mine = all.filter(e => prefs.choices[e.id] && Date.parse(e.ends_at) > now);
   const next = mine.find(e => e.status === 'scheduled' && Date.parse(e.starts_at) > now);
   const lesson = all.find(e => e.id === detail);
+  const info = lesson ? classInfo(lesson.title) : null;
   const unavailable = Object.keys(prefs.choices).filter(id => !all.some(e => e.id === id) && id.split(':').at(-1)! >= today);
   const card = (event: Occurrence, compact = false) => {
     const selected = !!prefs.choices[event.id], past = Date.parse(event.starts_at) <= now;
@@ -106,9 +110,26 @@ export default function ScheduleScreen() {
         {detail ? <>
           <Pressable accessibilityRole="button" onPress={() => setDetail(null)} style={s.back}><Icon name="back" active /><Text style={s.link}>Назад</Text></Pressable>
           {lesson ? <>
-            <Text style={s.eyebrow}>ЗАНЯТИЕ ШКОЛЫ</Text><Text style={s.title}>{lesson.title}</Text>
+            <Text style={s.title}>{info!.title}</Text>
             <Text style={s.body}>{date(lesson.starts_at)} · {time(lesson.starts_at)}–{time(lesson.ends_at)}</Text>
-            <Text style={s.caption}>Время Израиля</Text>{card(lesson, true)}
+            <View style={s.section}><Text style={s.lessonTitle}>{info!.format}</Text>
+              {!!info!.location && <Text style={s.body}>{info!.location}</Text>}
+              <Text style={s.caption}>Время Израиля · {Math.round((Date.parse(lesson.ends_at) - Date.parse(lesson.starts_at)) / 60000)} мин</Text></View>
+            <View style={s.section}><Text style={s.lessonTitle}>О занятии</Text>
+              <Text style={s.body}>{info!.description}</Text>
+              <Pressable accessibilityRole="link" onPress={() => void Linking.openURL(info!.source)} style={s.textButton}>
+                <Text style={s.link}>Материал школы о направлении</Text></Pressable></View>
+            {lesson.status === 'cancelled' || Date.parse(lesson.starts_at) <= now ? <View style={s.section}>
+              <Text style={s.lessonTitle}>{lesson.status === 'cancelled' ? 'Занятие отменено' : Date.parse(lesson.ends_at) <= now ? 'Занятие завершилось' : 'Занятие уже началось'}</Text>
+              {!!prefs.choices[lesson.id] && <Pressable accessibilityRole="button" disabled={busy} style={s.outlineButton} onPress={() => void model.toggle(lesson.id)}><Text style={s.link}>Убрать из моих занятий</Text></Pressable>}
+            </View> : <View style={s.section}>
+              <Pressable accessibilityRole="button" accessibilityState={{ selected: !!prefs.choices[lesson.id], disabled: busy || !ready }}
+                accessibilityLabel={prefs.choices[lesson.id] ? 'Не пойду — убрать занятие' : 'Пойду на занятие'} disabled={busy || !ready}
+                onPress={() => void model.toggle(lesson.id)} style={({ pressed }) => [s.attend, prefs.choices[lesson.id] && s.attendSelected, pressed && s.pressed, busy && s.pressed]}>
+                <Text style={s.attendLabel}>{busy ? 'Сохраняем…' : prefs.choices[lesson.id] ? 'Я иду · Отменить выбор' : 'Пойду на занятие'}</Text>
+              </Pressable>
+              <Text style={s.caption}>{prefs.choices[lesson.id] ? 'Занятие сохранено в «Мои занятия».' : 'Сохранится только эта дата. Это личный выбор, не запись у преподавателя.'}</Text>
+            </View>}
             {!!prefs.choices[lesson.id] && reminders}
           </> : empty('Занятие больше не найдено в расписании.')}
         </> : <>
@@ -130,14 +151,18 @@ export default function ScheduleScreen() {
             <View style={s.segments}>{([['day', 'День'], ['week', 'Неделя'], ['calendar', 'Календарь']] as const).map(([key, label]) =>
               <Pressable accessibilityRole={Platform.OS === 'web' ? 'tab' : 'button'} accessibilityState={{ selected: view === key }} key={key} onPress={() => setView(key)} style={[s.segment, view === key && s.segmentOn]}>
                 <Text style={s.segmentText}>{label}</Text></Pressable>)}</View>
-            <View style={s.legend}><View style={s.dot} /><Text style={s.caption}>моё расписание</Text><View style={s.legendOutline}/><Text style={s.caption}>занятия школы</Text></View>
-            {view === 'week' ? days.slice(0, 7).map(day => <View key={day} style={[s.weekRow, day === today && s.todayRow]}>
-              <View style={s.weekDate}><Text style={s.dayShort}>{format(`${day}T12:00:00Z`, { weekday: 'short' })}</Text><Text style={s.dayNumber}>{Number(day.slice(-2))}</Text></View>
-              <View style={s.weekLessons}>{all.filter(e => dayKey(e.starts_at) === day).map(e =>
+            <View accessibilityLabel="Формат занятий" style={s.filters}>{([['all', 'Все'], ['online', 'Онлайн'], ['in-person', 'Очно']] as const).map(([key, label]) =>
+              <Pressable key={key} accessibilityRole="button" accessibilityState={{ selected: formatFilter === key }} onPress={() => setFormatFilter(key)} style={[s.filter, formatFilter === key && s.filterOn]}>
+                <Text style={[s.filterText, formatFilter === key && s.inverse]}>{label}</Text></Pressable>)}</View>
+            {view === 'week' ? days.slice(0, 7).map(day => <View key={day} style={s.weekRow}>
+              <View style={[s.weekDate, day === today && s.todayDate]}><Text style={[s.weekDay, day === today && s.inverse]}>{format(`${day}T12:00:00Z`, { weekday: 'short' })}</Text><Text style={[s.weekNumber, day === today && s.inverse]}>{Number(day.slice(-2))}</Text>
+                {day === today && <Text style={s.todayLabel}>сегодня</Text>}</View>
+              <View style={s.weekLessons}>{visible.filter(e => dayKey(e.starts_at) === day).map(e =>
                 <Pressable accessibilityRole="button" accessibilityLabel={`${date(e.starts_at)}, ${time(e.starts_at)}, ${e.title}${prefs.choices[e.id] ? ', выбрано' : ''}`}
-                  key={e.id} onPress={() => setDetail(e.id)} style={({ pressed }) => [s.weekLesson, prefs.choices[e.id] && s.lessonMine, pressed && s.pressed]}>
-                  <Text style={s.weekTime}>{time(e.starts_at)}</Text><Text style={s.weekTitle}>{e.title}{prefs.choices[e.id] ? ' ✓' : ''}</Text>
-                </Pressable>)}{data && !all.some(e => dayKey(e.starts_at) === day) && <Text style={s.caption}>Нет занятий</Text>}</View>
+                  key={e.id} onPress={() => setDetail(e.id)} style={({ pressed }) => [s.weekLesson, prefs.choices[e.id] && s.weekSelected, pressed && s.pressed]}>
+                  <Text style={[s.weekTime, prefs.choices[e.id] && s.inverse]}>{time(e.starts_at)}</Text><View style={s.flex}><Text style={[s.weekTitle, prefs.choices[e.id] && s.inverse]}>{e.title}</Text>
+                    {!!prefs.choices[e.id] && <Text style={s.selectedLabel}>Я иду</Text>}</View>
+                </Pressable>)}{data && !visible.some(e => dayKey(e.starts_at) === day) && <Text style={s.caption}>{formatFilter === 'all' ? 'Нет занятий' : 'Нет занятий этого формата'}</Text>}</View>
             </View>) : <>
               {view === 'day' ? <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.dayStrip}>
                 {days.map(day => <Pressable key={day} accessibilityRole="button" accessibilityLabel={date(`${day}T12:00:00Z`)} onPress={() => setSelectedDay(day)}
@@ -150,7 +175,8 @@ export default function ScheduleScreen() {
                     <Text style={[s.dayNumber, day === selectedDay && s.inverse]}>{Number(day.slice(-2))}</Text></Pressable>)}
                 </View></View>}
               <Text style={s.sectionLabel}>{date(`${selectedDay}T12:00:00Z`)}</Text>
-              {all.filter(e => dayKey(e.starts_at) === selectedDay).map(e => card(e))}
+              {visible.filter(e => dayKey(e.starts_at) === selectedDay).map(e => card(e))}
+              {data && !visible.some(e => dayKey(e.starts_at) === selectedDay) && empty('На эту дату нет занятий выбранного формата.')}
             </>}
           </>}
           {tab === 'mine' && <>
@@ -196,12 +222,12 @@ const s = StyleSheet.create({
   nextTitle: { fontFamily: F.heading, color: C.sageDeep, fontSize: 22, lineHeight: 28 },
   next: { padding: 20, gap: 12, borderRadius: 28, backgroundColor: C.neutral100 },
   lessonCard: { borderWidth: 1, borderColor: C.divider, borderRadius: 16, padding: 14, gap: 8 },
-  lessonMine: { backgroundColor: C.accentSoft, borderColor: C.accentBorder },
+  lessonMine: { backgroundColor: C.sageMuted, borderColor: C.sageDark, borderWidth: 2 },
   cardMain: { gap: 5, minHeight: 48 },
   time: { fontFamily: F.heading, color: C.accentDark, fontSize: 14, lineHeight: 19 },
   between: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
   choose: { minHeight: 44, paddingHorizontal: 16, justifyContent: 'center', borderRadius: 14, borderWidth: 1, borderColor: C.accentBorder },
-  chosen: { backgroundColor: C.accent, borderColor: C.accent },
+  chosen: { backgroundColor: C.sageDark, borderColor: C.sageDark },
   chooseLabel: { fontFamily: F.semibold, fontSize: 13, color: C.accentDark },
   inverse: { color: C.white, opacity: 1 }, pressed: { opacity: 0.65 },
   section: { gap: 12 }, flex: { flex: 1 },
@@ -209,12 +235,18 @@ const s = StyleSheet.create({
   segments: { flexDirection: 'row', backgroundColor: C.neutral200, padding: 3, borderRadius: 99 },
   segment: { minHeight: 44, flex: 1, borderRadius: 99, alignItems: 'center', justifyContent: 'center' },
   segmentOn: { backgroundColor: C.neutral100 }, segmentText: { fontFamily: F.semibold, fontSize: 13, color: C.text },
-  legend: { flexDirection: 'row', alignItems: 'center', gap: 6 }, dot: { width: 9, height: 9, borderRadius: 9, backgroundColor: C.accent },
-  legendOutline: { width: 9, height: 9, borderWidth: 1, borderColor: C.neutral500, borderRadius: 2, marginLeft: 8 },
-  weekRow: { flexDirection: 'row', gap: 12, paddingVertical: 5 }, todayRow: { backgroundColor: 'rgba(240,250,225,0.58)', borderRadius: 12 },
-  weekDate: { width: 44, paddingTop: 5 }, dayShort: { fontFamily: F.regular, fontSize: 10, lineHeight: 16, textTransform: 'uppercase', color: C.neutral500 },
+  filters: { flexDirection: 'row', gap: 8 }, filter: { paddingHorizontal: 20, minHeight: 44, borderRadius: 24, borderWidth: 1, borderColor: C.sageDark, alignItems: 'center', justifyContent: 'center' },
+  filterOn: { backgroundColor: C.sageDeep }, filterText: { fontFamily: F.semibold, fontSize: 14, color: C.sageDeep },
+  attend: { minHeight: 56, padding: 16, borderRadius: 16, backgroundColor: C.accentDark, alignItems: 'center', justifyContent: 'center' },
+  attendSelected: { backgroundColor: C.sageDark }, attendLabel: { fontFamily: F.semibold, fontSize: 17, lineHeight: 24, color: C.white },
+  weekRow: { flexDirection: 'row', gap: 10, paddingVertical: 5, alignItems: 'flex-start' },
+  weekDate: { width: 64, paddingVertical: 10, alignItems: 'center', gap: 2, borderRadius: 14 }, todayDate: { backgroundColor: C.accentDark },
+  weekDay: { fontFamily: F.semibold, fontSize: 14, lineHeight: 20, textTransform: 'uppercase', color: C.sageDeep },
+  weekNumber: { fontFamily: F.bold, fontSize: 28, lineHeight: 34, color: C.sageDeep }, todayLabel: { fontFamily: F.semibold, fontSize: 10, lineHeight: 15, color: C.white },
+  dayShort: { fontFamily: F.regular, fontSize: 12, lineHeight: 18, textTransform: 'uppercase', color: C.sageDark },
   dayNumber: { fontFamily: F.heading, color: C.text, fontSize: 18, lineHeight: 25 }, weekLessons: { flex: 1, gap: 6 },
   weekLesson: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 12, backgroundColor: C.neutral100, minHeight: 44 },
+  weekSelected: { backgroundColor: C.sageDark }, selectedLabel: { fontFamily: F.semibold, fontSize: 12, lineHeight: 18, color: C.white, marginTop: 5 },
   weekTime: { fontFamily: F.heading, color: C.text, fontSize: 12 }, weekTitle: { flex: 1, fontFamily: F.semibold, color: C.text, fontSize: 13, lineHeight: 18 },
   dayStrip: { gap: 6 }, dayChip: { minWidth: 46, padding: 10, alignItems: 'center', backgroundColor: C.neutral100, borderRadius: 14 },
   dayOn: { backgroundColor: C.sageDeep }, calendar: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 }, calendarDay: { width: '13%', minHeight: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 12 },
