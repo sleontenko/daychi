@@ -1,10 +1,9 @@
-import { useFonts } from 'expo-font';
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Linking, Platform, Pressable, RefreshControl, ScrollView,
-  StyleSheet, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, Pressable, RefreshControl, ScrollView,
+  StyleSheet, Switch, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Organic as C, OrganicFonts as F } from '../prototype/theme';
+import { Organic as C } from '../prototype/theme';
 import { dayKey, type Occurrence } from './model';
 import { testReminder } from './local-reminders';
 import { useSchedule } from './use-schedule';
@@ -21,17 +20,18 @@ const iconNames = {
   mine: { ios: 'checkmark.circle', android: 'check_circle', web: 'check_circle' },
   bell: { ios: 'bell', android: 'notifications', web: 'notifications' },
   back: { ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' },
+  forward: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },
+  selected: { ios: 'checkmark.circle.fill', android: 'check_circle', web: 'check_circle' },
+  dot: { ios: 'circle.fill', android: 'circle', web: 'circle' },
 } as const;
-function Icon({ name, active = false }: { name: keyof typeof iconNames; active?: boolean }) {
-  return <SymbolView name={iconNames[name] as SymbolViewProps['name']} size={21} tintColor={active ? C.accentDark : C.neutral500} />;
+function Icon({ name, active = false, size = 21, color }: { name: keyof typeof iconNames; active?: boolean; size?: number; color?: string }) {
+  return <SymbolView name={iconNames[name] as SymbolViewProps['name']} size={size} tintColor={color ?? (active ? C.accentDark : '#77716A')} />;
 }
 
 export default function ScheduleScreen() {
   const model = useSchedule();
   const { data, prefs, now, busy, ready, offline, loading } = model;
-  const [fonts] = useFonts({ Caprasimo: require('../../../assets/fonts/Caprasimo-Regular.ttf'),
-    Figtree: require('../../../assets/fonts/Figtree-Regular.ttf'), FigtreeSemiBold: require('../../../assets/fonts/Figtree-SemiBold.ttf'),
-    FigtreeBold: require('../../../assets/fonts/Figtree-Bold.ttf') });
+  const { fontScale } = useWindowDimensions();
   const [tab, setTab] = useState<Tab>('today');
   const [view, setView] = useState<'day' | 'week' | 'calendar'>('week');
   const [formatFilter, setFormatFilter] = useState<FormatFilter>('all');
@@ -39,12 +39,9 @@ export default function ScheduleScreen() {
   const [detail, setDetail] = useState<string | null>(null);
   const [testState, setTestState] = useState('');
   const scroll = useRef<ScrollView>(null);
-  const [fade] = useState(() => new Animated.Value(1));
   useEffect(() => {
     scroll.current?.scrollTo({ y: 0, animated: false });
-    fade.setValue(0.5);
-    Animated.timing(fade, { toValue: 1, duration: 180, useNativeDriver: true }).start();
-  }, [tab, detail, fade]);
+  }, [tab, detail]);
 
   const today = dayKey(now);
   const all = data?.occurrences ?? [];
@@ -55,6 +52,37 @@ export default function ScheduleScreen() {
   const lesson = all.find(e => e.id === detail);
   const info = lesson ? classInfo(lesson.title) : null;
   const unavailable = Object.keys(prefs.choices).filter(id => !all.some(e => e.id === id) && id.split(':').at(-1)! >= today);
+  const agenda = (day: string) => {
+    const events = visible.filter(e => dayKey(e.starts_at) === day);
+    const isToday = day === today;
+    return <View key={day} style={s.agendaSection}>
+      <View style={s.dayHeading}>
+        {isToday && <Icon name="dot" active size={10} />}
+        <Text accessibilityRole="header" style={s.dayHeadingText}>
+          {isToday ? 'Сегодня, ' : ''}{format(`${day}T12:00:00Z`, { weekday: 'long' })} · {format(`${day}T12:00:00Z`, { day: 'numeric', month: 'long' })}
+        </Text>
+      </View>
+      {events.length ? <View style={s.agendaGroup}>{events.map((event, index) => {
+        const details = classInfo(event.title);
+        const selected = !!prefs.choices[event.id];
+        const ended = Date.parse(event.ends_at) <= now;
+        const status = event.status === 'cancelled' ? 'Отменено' : ended ? 'Завершилось' : '';
+        const meta = details.location ? [details.location, details.online ? 'Онлайн' : null].filter(Boolean).join(' · ') : details.format;
+        const badge = selected && <View style={s.attendanceBadge}><Icon name="selected" size={20} color={C.sageDark} /><Text style={s.attendanceText}>Я иду</Text></View>;
+        return <Pressable key={event.id} accessibilityRole="button" accessibilityState={{ selected }}
+          accessibilityLabel={`${date(event.starts_at)}, ${time(event.starts_at)}, ${event.title}${selected ? ', я иду' : ''}${status ? `, ${status}` : ''}`}
+          onPress={() => setDetail(event.id)} style={({ pressed }) => [s.agendaRow, fontScale > 1.5 && s.agendaRowLarge, index > 0 && s.agendaSeparator, selected && s.agendaSelected, pressed && s.pressed]}>
+          <View style={[s.agendaTimeColumn, fontScale > 1.3 && s.agendaTimeLarge]}><Text style={s.agendaTime}>{time(event.starts_at)}</Text></View>
+          <View style={s.agendaContent}><Text style={s.agendaTitle}>{details.title}</Text><Text style={s.agendaMeta}>{meta}</Text>
+            {!!status && <Text style={s.agendaStatus}>{status}</Text>}
+            {fontScale > 1.3 && badge}
+          </View>
+          {fontScale <= 1.3 && badge}
+          {fontScale <= 1.5 && <Icon name="forward" size={12} />}
+        </Pressable>;
+      })}</View> : data ? <Text style={s.caption}>{formatFilter === 'all' ? 'Нет занятий' : 'Нет занятий этого формата'}</Text> : null}
+    </View>;
+  };
   const card = (event: Occurrence, compact = false) => {
     const selected = !!prefs.choices[event.id], past = Date.parse(event.starts_at) <= now;
     return <View key={event.id} style={[s.lessonCard, selected && s.lessonMine]}>
@@ -88,7 +116,7 @@ export default function ScheduleScreen() {
     </View>
     {prefs.enabled && model.allowed && <>
       <Text style={s.sectionLabel}>КОГДА НАПОМНИТЬ</Text>
-      <View style={s.segments}>{[[0, 'В начале'], [15, '15 мин'], [30, '30 мин'], [60, '1 час']].map(([lead, label]) =>
+      <View style={[s.segments, fontScale > 1.2 && s.controlsLarge]}>{[[0, 'В начале'], [15, '15 мин'], [30, '30 мин'], [60, '1 час']].map(([lead, label]) =>
         <Pressable key={lead} accessibilityRole={Platform.OS === 'web' ? 'radio' : 'button'} accessibilityState={{ checked: prefs.lead === lead, selected: prefs.lead === lead }} disabled={busy}
           onPress={() => void model.setLead(Number(lead))} style={[s.segment, prefs.lead === lead && s.segmentOn]}>
           <Text style={s.segmentText}>{label}</Text></Pressable>)}</View>
@@ -102,11 +130,10 @@ export default function ScheduleScreen() {
       onPress={() => void Linking.openSettings()}><Text style={s.link}>Настройки уведомлений iPhone</Text></Pressable>}
   </View>;
 
-  if (!fonts) return <View style={s.loading}><ActivityIndicator color={C.accent} /></View>;
   return <SafeAreaView edges={['top']} style={s.safe}>
     <ScrollView ref={scroll} contentContainerStyle={s.page} showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={loading} onRefresh={model.refresh} tintColor={C.accent} />}>
-      <Animated.View style={[s.screen, { opacity: fade }]}>
+      <View style={s.screen}>
         {detail ? <>
           <Pressable accessibilityRole="button" onPress={() => setDetail(null)} style={s.back}><Icon name="back" active /><Text style={s.link}>Назад</Text></Pressable>
           {lesson ? <>
@@ -135,7 +162,7 @@ export default function ScheduleScreen() {
         </> : <>
           <View><Text style={s.eyebrow}>{tab === 'today' ? 'СЕГОДНЯ' : tab === 'schedule' ? 'РАСПИСАНИЕ' : 'МОЯ ПРАКТИКА'}</Text>
             <Text accessibilityRole="header" style={s.title}>{tab === 'today' ? date(now) : tab === 'schedule' ? 'Занятия школы' : 'Мои занятия'}</Text>
-            <Text style={s.caption}>Время занятий — Израиль</Text></View>
+            <Text style={s.caption}>{tab === 'schedule' && view === 'week' ? `${format(`${today}T12:00:00Z`, { day: 'numeric', month: 'short' })} – ${format(`${days[6]}T12:00:00Z`, { day: 'numeric', month: 'short' })} · ` : ''}Время Израиля</Text></View>
 
           {tab === 'today' && <>
             {next && <View style={s.next}><Text style={s.sectionLabel}>БЛИЖАЙШЕЕ ИЗ ВЫБРАННЫХ</Text>
@@ -148,22 +175,13 @@ export default function ScheduleScreen() {
           </>}
 
           {tab === 'schedule' && <>
-            <View style={s.segments}>{([['day', 'День'], ['week', 'Неделя'], ['calendar', 'Календарь']] as const).map(([key, label]) =>
+            <View style={[s.segments, fontScale > 1.2 && s.controlsLarge]}>{([['day', 'День'], ['week', 'Неделя'], ['calendar', 'Календарь']] as const).map(([key, label]) =>
               <Pressable accessibilityRole={Platform.OS === 'web' ? 'tab' : 'button'} accessibilityState={{ selected: view === key }} key={key} onPress={() => setView(key)} style={[s.segment, view === key && s.segmentOn]}>
                 <Text style={s.segmentText}>{label}</Text></Pressable>)}</View>
-            <View accessibilityLabel="Формат занятий" style={s.filters}>{([['all', 'Все'], ['online', 'Онлайн'], ['in-person', 'Очно']] as const).map(([key, label]) =>
+            <View accessibilityLabel="Формат занятий" style={[s.filters, fontScale > 1.2 && s.controlsLarge]}>{([['all', 'Все'], ['online', 'Онлайн'], ['in-person', 'Очно']] as const).map(([key, label]) =>
               <Pressable key={key} accessibilityRole="button" accessibilityState={{ selected: formatFilter === key }} onPress={() => setFormatFilter(key)} style={[s.filter, formatFilter === key && s.filterOn]}>
                 <Text style={[s.filterText, formatFilter === key && s.inverse]}>{label}</Text></Pressable>)}</View>
-            {view === 'week' ? days.slice(0, 7).map(day => <View key={day} style={s.weekRow}>
-              <View style={[s.weekDate, day === today && s.todayDate]}><Text style={[s.weekDay, day === today && s.inverse]}>{format(`${day}T12:00:00Z`, { weekday: 'short' })}</Text><Text style={[s.weekNumber, day === today && s.inverse]}>{Number(day.slice(-2))}</Text>
-                {day === today && <Text style={s.todayLabel}>сегодня</Text>}</View>
-              <View style={s.weekLessons}>{visible.filter(e => dayKey(e.starts_at) === day).map(e =>
-                <Pressable accessibilityRole="button" accessibilityLabel={`${date(e.starts_at)}, ${time(e.starts_at)}, ${e.title}${prefs.choices[e.id] ? ', выбрано' : ''}`}
-                  key={e.id} onPress={() => setDetail(e.id)} style={({ pressed }) => [s.weekLesson, prefs.choices[e.id] && s.weekSelected, pressed && s.pressed]}>
-                  <Text style={[s.weekTime, prefs.choices[e.id] && s.inverse]}>{time(e.starts_at)}</Text><View style={s.flex}><Text style={[s.weekTitle, prefs.choices[e.id] && s.inverse]}>{e.title}</Text>
-                    {!!prefs.choices[e.id] && <Text style={s.selectedLabel}>Я иду</Text>}</View>
-                </Pressable>)}{data && !visible.some(e => dayKey(e.starts_at) === day) && <Text style={s.caption}>{formatFilter === 'all' ? 'Нет занятий' : 'Нет занятий этого формата'}</Text>}</View>
-            </View>) : <>
+            {view === 'week' ? days.slice(0, 7).map(agenda) : <>
               {view === 'day' ? <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.dayStrip}>
                 {days.map(day => <Pressable key={day} accessibilityRole="button" accessibilityLabel={date(`${day}T12:00:00Z`)} onPress={() => setSelectedDay(day)}
                   style={[s.dayChip, day === selectedDay && s.dayOn]}><Text style={[s.dayShort, day === selectedDay && s.inverse]}>{format(`${day}T12:00:00Z`, { weekday: 'short' })}</Text>
@@ -199,12 +217,12 @@ export default function ScheduleScreen() {
           <Text style={s.footnote}>Регулярное расписание школы. Отмены из Telegram пока не учитываются. Изменения проверяются при открытии приложения.</Text>
           {offline && <Pressable accessibilityRole="button" style={s.textButton} onPress={model.refresh}><Text style={s.link}>Обновить</Text></Pressable>}
         </View>}
-      </Animated.View>
+      </View>
     </ScrollView>
     {!detail && <SafeAreaView edges={['bottom']} style={s.tabSafe}><View style={s.tabs}>
       {([['today', 'Сегодня'], ['schedule', 'Расписание'], ['mine', 'Мои занятия']] as const).map(([key, label]) =>
         <Pressable key={key} accessibilityRole={Platform.OS === 'web' ? 'tab' : 'button'} accessibilityState={{ selected: tab === key }} accessibilityLabel={label} onPress={() => setTab(key)} style={s.tab}>
-          <Icon name={key} active={tab === key} /><Text style={[s.tabText, tab === key && s.tabOn]}>{label}</Text></Pressable>)}
+          <Icon name={key} active={tab === key} /><Text maxFontSizeMultiplier={1.2} style={[s.tabText, tab === key && s.tabOn]}>{label}</Text></Pressable>)}
     </View></SafeAreaView>}
   </SafeAreaView>;
 }
@@ -212,52 +230,63 @@ export default function ScheduleScreen() {
 const s = StyleSheet.create({
   loading: { flex: 1, backgroundColor: C.background, alignItems: 'center', justifyContent: 'center' },
   safe: { flex: 1, backgroundColor: C.background, width: '100%', maxWidth: 600, alignSelf: 'center' },
-  page: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 40 }, screen: { gap: 20 },
-  eyebrow: { fontFamily: F.heading, color: C.accentDark, fontSize: 12, letterSpacing: 1.7, lineHeight: 17 },
-  title: { fontFamily: F.heading, color: C.sageDeep, fontSize: 28, lineHeight: 34, marginTop: 3 },
-  body: { fontFamily: F.regular, color: C.text, fontSize: 15, lineHeight: 22 },
-  caption: { fontFamily: F.regular, color: C.text, opacity: 0.62, fontSize: 12, lineHeight: 18 },
-  sectionLabel: { fontFamily: F.regular, color: C.text, opacity: 0.6, fontSize: 12, lineHeight: 18, letterSpacing: 0.8 },
-  lessonTitle: { fontFamily: F.semibold, color: C.text, fontSize: 16, lineHeight: 22 },
-  nextTitle: { fontFamily: F.heading, color: C.sageDeep, fontSize: 22, lineHeight: 28 },
+  page: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 40 }, screen: { gap: 24 },
+  eyebrow: { color: C.accentDark, fontSize: 11, letterSpacing: 1.7, lineHeight: 16, marginBottom: 7 },
+  title: { color: C.text, fontSize: 32, lineHeight: 38, fontWeight: '500', marginBottom: 6, letterSpacing: -0.6 },
+  body: { color: C.text, fontSize: 17, lineHeight: 25 },
+  caption: { color: '#68635B', fontSize: 14, lineHeight: 20 },
+  sectionLabel: { color: '#68635B', fontSize: 12, lineHeight: 18, letterSpacing: 0.6 },
+  lessonTitle: { fontWeight: '600', color: C.text, fontSize: 17, lineHeight: 23 },
+  nextTitle: { fontWeight: '500', color: C.sageDeep, fontSize: 24, lineHeight: 30 },
   next: { padding: 20, gap: 12, borderRadius: 28, backgroundColor: C.neutral100 },
-  lessonCard: { borderWidth: 1, borderColor: C.divider, borderRadius: 16, padding: 14, gap: 8 },
-  lessonMine: { backgroundColor: C.sageMuted, borderColor: C.sageDark, borderWidth: 2 },
+  lessonCard: { backgroundColor: C.neutral100, borderRadius: 14, padding: 16, gap: 12 },
+  lessonMine: { backgroundColor: '#E7EADC' },
   cardMain: { gap: 5, minHeight: 48 },
-  time: { fontFamily: F.heading, color: C.accentDark, fontSize: 14, lineHeight: 19 },
+  time: { fontWeight: '500', fontVariant: ['tabular-nums'], color: C.accentDark, fontSize: 15, lineHeight: 21 },
   between: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
   choose: { minHeight: 44, paddingHorizontal: 16, justifyContent: 'center', borderRadius: 14, borderWidth: 1, borderColor: C.accentBorder },
   chosen: { backgroundColor: C.sageDark, borderColor: C.sageDark },
-  chooseLabel: { fontFamily: F.semibold, fontSize: 13, color: C.accentDark },
+  chooseLabel: { fontWeight: '600', fontSize: 15, color: C.accentDark },
   inverse: { color: C.white, opacity: 1 }, pressed: { opacity: 0.65 },
   section: { gap: 12 }, flex: { flex: 1 },
   reminderRow: { padding: 16, borderRadius: 24, backgroundColor: C.neutral100, flexDirection: 'row', gap: 12, alignItems: 'center' },
   segments: { flexDirection: 'row', backgroundColor: C.neutral200, padding: 3, borderRadius: 99 },
-  segment: { minHeight: 44, flex: 1, borderRadius: 99, alignItems: 'center', justifyContent: 'center' },
-  segmentOn: { backgroundColor: C.neutral100 }, segmentText: { fontFamily: F.semibold, fontSize: 13, color: C.text },
-  filters: { flexDirection: 'row', gap: 8 }, filter: { paddingHorizontal: 20, minHeight: 44, borderRadius: 24, borderWidth: 1, borderColor: C.sageDark, alignItems: 'center', justifyContent: 'center' },
-  filterOn: { backgroundColor: C.sageDeep }, filterText: { fontFamily: F.semibold, fontSize: 14, color: C.sageDeep },
+  segment: { minHeight: 44, flex: 1, paddingVertical: 8, paddingHorizontal: 6, borderRadius: 99, alignItems: 'center', justifyContent: 'center' },
+  controlsLarge: { flexDirection: 'column', flexWrap: 'nowrap', alignItems: 'stretch', borderRadius: 16 },
+  segmentOn: { backgroundColor: C.neutral100 }, segmentText: { alignSelf: 'stretch', textAlign: 'center', fontWeight: '500', fontSize: 15, color: C.text },
+  filters: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 }, filter: { paddingHorizontal: 20, minHeight: 44, paddingVertical: 8, borderRadius: 24, borderWidth: 1, borderColor: C.divider, alignItems: 'center', justifyContent: 'center' },
+  filterOn: { backgroundColor: C.accentDark, borderColor: C.accentDark }, filterText: { alignSelf: 'stretch', textAlign: 'center', fontWeight: '500', fontSize: 15, color: C.text },
   attend: { minHeight: 56, padding: 16, borderRadius: 16, backgroundColor: C.accentDark, alignItems: 'center', justifyContent: 'center' },
-  attendSelected: { backgroundColor: C.sageDark }, attendLabel: { fontFamily: F.semibold, fontSize: 17, lineHeight: 24, color: C.white },
-  weekRow: { flexDirection: 'row', gap: 10, paddingVertical: 5, alignItems: 'flex-start' },
-  weekDate: { width: 64, paddingVertical: 10, alignItems: 'center', gap: 2, borderRadius: 14 }, todayDate: { backgroundColor: C.accentDark },
-  weekDay: { fontFamily: F.semibold, fontSize: 14, lineHeight: 20, textTransform: 'uppercase', color: C.sageDeep },
-  weekNumber: { fontFamily: F.bold, fontSize: 28, lineHeight: 34, color: C.sageDeep }, todayLabel: { fontFamily: F.semibold, fontSize: 10, lineHeight: 15, color: C.white },
-  dayShort: { fontFamily: F.regular, fontSize: 12, lineHeight: 18, textTransform: 'uppercase', color: C.sageDark },
-  dayNumber: { fontFamily: F.heading, color: C.text, fontSize: 18, lineHeight: 25 }, weekLessons: { flex: 1, gap: 6 },
-  weekLesson: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 12, backgroundColor: C.neutral100, minHeight: 44 },
-  weekSelected: { backgroundColor: C.sageDark }, selectedLabel: { fontFamily: F.semibold, fontSize: 12, lineHeight: 18, color: C.white, marginTop: 5 },
-  weekTime: { fontFamily: F.heading, color: C.text, fontSize: 12 }, weekTitle: { flex: 1, fontFamily: F.semibold, color: C.text, fontSize: 13, lineHeight: 18 },
+  attendSelected: { backgroundColor: C.sageDark }, attendLabel: { fontWeight: '600', fontSize: 17, lineHeight: 24, color: C.white },
+  agendaSection: { gap: 12 },
+  dayHeading: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 4 },
+  dayHeadingText: { flex: 1, fontSize: 17, lineHeight: 24, fontWeight: '600', color: C.text },
+  agendaGroup: { backgroundColor: C.neutral100, borderRadius: 14, overflow: 'hidden' },
+  agendaRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 13, paddingHorizontal: 12, gap: 10, minHeight: 66 },
+  agendaRowLarge: { flexDirection: 'column', alignItems: 'stretch' },
+  agendaSeparator: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.divider },
+  agendaSelected: { backgroundColor: '#E7EADC' },
+  agendaTimeColumn: { width: 56, paddingRight: 9, borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: C.divider, alignSelf: 'stretch', justifyContent: 'center' },
+  agendaTimeLarge: { width: 'auto', minWidth: 76, borderRightWidth: 0 },
+  agendaTime: { fontSize: 14, fontWeight: '600', fontVariant: ['tabular-nums'], color: '#59564E' },
+  agendaContent: { flex: 1, gap: 3 },
+  agendaTitle: { fontSize: 16, lineHeight: 21, fontWeight: '500', color: C.text },
+  agendaMeta: { fontSize: 14, lineHeight: 19, color: '#68635B' },
+  agendaStatus: { fontSize: 13, lineHeight: 18, color: C.accentDark },
+  attendanceBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 3 },
+  attendanceText: { fontSize: 13, fontWeight: '500', color: C.sageDark },
+  dayShort: { fontSize: 12, lineHeight: 18, textTransform: 'uppercase', color: C.sageDark },
+  dayNumber: { fontWeight: '600', color: C.text, fontSize: 18, lineHeight: 25 },
   dayStrip: { gap: 6 }, dayChip: { minWidth: 46, padding: 10, alignItems: 'center', backgroundColor: C.neutral100, borderRadius: 14 },
   dayOn: { backgroundColor: C.sageDeep }, calendar: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 }, calendarDay: { width: '13%', minHeight: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 12 },
-  textButton: { minHeight: 44, justifyContent: 'center', alignSelf: 'flex-start' }, link: { fontFamily: F.semibold, fontSize: 14, color: C.accentDark },
+  textButton: { minHeight: 44, justifyContent: 'center', alignSelf: 'flex-start' }, link: { fontWeight: '500', fontSize: 16, color: C.accentDark },
   outlineButton: { borderWidth: 1, borderColor: C.divider, borderRadius: 16, alignItems: 'center', padding: 14, minHeight: 48 },
-  primary: { backgroundColor: C.accent, borderRadius: 16, minHeight: 48, padding: 14, alignItems: 'center' }, primaryLabel: { fontFamily: F.heading, color: C.white, fontSize: 14 },
+  primary: { backgroundColor: C.accentDark, borderRadius: 16, minHeight: 48, padding: 14, alignItems: 'center' }, primaryLabel: { fontWeight: '600', color: C.white, fontSize: 16 },
   empty: { paddingVertical: 28, gap: 12 }, notice: { padding: 16, backgroundColor: C.surface, borderRadius: 16 },
   footer: { paddingTop: 16, gap: 7, borderTopWidth: StyleSheet.hairlineWidth, borderColor: C.divider },
-  footnote: { fontFamily: F.regular, color: C.text, opacity: 0.55, fontSize: 11, lineHeight: 16 },
+  footnote: { color: '#68635B', fontSize: 12, lineHeight: 18 },
   back: { flexDirection: 'row', gap: 6, alignItems: 'center', minHeight: 44 },
-  tabSafe: { backgroundColor: C.background, borderTopWidth: StyleSheet.hairlineWidth, borderColor: C.divider },
+  tabSafe: { backgroundColor: C.neutral100, borderTopWidth: StyleSheet.hairlineWidth, borderColor: C.divider },
   tabs: { height: 60, flexDirection: 'row' }, tab: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4 },
-  tabText: { fontFamily: F.regular, fontSize: 10, color: C.neutral500 }, tabOn: { fontFamily: F.semibold, color: C.accentDark },
+  tabText: { alignSelf: 'stretch', textAlign: 'center', fontSize: 11, color: '#68635B' }, tabOn: { fontWeight: '600', color: C.accentDark },
 });
