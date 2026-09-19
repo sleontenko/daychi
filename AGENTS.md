@@ -9,7 +9,12 @@ Keep the schedule timezone Asia/Jerusalem, distinct from the device timezone.
 
 For each TestFlight build update the changelog with added/fixed/changed behavior,
 tests actually run, limitations, Apple status and source commit/tag. Do not claim
-real-device delivery from simulator evidence. Ask before releasing a new build.
+real-device delivery from simulator evidence. Ask before releasing a new build
+unless the current task already authorizes it. Once a TestFlight release is
+authorized, automatically distribute it to all members of the existing internal
+group «Личное тестирование» (ed8a05aa-a6db-41e9-93e6-299c8f36c7c2), without
+asking for another confirmation. This is the owner’s standing instruction from
+2026-09-19, including build 6. Verify group assignment and Testing status.
 Keep roadmap items separate from completed work. Never rewrite past release facts.
 
 Every subsequent version must be checked against the original design archive and

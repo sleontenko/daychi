@@ -26,15 +26,15 @@ tag `testflight/ios-1.0.0-6`. No secrets/private data committed.
 - Apple processing completed. Build ID `4cc8dcaf-2b80-4919-a6b5-39a048abd07f`.
   What to Test saved. Owner signed in to App Store Connect.
 
-## Remaining
+## Distribution completed
 
-Auto-review rejected the final Add action granting the build to the existing
-internal group «Личное тестирование», because general TestFlight upload consent
-was not accepted as exact recipient authorization. Explicit consent requested;
-wait for it before retrying. The Chrome Apple tab has the Add Group dialog open,
-only «Личное тестирование» checked. After consent, click Add, verify group and
-Testing, then update current-version docs and changelog. External group/review
-is not part of this internal rollout.
+Owner granted standing authorization to distribute released builds to all members
+of the existing internal group «Личное тестирование» without re-confirmation.
+Build 6 added successfully; group has 4 testers. Its Builds tab confirms Testing.
+The earlier Add rejection is resolved. What to Test was already saved.
+No external group/review rollout is claimed. No further release step is pending
+for this internal group. Documentation/source commits remain local; GitHub push
+was previously rejected and has not been retried.
 
 Apple URL: https://appstoreconnect.apple.com/teams/1807807a-3e63-4c00-bfb7-041c50b96e9f/apps/6813117483/testflight/ios/4cc8dcaf-2b80-4919-a6b5-39a048abd07f
 
