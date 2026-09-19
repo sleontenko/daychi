@@ -143,3 +143,12 @@ search/category «Веер» yields 129, junior subtopic 56, saved detail opens 
 original source link. Two offline-model tests cover normalization, pagination,
 filters, sorting and unavailable bookmark IDs. No school login/password or session token is embedded; original material access
 codes are part of the private snapshot distributed to the authorized beta group.
+
+## Build 8 · Zoom details
+
+Release iPhone 18 Pro Simulator / iOS 27: details match the existing approved
+composition and theme, with a new connection section using the existing outline
+button. Jerusalem 18:00–20:00 and selectable passcode are visible.
+Private evidence: `data/qa-build8/zoom-ios.jpg`; compared with prior detail
+`docs/qa-build4/class-detail-ios.jpg`. No changes to map or learning sequence.
+Physical device / installed Zoom handoff not verified.
