@@ -128,3 +128,17 @@ DESIGN.md; автоматический detector не запускался.
 и подтемы индекса. См. `docs/DESIGN.md` и новый раздел корневого `design-qa.md`.
 Проверены TypeScript, lint и браузер 402×874: вход, поиск, фильтры, детали,
 сохранённые. Изменённый экран пока не проверен нативно и не выпущен.
+
+### Production HTTPS — 19 сентября 2026
+
+После явного разрешения владельца API запущен отдельным launch agent
+`ai.mypraxis.quietpractice.wiki` на Mac mini, loopback 8767. Production-копия:
+`~/projects/quiet-practice-wiki-release`; приватные данные и серверная конфигурация:
+`~/.config/quiet-practice/wiki/`. Постоянный SQLite сохранён при переносе.
+
+Funnel публикует только `/api/wiki` на существующем HTTPS-хосте
+`mac-mini-server.tail07600a.ts.net`, upstream `http://127.0.0.1:8767/api/wiki`.
+Маршрут расписания остаётся прежним. Старый API корпуса не публиковался.
+HTTPS-проверка: анонимный запрос 401; вход, каталог 1145, поиск и детали успешны;
+ответы no-store; logout отзывает токен (401); расписание `/health` = 200.
+Сборка 6 содержит этот HTTPS-хост, без loopback URL вики.

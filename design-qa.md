@@ -107,3 +107,18 @@ Native visual check at default text size: passed. Extreme Dynamic Type and
 physical-device delivery remain unverified. The separately signed device archive
 is build 6; the simulator UI check above used the existing Debug runner, not an
 installed TestFlight binary. Public HTTPS connectivity is a separate pending gate.
+
+## Release + production endpoint confirmation — 2026-09-19
+
+Release Simulator build 6 was compiled with explicit HTTPS build settings and
+launched successfully. Verified the actual wiki endpoint in the intermediate JS
+bundle (not merely presence of the shared schedule hostname). Login to production,
+real catalog, session after stop/launch, saved-only filter and detail verified.
+Source image and final Release screenshot were opened in the same comparison;
+`data/qa-build6/wiki-release-ios.jpg` is private/ignored. Appearance is unchanged
+from the checked Debug view. Production HTTPS integration gate: passed.
+An initial simulator-only build omitted the wiki build setting; rebuilt with
+explicit settings. The device archive had the correct setting from its first
+successful build, confirmed independently in its intermediate JS bundle.
+
+final result: passed
