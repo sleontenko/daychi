@@ -97,3 +97,22 @@ def test_missing_config_and_missing_catalog(tmp_path):
     client = TestClient(create_wiki_app(cfg))
     assert client.post('/api/wiki/login', json={'username': 'student', 'password': 'wrong'}).status_code == 503
     assert client.get('/api/wiki/materials').status_code == 503
+
+
+def test_beta_snapshot_preserves_ids_without_modifying_live_sessions(tmp_path):
+    from scripts.prepare_wiki_beta_catalog import prepare
+    cfg, client = setup(tmp_path, 3)
+    headers = auth(client)
+    expected = client.get('/api/wiki/materials', headers=headers).json()
+    with sqlite3.connect(cfg.database) as con:
+        sessions_before = con.execute('SELECT * FROM sessions').fetchall()
+    output = tmp_path / 'generated/catalog.json'
+    prepare(cfg.index, cfg.database, output)
+    snapshot = json.loads(output.read_text())
+    assert [r['id'] for r in snapshot['materials']] == [r['id'] for r in expected['items']]
+    assert len(snapshot['categories']) == 1
+    assert snapshot['materials'][0]['links']
+    assert 'test-password' not in output.read_text()
+    assert headers['Authorization'].split()[1] not in output.read_text()
+    with sqlite3.connect(cfg.database) as con:
+        assert con.execute('SELECT * FROM sessions').fetchall() == sessions_before

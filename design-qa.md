@@ -122,3 +122,23 @@ explicit settings. The device archive had the correct setting from its first
 successful build, confirmed independently in its intermediate JS bundle.
 
 final result: passed
+
+## Build 7 — closed beta without login, 2026-09-19
+
+Reference: original `apps/practice-app/design-reference-wiki.jpg`. Actual Release
+build 7 on iPhone 18 Pro / iOS 27 opens the existing catalog immediately; native
+capture `data/qa-build7/wiki-release-ios.jpg` is private/ignored. Both images were
+opened in one comparison input. Catalog composition is unchanged from build 6;
+manual login and the settings logout action are removed as explicitly requested.
+No new visual departure from the original wiki. Settings show 1145 materials;
+previous saved bookmark remains. The signed archive includes a local catalog
+provider with no wiki fetch/auth route, verified in the actual bundled code.
+Source links retain their original online behavior. No claim of physical-device
+verification or a repaired network/Funnel connection.
+
+final result: passed
+
+Additional build-7 behavior verification: local web catalog without a login form;
+search/category «Веер» yields 129, junior subtopic 56, saved detail opens with its
+original source link. Two offline-model tests cover normalization, pagination,
+filters, sorting and unavailable bookmark IDs. No source credentials in bundle.

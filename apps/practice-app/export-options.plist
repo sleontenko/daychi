@@ -7,5 +7,5 @@
 <key>signingStyle</key><string>automatic</string>
 <key>manageAppVersionAndBuildNumber</key><false/>
 <key>uploadSymbols</key><true/>
-<key>testFlightInternalTestingOnly</key><false/>
+<key>testFlightInternalTestingOnly</key><true/>
 </dict></plist>

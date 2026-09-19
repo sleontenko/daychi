@@ -1,10 +1,9 @@
-import WikiLogin from './wiki-login';
 import { SymbolView } from 'expo-symbols';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, AppState, FlatList, Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Organic as C } from '../prototype/theme';
-import { Category, Material, readSession, Results, Summary, WikiError, wikiRequest, writeSession } from './api';
+import { Category, Material, Results, Summary, wikiRequest } from './api';
 
 const BOOKMARKS = 'quietpractice.wiki.bookmarks.v1';
 function Button({ title, onPress, selected, disabled }: { title: string; onPress: () => void; selected?: boolean; disabled?: boolean }) {
@@ -13,10 +12,7 @@ function Button({ title, onPress, selected, disabled }: { title: string; onPress
     <Text style={[s.link, selected && { color: '#fff' }]}>{title}</Text></Pressable>;
 }
 export default function WikiScreen() {
-  const [token, setToken] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
@@ -28,46 +24,37 @@ export default function WikiScreen() {
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [savedOnly, setSavedOnly] = useState(false);
   const [saved, setSaved] = useState<string[]>([]);
-  const [results, setResults] = useState<Results>({ total: 0, items: [] });
+  const [results, setResults] = useState<Results>({ total: 0, items: [], missing_ids: [] });
   const [detail, setDetail] = useState<Material | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
   const generation = useRef(0);
   const detailGeneration = useRef(0);
-  const authGeneration = useRef(0);
   const bookmarkBusy = useRef(false);
   const paging = useRef(false);
   useEffect(() => {
     let active = true;
-    Promise.all([readSession(), AsyncStorage.getItem(BOOKMARKS)]).then(([session, bookmarks]) => {
+    AsyncStorage.getItem(BOOKMARKS).then(bookmarks => {
       if (!active) return;
       const parsed: unknown = bookmarks ? JSON.parse(bookmarks) : [];
       setSaved(Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string') : []);
-      setToken(session);
     }).catch(() => { if (active) setError('Не удалось восстановить сохранённые данные.'); })
       .finally(() => { if (active) setReady(true); });
     return () => { active = false; };
   }, []);
   useEffect(() => { const timer = setTimeout(() => setSearch(query), 250); return () => clearTimeout(timer); }, [query]);
-  const clearSession = useCallback(async () => {
-    authGeneration.current++; generation.current++; detailGeneration.current++;
-    setToken(null); setResults({ total: 0, items: [] }); setCategories([]); setDetail(null); setDetailId(null); setBusy(false);
-    await writeSession(null);
-  }, []);
   const fail = useCallback((e: unknown) => {
     setError(e instanceof Error ? e.message : 'Не удалось загрузить материалы.');
-    if (e instanceof WikiError && e.status === 401) void clearSession().catch(() => setError('Не удалось удалить сессию с устройства. Повторите выход.'));
-  }, [clearSession]);
+  }, []);
   useEffect(() => {
     const subscription = AppState.addEventListener('change', state => { if (state === 'active') setRevision(x => x + 1); });
     return () => subscription.remove();
   }, []);
   useEffect(() => {
-    if (!token) return;
     let active = true;
-    wikiRequest<Category[]>('/categories', token).then(rows => { if (active) setCategories(rows); }).catch(e => { if (active) fail(e); });
+    wikiRequest<Category[]>('/categories').then(rows => { if (active) setCategories(rows); }).catch(e => { if (active) fail(e); });
     return () => { active = false; };
-  }, [token, revision, fail]);
+  }, [revision, fail]);
   const savedFilter = savedOnly ? (saved.length ? saved.join(',') : 'none') : '';
   const makePath = useCallback((offset: number) => {
     const params = new URLSearchParams({ q: search, category, subtopic, sort, offset: String(offset), limit: '40' });
@@ -75,42 +62,27 @@ export default function WikiScreen() {
     return `/materials?${params}`;
   }, [search, category, subtopic, sort, savedFilter]);
   useEffect(() => {
-    if (!token) return;
     const id = ++generation.current;
-    // Clear results before fetching a different query; never display stale private rows.
+    // Clear results before applying a different catalog query.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setBusy(true); setError(''); setResults({ total: 0, items: [] });
-    wikiRequest<Results>(makePath(0), token).then(rows => { if (generation.current === id) setResults(rows); })
+    setBusy(true); setError(''); setResults({ total: 0, items: [], missing_ids: [] });
+    wikiRequest<Results>(makePath(0)).then(rows => { if (generation.current === id) setResults(rows); })
       .catch(e => { if (generation.current === id) fail(e); })
       .finally(() => { if (generation.current === id) setBusy(false); });
     const requests = generation;
     return () => { requests.current++; };
-  }, [token, makePath, revision, fail]);
+  }, [makePath, revision, fail]);
   useEffect(() => {
-    if (!token || !detailId) return;
+    if (!detailId) return;
     const id = ++detailGeneration.current;
     // Clear the previous material while the new request is pending.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setDetail(null); setError('');
-    wikiRequest<Material>(`/materials/${encodeURIComponent(detailId)}`, token).then(row => { if (id === detailGeneration.current) setDetail(row); })
+    wikiRequest<Material>(`/materials/${encodeURIComponent(detailId)}`).then(row => { if (id === detailGeneration.current) setDetail(row); })
       .catch(e => { if (id === detailGeneration.current) fail(e); });
     const requests = detailGeneration;
     return () => { requests.current++; };
-  }, [detailId, token, revision, fail]);
-  async function login() {
-    setBusy(true); setError('');
-    const id = ++authGeneration.current;
-    try {
-      const response = await wikiRequest<{ token: string }>('/login', null, { username: username.trim(), password });
-      if (id !== authGeneration.current) return;
-      await writeSession(response.token); setPassword(''); setToken(response.token);
-    } catch (e) { fail(e); setBusy(false); }
-  }
-  async function logout() {
-    setBusy(true); setError('');
-    try { if (token) await wikiRequest('/logout', token, {}); await clearSession(); }
-    catch (e) { fail(e); } finally { setBusy(false); }
-  }
+  }, [detailId, revision, fail]);
   async function bookmark(id: string) {
     if (bookmarkBusy.current) return;
     bookmarkBusy.current = true;
@@ -120,19 +92,17 @@ export default function WikiScreen() {
     finally { bookmarkBusy.current = false; }
   }
   async function more() {
-    if (!token || busy || paging.current) return;
+    if (busy || paging.current) return;
     const id = generation.current;
     paging.current = true; setBusy(true); setError('');
-    try { const next = await wikiRequest<Results>(makePath(results.items.length), token);
-      if (id === generation.current) setResults(old => ({ total: next.total, items: [...old.items, ...next.items.filter(r => !old.items.some(x => x.id === r.id))] }));
+    try { const next = await wikiRequest<Results>(makePath(results.items.length));
+      if (id === generation.current) setResults(old => ({ total: next.total, missing_ids: next.missing_ids, items: [...old.items, ...next.items.filter(r => !old.items.some(x => x.id === r.id))] }));
     } catch (e) { if (id === generation.current) fail(e); }
     finally { paging.current = false; if (id === generation.current) setBusy(false); }
   }
   const notice = error ? <View accessibilityRole="alert" style={s.notice}><Text style={s.body}>{error}</Text>
-    {token && <Button title="Повторить" onPress={() => setRevision(x => x + 1)} />}</View> : null;
+    <Button title="Повторить" onPress={() => setRevision(x => x + 1)} /></View> : null;
   if (!ready) return <ActivityIndicator style={s.page} color={C.accentDark} />;
-  if (!token) return <WikiLogin username={username} password={password} busy={busy} error={error}
-    onUsername={value => { setUsername(value); setError(''); }} onPassword={value => { setPassword(value); setError(''); }} onSubmit={() => void login()} />;
   const detailView = detailId ? <ScrollView contentContainerStyle={[s.page, { gap: 16 }]}>
     <Button title="‹ Назад к материалам" onPress={() => { setDetailId(null); setDetail(null); setError(''); }} />
     {detail ? <><Text style={s.eyebrow}>{detail.category_name.toUpperCase()}</Text>
@@ -171,7 +141,6 @@ export default function WikiScreen() {
         <Button title="Все подтемы" selected={!subtopic} onPress={() => setSubtopic('')} />
         {chosen.subtopics.map(c => <Button key={c.id} title={c.name} selected={subtopic === c.id} onPress={() => setSubtopic(c.id)} />)}
       </ScrollView></>}
-      <Button title="Выйти" disabled={busy} onPress={() => void logout()} />
     </View>}
     {!!subtopic && <Button title={`Подтема: ${chosen?.subtopics.find(x => x.id === subtopic)?.name ?? subtopic} · Сбросить`} onPress={() => setSubtopic('')} />}
     {notice}

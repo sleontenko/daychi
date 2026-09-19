@@ -22,3 +22,8 @@ screen references in docs/DESIGN.md before release. Preserve explicitly approved
 screen-specific revisions (including build-5 schedule). Record the reference,
 screenshots compared, justified data/native differences, and actual QA result.
 Do not introduce visual departures without owner agreement.
+
+Build 7 is an owner-authorized closed beta with a private bundled wiki snapshot
+and no manual login. Generated catalog stays ignored by Git. Do not publish web
+exports or widen distribution of this snapshot; restore server authorization
+before a broader release. See docs/wiki-closed-beta.md.
