@@ -7,6 +7,7 @@ iOS-приложение школы: расписание → выбор зан�
 
 - [Продукт и текущие границы](docs/PRODUCT.md)
 - [План развития](docs/ROADMAP.md)
+- [Zoom в расписании — подготовленные изменения](docs/schedule-zoom.md)
 - [План вики на основе индекса](docs/WIKI_PLAN.md)
 - [Вики без входа: закрытая бета](docs/wiki-closed-beta.md)
 - [Вики: серверная реализация](docs/wiki-implementation.md)

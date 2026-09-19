@@ -1,3 +1,4 @@
+import { telegramSchedule } from './zoom';
 import { Platform } from 'react-native';
 import { decodeSchedule, type Schedule } from './model';
 import { scheduleFromHTML, SOURCE_URL } from './source';
@@ -19,5 +20,5 @@ export async function loadSchedule(): Promise<Schedule> {
   // directly; race independent HTTPS paths, retaining certificate validation.
   const requests = [get(`${endpoint.replace(/\/$/, '')}/api/v1/schedule`, false)];
   if (Platform.OS !== 'web') requests.push(get(SOURCE_URL, true));
-  return Promise.any(requests);
+  return telegramSchedule(await Promise.any(requests));
 }

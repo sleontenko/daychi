@@ -1,3 +1,4 @@
+import { classZoom } from './zoom';
 import WikiScreen from '../wiki/wiki-screen';
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import { useEffect, useRef, useState } from 'react';
@@ -39,7 +40,9 @@ export default function ScheduleScreen() {
   const [view, setView] = useState<'day' | 'week' | 'calendar'>('week');
   const [formatFilter, setFormatFilter] = useState<FormatFilter>('all');
   const [selectedDay, setSelectedDay] = useState(dayKey(now));
-  const [detail, setDetail] = useState<string | null>(null);
+  const [detail, setDetailId] = useState<string | null>(null);
+  const [zoomError, setZoomError] = useState('');
+  const setDetail = (id: string | null) => { setZoomError(''); setDetailId(id); };
   const [testState, setTestState] = useState('');
   const scroll = useRef<ScrollView>(null);
   useEffect(() => {
@@ -54,6 +57,7 @@ export default function ScheduleScreen() {
   const next = mine.find(e => e.status === 'scheduled' && Date.parse(e.starts_at) > now);
   const lesson = all.find(e => e.id === detail);
   const info = lesson ? classInfo(lesson.title) : null;
+  const zoom = lesson ? classZoom(lesson) : null;
   const unavailable = Object.keys(prefs.choices).filter(id => !all.some(e => e.id === id) && id.split(':').at(-1)! >= today);
   const agenda = (day: string) => {
     const events = visible.filter(e => dayKey(e.starts_at) === day);
@@ -146,6 +150,18 @@ export default function ScheduleScreen() {
             <View style={s.section}><Text style={s.lessonTitle}>{info!.format}</Text>
               {!!info!.location && <Text style={s.body}>{info!.location}</Text>}
               <Text style={s.caption}>Время Израиля · {Math.round((Date.parse(lesson.ends_at) - Date.parse(lesson.starts_at)) / 60000)} мин</Text></View>
+            {zoom && Date.parse(lesson.ends_at) > now && <View style={s.section}>
+              <Text style={s.lessonTitle}>Подключение к занятию</Text>
+              <Text selectable style={s.body}>Пароль Zoom: {zoom.password}</Text>
+              <Pressable accessibilityRole="link" accessibilityLabel="Открыть занятие в Zoom"
+                style={({ pressed }) => [s.outlineButton, pressed && s.pressed]}
+                onPress={() => { setZoomError(''); void Linking.openURL(zoom.url).catch(() =>
+                  setZoomError('Не удалось открыть Zoom. Проверьте интернет или откройте ссылку вручную.')); }}>
+                <Text style={s.link}>Открыть Zoom ↗</Text>
+              </Pressable>
+              {!!zoomError && <><Text accessibilityRole="alert" style={s.caption}>{zoomError}</Text>
+                <Text selectable style={s.link}>{zoom.url}</Text></>}
+            </View>}
             <View style={s.section}><Text style={s.lessonTitle}>О занятии</Text>
               <Text style={s.body}>{info!.description}</Text>
               <Pressable accessibilityRole="link" onPress={() => void Linking.openURL(info!.source)} style={s.textButton}>

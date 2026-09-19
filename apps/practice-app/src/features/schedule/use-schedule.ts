@@ -1,3 +1,4 @@
+import { telegramSchedule } from './zoom';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, Platform } from 'react-native';
@@ -62,7 +63,7 @@ export function useSchedule() {
         if (alive.current) setPrefs(restored);
         const cached = await AsyncStorage.getItem(CACHE);
         if (cached) {
-          try { state.current.data = decodeSchedule(JSON.parse(cached)); } catch { /* Reject invalid cache. */ }
+          try { state.current.data = telegramSchedule(decodeSchedule(JSON.parse(cached))); } catch { /* Reject invalid cache. */ }
         }
         if (alive.current) { setData(state.current.data); setOffline(!!state.current.data); }
         await serial(reconcile);

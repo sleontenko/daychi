@@ -37,3 +37,6 @@ apps/practice-app/android/
 
 # Private catalog embedded only in the explicitly authorized closed beta build
 apps/practice-app/src/features/wiki/generated/
+
+# Private Zoom meeting links/passcodes supplied for the closed beta
+apps/practice-app/src/features/schedule/generated/
