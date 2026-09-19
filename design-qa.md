@@ -141,4 +141,5 @@ final result: passed
 Additional build-7 behavior verification: local web catalog without a login form;
 search/category «Веер» yields 129, junior subtopic 56, saved detail opens with its
 original source link. Two offline-model tests cover normalization, pagination,
-filters, sorting and unavailable bookmark IDs. No source credentials in bundle.
+filters, sorting and unavailable bookmark IDs. No school login/password or session token is embedded; original material access
+codes are part of the private snapshot distributed to the authorized beta group.
