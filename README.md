@@ -7,6 +7,8 @@ iOS-приложение школы: расписание → выбор зан�
 
 - [Продукт и текущие границы](docs/PRODUCT.md)
 - [План развития](docs/ROADMAP.md)
+- [План вики на основе индекса](docs/WIKI_PLAN.md)
+- [Локальная реализация вики и проверки](docs/wiki-implementation.md)
 - [Принятый дизайн и референсы](docs/DESIGN.md)
 - [Журнал версий TestFlight](docs/TESTFLIGHT_CHANGELOG.md)
 - [Проверки сборки 3](docs/schedule-build3.md)

@@ -1,3 +1,4 @@
+import WikiScreen from '../wiki/wiki-screen';
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Linking, Platform, Pressable, RefreshControl, ScrollView,
@@ -9,7 +10,7 @@ import { testReminder } from './local-reminders';
 import { useSchedule } from './use-schedule';
 import { classInfo, matchesFormat, type FormatFilter } from './class-info';
 
-type Tab = 'today' | 'schedule' | 'mine';
+type Tab = 'today' | 'schedule' | 'mine' | 'wiki';
 const format = (value: string | number, options: Intl.DateTimeFormatOptions) =>
   new Intl.DateTimeFormat('ru-RU', { timeZone: 'Asia/Jerusalem', ...options }).format(new Date(value));
 const time = (value: string) => format(value, { hour: '2-digit', minute: '2-digit' });
@@ -18,6 +19,7 @@ const iconNames = {
   today: { ios: 'house', android: 'home', web: 'home' },
   schedule: { ios: 'calendar', android: 'calendar_month', web: 'calendar_month' },
   mine: { ios: 'checkmark.circle', android: 'check_circle', web: 'check_circle' },
+  wiki: { ios: 'book.closed', android: 'menu_book', web: 'menu_book' },
   bell: { ios: 'bell', android: 'notifications', web: 'notifications' },
   back: { ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' },
   forward: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },
@@ -33,6 +35,7 @@ export default function ScheduleScreen() {
   const { data, prefs, now, busy, ready, offline, loading } = model;
   const { fontScale } = useWindowDimensions();
   const [tab, setTab] = useState<Tab>('today');
+  const [wikiOpened, setWikiOpened] = useState(false);
   const [view, setView] = useState<'day' | 'week' | 'calendar'>('week');
   const [formatFilter, setFormatFilter] = useState<FormatFilter>('all');
   const [selectedDay, setSelectedDay] = useState(dayKey(now));
@@ -131,7 +134,8 @@ export default function ScheduleScreen() {
   </View>;
 
   return <SafeAreaView edges={['top']} style={s.safe}>
-    <ScrollView ref={scroll} contentContainerStyle={s.page} showsVerticalScrollIndicator={false}
+    {wikiOpened && <View style={{ flex: 1, display: tab === 'wiki' ? 'flex' : 'none' }}><WikiScreen /></View>}
+    <ScrollView style={{ display: tab === 'wiki' ? 'none' : 'flex' }} ref={scroll} contentContainerStyle={s.page} showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={loading} onRefresh={model.refresh} tintColor={C.accent} />}>
       <View style={s.screen}>
         {detail ? <>
@@ -220,8 +224,8 @@ export default function ScheduleScreen() {
       </View>
     </ScrollView>
     {!detail && <SafeAreaView edges={['bottom']} style={s.tabSafe}><View style={s.tabs}>
-      {([['today', 'Сегодня'], ['schedule', 'Расписание'], ['mine', 'Мои занятия']] as const).map(([key, label]) =>
-        <Pressable key={key} accessibilityRole={Platform.OS === 'web' ? 'tab' : 'button'} accessibilityState={{ selected: tab === key }} accessibilityLabel={label} onPress={() => setTab(key)} style={s.tab}>
+      {([['today', 'Сегодня'], ['schedule', 'Расписание'], ['mine', 'Мои занятия'], ['wiki', 'Вики']] as const).map(([key, label]) =>
+        <Pressable key={key} accessibilityRole={Platform.OS === 'web' ? 'tab' : 'button'} accessibilityState={{ selected: tab === key }} accessibilityLabel={label} onPress={() => { if (key === 'wiki') setWikiOpened(true); setTab(key); }} style={s.tab}>
           <Icon name={key} active={tab === key} /><Text maxFontSizeMultiplier={1.2} style={[s.tabText, tab === key && s.tabOn]}>{label}</Text></Pressable>)}
     </View></SafeAreaView>}
   </SafeAreaView>;

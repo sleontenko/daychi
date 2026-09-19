@@ -10,8 +10,10 @@
     "ios": {
       "icon": "./assets/images/quiet-practice-icon.png",
       "bundleIdentifier": "ai.mypraxis.quietpractice",
-      "buildNumber": "5",
-      "infoPlist": { "ITSAppUsesNonExemptEncryption": false }
+      "buildNumber": "6",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -27,6 +29,14 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "enableSceneSupport": true
+          }
+        }
+      ],
       "expo-router",
       "expo-notifications",
       [

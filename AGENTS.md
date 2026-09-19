@@ -11,3 +11,9 @@ For each TestFlight build update the changelog with added/fixed/changed behavior
 tests actually run, limitations, Apple status and source commit/tag. Do not claim
 real-device delivery from simulator evidence. Ask before releasing a new build.
 Keep roadmap items separate from completed work. Never rewrite past release facts.
+
+Every subsequent version must be checked against the original design archive and
+screen references in docs/DESIGN.md before release. Preserve explicitly approved
+screen-specific revisions (including build-5 schedule). Record the reference,
+screenshots compared, justified data/native differences, and actual QA result.
+Do not introduce visual departures without owner agreement.

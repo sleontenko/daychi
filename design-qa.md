@@ -55,3 +55,55 @@ No open P0/P1/P2 findings in the checked screen/state scope. Follow-up: verify o
 the owner's phone before expanding the design to further product surfaces.
 
 final result: passed
+
+---
+
+# Wiki design QA — 2026-09-19 (local web implementation)
+
+Source: `apps/practice-app/design-reference-wiki.jpg`, 402×874.
+Implementation: http://localhost:8082, Chrome viewport 402×874, authenticated
+wiki catalog. Reference and implementation screenshots were opened together
+in a single comparison input in this task. Compare app content, excluding the
+source's drawn device status bar. Private catalog captures remain inline in the
+task and are not committed as public repository assets.
+
+P2 corrected: oversized title and two prominent filter rows displaced cards.
+Restored the original title, 20pt margins, 16pt section gaps, pill search and one
+horizontal chip row. Extra controls moved behind a labelled settings button.
+P2 corrected: cards lacked the reference metadata hierarchy. Restored top badge
+and date, 18pt heading, 13pt subordinate text, 16pt corners and 10pt card gaps.
+
+Intentional data differences: actual archive categories instead of unverified
+term/practice/lecture types; source subtopics instead of mock definitions; actual
+publication dates instead of fabricated relative update dates. System typography
+follows the approved build-5 rules. 44pt chip hit areas are taller than the mock.
+Existing bottom navigation is preserved, including My Classes instead of mock Map.
+No raster assets needed; search/settings use the existing Expo Symbols library.
+
+Verified in browser: login, query (131 results for the tested topic), category
+(129), subtopic selection, material detail, return and saved-only list. Clearing
+search works with keyboard select-all/backspace. No browser console errors.
+TypeScript and Expo lint pass. Native iPhone rendering and large Dynamic Type
+of this revision remain unverified; prior native evidence is not reused here.
+No open P0/P1/P2 findings within the checked web catalog scope.
+
+final result: passed
+
+## Native follow-up — build 6 preparation, 2026-09-19
+
+Actual iPhone 18 Pro Simulator / iOS 27 Debug rendering of the current source
+was compared with `design-reference-wiki.jpg` in the same tool input. Screenshot:
+`data/qa-build6/wiki-ios.jpg` (private, ignored; 368×800 scaled capture of
+402×874 pt). Native safe areas account for vertical offset. Title, search,
+filter strip, badge/date/title hierarchy, palette and card spacing are consistent
+with the reference and documented real-data differences. No clipped catalog
+labels at the checked default text size. Native login, persisted session after
+stop/launch and Simulator restart, saved material and detail/return verified.
+The password-save system prompt temporarily blocked automation; restarting
+Simulator cleared it without saving credentials. CUA native pipe unavailable;
+XcodeBuildMCP touch events with duration enabled the check.
+
+Native visual check at default text size: passed. Extreme Dynamic Type and
+physical-device delivery remain unverified. The separately signed device archive
+is build 6; the simulator UI check above used the existing Debug runner, not an
+installed TestFlight binary. Public HTTPS connectivity is a separate pending gate.
