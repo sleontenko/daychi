@@ -1,11 +1,15 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAccess } from '../access/session';
+import AccessScreen from '../access/access-screen';
+import SettingsScreen, { type SettingsPage } from '../settings/settings-screen';
 import { isChosen, seriesId, subscribed } from './attendance';
 import AttendanceActions from './attendance-actions';
 import CalendarExport from './calendar-export';
-import { classZoom } from './zoom';
+import { useClassZoom } from './zoom';
 import WikiScreen from '../wiki/wiki-screen';
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Linking, Platform, Pressable, RefreshControl, ScrollView,
+import { ActivityIndicator, BackHandler, Linking, Platform, Pressable, RefreshControl, ScrollView,
   StyleSheet, Switch, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Organic as C } from '../prototype/theme';
@@ -14,13 +18,14 @@ import { testReminder } from './local-reminders';
 import { useSchedule } from './use-schedule';
 import { classInfo, matchesFormat, type FormatFilter } from './class-info';
 
-type Tab = 'today' | 'schedule' | 'mine' | 'wiki';
+type Tab = 'schedule' | 'mine' | 'wiki';
 const format = (value: string | number, options: Intl.DateTimeFormatOptions) =>
   new Intl.DateTimeFormat('ru-RU', { timeZone: 'Asia/Jerusalem', ...options }).format(new Date(value));
 const time = (value: string) => format(value, { hour: '2-digit', minute: '2-digit' });
 const date = (value: string | number) => format(value, { weekday: 'long', day: 'numeric', month: 'long' });
 const iconNames = {
-  today: { ios: 'house', android: 'home', web: 'home' },
+  settings: { ios: 'gearshape', android: 'settings', web: 'settings' },
+  feedback: { ios: 'bubble', android: 'chat_bubble_outline', web: 'chat_bubble_outline' },
   schedule: { ios: 'calendar', android: 'calendar_month', web: 'calendar_month' },
   mine: { ios: 'checkmark.circle', android: 'check_circle', web: 'check_circle' },
   wiki: { ios: 'book.closed', android: 'menu_book', web: 'menu_book' },
@@ -35,12 +40,30 @@ function Icon({ name, active = false, size = 21, color }: { name: keyof typeof i
 }
 
 export default function ScheduleScreen() {
+  const access = useAccess();
   const model = useSchedule();
   const { data, prefs, now, busy, ready, offline, loading } = model;
   const { fontScale } = useWindowDimensions();
-  const [tab, setTab] = useState<Tab>('today');
+  const [tab, setTab] = useState<Tab>('schedule');
+  const [settingsPage, setSettingsPage] = useState<SettingsPage | null>(null);
+  const [cancelSeries, setCancelSeries] = useState<string | null>(null);
+  const [week, setWeek] = useState(0);
   const [wikiOpened, setWikiOpened] = useState(false);
   const [view, setView] = useState<'day' | 'week' | 'calendar'>('week');
+  const viewRevision = useRef(0);
+  const viewQueue = useRef(Promise.resolve());
+  useEffect(() => {
+    let active = true;
+    AsyncStorage.getItem('daychee.schedule.view.v1').then(saved => {
+      if (active && viewRevision.current === 0 && (saved === 'day' || saved === 'week' || saved === 'calendar')) setView(saved);
+    }).catch(() => {});
+    return () => { active = false; };
+  }, []);
+  const changeView = (value: 'day' | 'week' | 'calendar') => {
+    viewRevision.current++; setView(value);
+    viewQueue.current = viewQueue.current.catch(() => {}).then(() => AsyncStorage.setItem('daychee.schedule.view.v1', value));
+    void viewQueue.current.catch(() => model.setError('Не удалось сохранить вид расписания.'));
+  };
   const [formatFilter, setFormatFilter] = useState<FormatFilter>('all');
   const [selectedDay, setSelectedDay] = useState(dayKey(now));
   const [detail, setDetailId] = useState<string | null>(null);
@@ -52,6 +75,12 @@ export default function ScheduleScreen() {
     scroll.current?.scrollTo({ y: 0, animated: false });
   }, [tab, detail]);
 
+  useEffect(() => {
+    if (!detail) return;
+    const handler = BackHandler.addEventListener('hardwareBackPress', () => { setDetailId(null); return true; });
+    return () => handler.remove();
+  }, [detail]);
+
   const today = dayKey(now);
   const all = data?.occurrences ?? [];
   const visible = all.filter(e => matchesFormat(e.title, formatFilter));
@@ -60,7 +89,8 @@ export default function ScheduleScreen() {
   const next = mine.find(e => e.status === 'scheduled' && Date.parse(e.starts_at) > now);
   const lesson = all.find(e => e.id === detail);
   const info = lesson ? classInfo(lesson.title) : null;
-  const zoom = lesson ? classZoom(lesson) : null;
+  const zoomState = useClassZoom(lesson);
+  const zoom = zoomState.room;
   const unavailable = Object.keys(prefs.choices).filter(id => !all.some(e => e.id === id) && id.split(':').at(-1)! >= today);
   const agenda = (day: string) => {
     const events = visible.filter(e => dayKey(e.starts_at) === day);
@@ -76,19 +106,18 @@ export default function ScheduleScreen() {
         const details = classInfo(event.title);
         const selected = isChosen(event, prefs);
         const ended = Date.parse(event.ends_at) <= now;
-        const status = event.status === 'cancelled' ? 'Отменено' : ended ? 'Завершилось' : '';
+        const status = event.status === 'cancelled' ? 'Отменено' : ended ? 'Завершилось' : subscribed(event, prefs) && !selected ? 'Пропускаю эту дату' : Date.parse(event.starts_at) <= now ? 'Уже началось' : '';
         const meta = details.location ? [details.location, details.online ? 'Онлайн' : null].filter(Boolean).join(' · ') : details.format;
         const badge = selected && <View style={s.attendanceBadge}><Icon name="selected" size={20} color={C.sageDark} /><Text style={s.attendanceText}>Я иду</Text></View>;
         return <Pressable key={event.id} accessibilityRole="button" accessibilityState={{ selected }}
           accessibilityLabel={`${date(event.starts_at)}, ${time(event.starts_at)}, ${event.title}${selected ? ', я иду' : ''}${status ? `, ${status}` : ''}`}
           onPress={() => setDetail(event.id)} style={({ pressed }) => [s.agendaRow, fontScale > 1.5 && s.agendaRowLarge, index > 0 && s.agendaSeparator, selected && s.agendaSelected, pressed && s.pressed]}>
-          <View style={[s.agendaTimeColumn, fontScale > 1.3 && s.agendaTimeLarge]}><Text style={s.agendaTime}>{time(event.starts_at)}</Text></View>
+          <View style={[s.agendaTimeColumn, fontScale > 1.3 && s.agendaTimeLarge]}><Text style={s.agendaTime}>{time(event.starts_at)}</Text><Text style={s.agendaEnd}>{time(event.ends_at)}</Text></View>
           <View style={s.agendaContent}><Text style={s.agendaTitle}>{details.title}</Text><Text style={s.agendaMeta}>{meta}</Text>
             {!!status && <Text style={s.agendaStatus}>{status}</Text>}
             {fontScale > 1.3 && badge}
           </View>
           {fontScale <= 1.3 && badge}
-          {fontScale <= 1.5 && <Icon name="forward" size={12} />}
         </Pressable>;
       })}</View> : data ? <Text style={s.caption}>{formatFilter === 'all' ? 'Нет занятий' : 'Нет занятий этого формата'}</Text> : null}
     </View>;
@@ -119,9 +148,9 @@ export default function ScheduleScreen() {
     <View style={s.reminderRow}>
       <Icon name="bell" active={prefs.enabled && model.allowed} />
       <View style={s.flex}><Text style={s.lessonTitle}>Напоминать о занятиях</Text>
-        <Text style={s.caption}>{Platform.OS !== 'ios' ? 'Доступно на iPhone' : prefs.enabled && model.allowed
-          ? `Запланировано на iPhone: ${model.scheduled}` : 'Для выбранных дат, даже без интернета'}</Text></View>
-      <Switch accessibilityLabel="Напоминать о занятиях" value={prefs.enabled && model.allowed} disabled={busy || !ready || Platform.OS !== 'ios'}
+        <Text style={s.caption}>{Platform.OS === 'web' ? 'Доступно в приложении на телефоне' : prefs.enabled && model.allowed
+          ? `Запланировано: ${model.scheduled}` : 'Для выбранных дат, даже без интернета'}</Text></View>
+      <Switch accessibilityLabel="Напоминать о занятиях" value={prefs.enabled && model.allowed} disabled={busy || !ready || Platform.OS === 'web'}
         trackColor={{ false: C.neutral300, true: C.sage }} onValueChange={value => void model.setEnabled(value)} />
     </View>
     {prefs.enabled && model.allowed && <>
@@ -132,27 +161,36 @@ export default function ScheduleScreen() {
           <Text style={s.segmentText}>{label}</Text></Pressable>)}</View>
       <Pressable accessibilityRole="button" onPress={() => {
         void testReminder().then(() => setTestState('Сверни приложение — через 10 секунд придёт уведомление.'))
-          .catch(() => setTestState('Не удалось отправить проверку. Проверь разрешение iOS.'));
+          .catch(() => setTestState('Не удалось отправить проверку. Проверь разрешение уведомлений.'));
       }} style={s.textButton}><Text style={s.link}>Проверить уведомление</Text></Pressable>
       {!!testState && <Text accessibilityRole="text" style={s.caption}>{testState}</Text>}
     </>}
-    {Platform.OS === 'ios' && !model.allowed && <Pressable accessibilityRole="button" style={s.textButton}
-      onPress={() => void Linking.openSettings()}><Text style={s.link}>Настройки уведомлений iPhone</Text></Pressable>}
+    {Platform.OS !== 'web' && !model.allowed && <Pressable accessibilityRole="button" style={s.textButton}
+      onPress={() => void Linking.openSettings()}><Text style={s.link}>Настройки уведомлений телефона</Text></Pressable>}
   </View>;
 
   return <SafeAreaView edges={['top']} style={s.safe}>
-    {wikiOpened && <View style={{ flex: 1, display: tab === 'wiki' ? 'flex' : 'none' }}><WikiScreen /></View>}
+    <SettingsScreen page={settingsPage} onPage={setSettingsPage} reminders={reminders} view={view} onView={changeView} />
+    {!detail && <View style={s.rootBar}>
+      <Pressable accessibilityRole="button" accessibilityLabel="Настройки" onPress={() => setSettingsPage('settings')} style={s.roundButton}><Icon name="settings" color={C.text} size={24} /></Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel="Обратная связь" onPress={() => setSettingsPage('feedback')} style={s.roundButton}><Icon name="feedback" color={C.text} size={24} /></Pressable>
+    </View>}
+    {wikiOpened && <View style={{ flex: 1, display: tab === 'wiki' ? 'flex' : 'none' }}>{access === 'active' ? <WikiScreen active={tab === 'wiki' && !settingsPage} /> : <AccessScreen />}</View>}
     <ScrollView style={{ display: tab === 'wiki' ? 'none' : 'flex' }} ref={scroll} contentContainerStyle={s.page} showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={loading} onRefresh={model.refresh} tintColor={C.accent} />}>
       <View style={s.screen}>
         {detail ? <>
           <Pressable accessibilityRole="button" onPress={() => setDetail(null)} style={s.back}><Icon name="back" active /><Text style={s.link}>Назад</Text></Pressable>
           {lesson ? <>
-            <Text style={s.title}>{info!.title}</Text>
+            <View style={s.filters}><Text style={s.detailTag}>{info!.format}</Text></View>
+            <Text style={s.detailTitle}>{info!.title}</Text>
+            <Text style={s.body}>{info!.description}</Text>
             <Text style={s.body}>{date(lesson.starts_at)} · {time(lesson.starts_at)}–{time(lesson.ends_at)}</Text>
-            <View style={s.section}><Text style={s.lessonTitle}>{info!.format}</Text>
+            <View style={s.section}>
               {!!info!.location && <Text style={s.body}>{info!.location}</Text>}
               <Text style={s.caption}>Время Израиля · {Math.round((Date.parse(lesson.ends_at) - Date.parse(lesson.starts_at)) / 60000)} мин</Text></View>
+            {info!.online && access !== 'active' && <Pressable accessibilityRole="button" style={s.outlineButton} onPress={() => setSettingsPage('access')}><Text style={s.link}>{access === 'offline' ? 'Проверить доступ к Zoom · нужен интернет' : access === 'loading' ? 'Проверяем доступ к Zoom…' : 'Подключение доступно по приглашению'}</Text></Pressable>}
+            {!!zoomState.error && <View><Text accessibilityRole="alert" style={s.caption}>{zoomState.error}</Text><Pressable accessibilityRole="button" onPress={zoomState.retry} style={s.textButton}><Text style={s.link}>Повторить</Text></Pressable></View>}
             {zoom && Date.parse(lesson.ends_at) > now && <View style={s.section}>
               <Text style={s.lessonTitle}>Подключение к занятию</Text>
               <Text selectable style={s.body}>Пароль Zoom: {zoom.password}</Text>
@@ -165,40 +203,30 @@ export default function ScheduleScreen() {
               {!!zoomError && <><Text accessibilityRole="alert" style={s.caption}>{zoomError}</Text>
                 <Text selectable style={s.link}>{zoom.url}</Text></>}
             </View>}
-            <View style={s.section}><Text style={s.lessonTitle}>О занятии</Text>
-              <Text style={s.body}>{info!.description}</Text>
-              <Pressable accessibilityRole="link" onPress={() => void Linking.openURL(info!.source)} style={s.textButton}>
-                <Text style={s.link}>Материал школы о направлении</Text></Pressable></View>
             <AttendanceActions key={lesson.id} event={lesson} prefs={prefs} now={now} disabled={busy || !ready}
               onChoose={weekly => void model.choose(lesson, weekly)} onToggle={() => void model.toggle(lesson.id)}
               onCancel={() => void model.cancelSubscription(seriesId(lesson.id))} />
             {lesson.status === 'scheduled' && Date.parse(lesson.starts_at) > now &&
               <CalendarExport key={`calendar:${lesson.id}`} event={lesson} weekly={subscribed(lesson, prefs)} />}
-            {isChosen(lesson, prefs) && reminders}
+            <Pressable accessibilityRole="link" onPress={() => void Linking.openURL(info!.source).catch(() => model.setError('Не удалось открыть материал школы.'))} style={s.textButton}><Text style={s.link}>Материал школы о направлении ↗</Text></Pressable>
+            {isChosen(lesson, prefs) && <Pressable accessibilityRole="button" onPress={() => setSettingsPage('reminders')} style={s.outlineButton}><Text style={s.link}>Напоминания</Text></Pressable>}
           </> : empty('Занятие больше не найдено в расписании.')}
         </> : <>
-          <View><Text style={s.eyebrow}>{tab === 'today' ? 'СЕГОДНЯ' : tab === 'schedule' ? 'РАСПИСАНИЕ' : 'МОЯ ПРАКТИКА'}</Text>
-            <Text accessibilityRole="header" style={s.title}>{tab === 'today' ? date(now) : tab === 'schedule' ? 'Занятия школы' : 'Мои занятия'}</Text>
-            <Text style={s.caption}>{tab === 'schedule' && view === 'week' ? `${format(`${today}T12:00:00Z`, { day: 'numeric', month: 'short' })} – ${format(`${days[6]}T12:00:00Z`, { day: 'numeric', month: 'short' })} · ` : ''}Время Израиля</Text></View>
-
-          {tab === 'today' && <>
-            {next && <View style={s.next}><Text style={s.sectionLabel}>БЛИЖАЙШЕЕ ИЗ ВЫБРАННЫХ</Text>
-              <Text style={s.nextTitle}>{next.title}</Text><Text style={s.body}>{date(next.starts_at)} · {time(next.starts_at)}</Text>
-              <Pressable accessibilityRole="button" onPress={() => setDetail(next.id)} style={s.textButton}><Text style={s.link}>О занятии →</Text></Pressable></View>}
-            <Text style={s.sectionLabel}>ЗАНЯТИЯ СЕГОДНЯ</Text>
-            {all.filter(e => dayKey(e.starts_at) === today).map(e => card(e))}
-            {data && !all.some(e => dayKey(e.starts_at) === today) && empty('Сегодня занятий нет.')}
-            <Pressable accessibilityRole="button" style={s.outlineButton} onPress={() => setTab('schedule')}><Text style={s.link}>Выбрать занятия на неделю →</Text></Pressable>
-          </>}
+          <View><Text accessibilityRole="header" style={s.title}>{tab === 'schedule' ? 'Расписание' : 'Мои занятия'}</Text>
+            <Text style={s.caption}>Время Израиля{data ? ` · ${offline ? 'сохранено' : 'обновлено'} ${format(data.fetched_at, { hour: '2-digit', minute: '2-digit' })}` : ''}</Text></View>
 
           {tab === 'schedule' && <>
-            <View style={[s.segments, fontScale > 1.2 && s.controlsLarge]}>{([['day', 'День'], ['week', 'Неделя'], ['calendar', 'Календарь']] as const).map(([key, label]) =>
-              <Pressable accessibilityRole={Platform.OS === 'web' ? 'tab' : 'button'} accessibilityState={{ selected: view === key }} key={key} onPress={() => setView(key)} style={[s.segment, view === key && s.segmentOn]}>
-                <Text style={s.segmentText}>{label}</Text></Pressable>)}</View>
             <View accessibilityLabel="Формат занятий" style={[s.filters, fontScale > 1.2 && s.controlsLarge]}>{([['all', 'Все'], ['online', 'Онлайн'], ['in-person', 'Очно']] as const).map(([key, label]) =>
               <Pressable key={key} accessibilityRole="button" accessibilityState={{ selected: formatFilter === key }} onPress={() => setFormatFilter(key)} style={[s.filter, formatFilter === key && s.filterOn]}>
-                <Text style={[s.filterText, formatFilter === key && s.inverse]}>{label}</Text></Pressable>)}</View>
-            {view === 'week' ? days.slice(0, 7).map(agenda) : <>
+                <Text style={[s.filterText, formatFilter === key && { color: C.accentDark }]}>{label}</Text></Pressable>)}</View>
+            {view === 'week' ? <>
+              <View style={s.between}>
+                <Pressable accessibilityRole="button" accessibilityLabel="Предыдущая неделя" disabled={week === 0} onPress={() => setWeek(0)} style={[s.roundButton, week === 0 && { opacity: 0.3 }]}><Icon name="back" /></Pressable>
+                <View style={s.weekLabel}><Text style={s.lessonTitle}>{format(`${days[week * 7]}T12:00:00Z`, { day: 'numeric', month: 'short' })} – {format(`${days[week * 7 + 6]}T12:00:00Z`, { day: 'numeric', month: 'short' })}</Text><Text style={s.caption}>{week === 0 ? 'Ближайшие 7 дней' : 'Следующие 7 дней'}</Text></View>
+                <Pressable accessibilityRole="button" accessibilityLabel="Следующая неделя" disabled={week === 1} onPress={() => setWeek(1)} style={[s.roundButton, week === 1 && { opacity: 0.3 }]}><Icon name="forward" /></Pressable>
+              </View>
+              {days.slice(week * 7, week * 7 + 7).map(agenda)}
+            </> : <>
               {view === 'day' ? <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.dayStrip}>
                 {days.map(day => <Pressable key={day} accessibilityRole="button" accessibilityLabel={date(`${day}T12:00:00Z`)} onPress={() => setSelectedDay(day)}
                   style={[s.dayChip, day === selectedDay && s.dayOn]}><Text style={[s.dayShort, day === selectedDay && s.inverse]}>{format(`${day}T12:00:00Z`, { weekday: 'short' })}</Text>
@@ -215,16 +243,17 @@ export default function ScheduleScreen() {
             </>}
           </>}
           {tab === 'mine' && <>
-            {reminders}
+            {next && <Pressable accessibilityRole="button" onPress={() => setDetail(next.id)} style={s.next}><Text style={s.sectionLabel}>БЛИЖАЙШЕЕ МОЁ ЗАНЯТИЕ</Text><Text style={s.lessonTitle}>{next.title}</Text><Text style={s.caption}>{date(next.starts_at)} · {time(next.starts_at)}</Text></Pressable>}
             {!!Object.keys(prefs.subscriptions ?? {}).length && <View style={s.section}>
               <Text style={s.sectionLabel}>КАЖДУЮ НЕДЕЛЮ</Text>
-              <Text style={s.caption}>Подписки действуют до отмены. Ближайшие даты и напоминания обновляются при открытии приложения.</Text>
+              <Text style={s.caption}>Регулярный выбор действует до отмены. Ближайшие даты и напоминания обновляются при открытии приложения.</Text>
               {Object.entries(prefs.subscriptions ?? {}).map(([id, subscription]) => <View key={id} style={s.section}>
                 <Text style={s.lessonTitle}>{subscription.title}</Text>
                 <Text style={s.caption}>{format(subscription.startsAt, { weekday: 'long' })} · с {subscription.from}</Text>
-                {!all.some(e => seriesId(e.id) === id) && <Text style={s.caption}>Сейчас нет в загруженном расписании. Подписка сохранена.</Text>}
+                {!all.some(e => seriesId(e.id) === id) && <Text style={s.caption}>Сейчас нет в загруженном расписании. Регулярный выбор сохранён.</Text>}
                 <Pressable accessibilityRole="button" disabled={busy || !ready} style={s.textButton}
-                  onPress={() => void model.cancelSubscription(id)}><Text style={s.link}>Отменить подписку</Text></Pressable>
+                  onPress={() => setCancelSeries(id)}><Text style={s.link}>Больше не ходить каждую неделю</Text></Pressable>
+                {cancelSeries === id && <View style={s.section}><Text style={s.body}>Убрать регулярный выбор и будущие напоминания?</Text><Pressable accessibilityRole="button" disabled={busy || !ready} style={s.outlineButton} onPress={() => { void model.cancelSubscription(id); setCancelSeries(null); }}><Text style={s.link}>Да, убрать регулярный выбор</Text></Pressable><Pressable accessibilityRole="button" style={s.textButton} onPress={() => setCancelSeries(null)}><Text style={s.link}>Оставить</Text></Pressable></View>}
               </View>)}
             </View>}
             {mine.length ? mine.map(e => <View key={e.id} style={s.section}><Text style={s.sectionLabel}>{date(e.starts_at)}</Text>{card(e)}</View>)
@@ -248,7 +277,7 @@ export default function ScheduleScreen() {
       </View>
     </ScrollView>
     {!detail && <SafeAreaView edges={['bottom']} style={s.tabSafe}><View style={s.tabs}>
-      {([['today', 'Сегодня'], ['schedule', 'Расписание'], ['mine', 'Мои занятия'], ['wiki', 'Вики']] as const).map(([key, label]) =>
+      {([['schedule', 'Расписание'], ['mine', 'Мои занятия'], ['wiki', 'Вики']] as const).map(([key, label]) =>
         <Pressable key={key} accessibilityRole={Platform.OS === 'web' ? 'tab' : 'button'} accessibilityState={{ selected: tab === key }} accessibilityLabel={label} onPress={() => { if (key === 'wiki') setWikiOpened(true); setTab(key); }} style={s.tab}>
           <Icon name={key} active={tab === key} /><Text maxFontSizeMultiplier={1.2} style={[s.tabText, tab === key && s.tabOn]}>{label}</Text></Pressable>)}
     </View></SafeAreaView>}
@@ -256,11 +285,17 @@ export default function ScheduleScreen() {
 }
 
 const s = StyleSheet.create({
+  detailTitle: { color: C.text, fontSize: 26, lineHeight: 32, fontWeight: '700' },
+  detailTag: { color: C.accentDark, backgroundColor: '#FFE1D0', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 99, fontSize: 14, fontWeight: '600' },
+  rootBar: { paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between' },
+  roundButton: { minHeight: 44, minWidth: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 99 },
+  weekLabel: { flex: 1, alignItems: 'center', gap: 2 },
+  agendaEnd: { fontSize: 13, color: '#645C50', fontVariant: ['tabular-nums'] },
   loading: { flex: 1, backgroundColor: C.background, alignItems: 'center', justifyContent: 'center' },
   safe: { flex: 1, backgroundColor: C.background, width: '100%', maxWidth: 600, alignSelf: 'center' },
-  page: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 40 }, screen: { gap: 24 },
+  page: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 40 }, screen: { gap: 16 },
   eyebrow: { color: C.accentDark, fontSize: 11, letterSpacing: 1.7, lineHeight: 16, marginBottom: 7 },
-  title: { color: C.text, fontSize: 32, lineHeight: 38, fontWeight: '500', marginBottom: 6, letterSpacing: -0.6 },
+  title: { color: C.text, fontSize: 32, lineHeight: 38, fontWeight: '700', marginBottom: 6, letterSpacing: -0.6 },
   body: { color: C.text, fontSize: 17, lineHeight: 25 },
   caption: { color: '#68635B', fontSize: 14, lineHeight: 20 },
   sectionLabel: { color: '#68635B', fontSize: 12, lineHeight: 18, letterSpacing: 0.6 },
@@ -268,7 +303,7 @@ const s = StyleSheet.create({
   nextTitle: { fontWeight: '500', color: C.sageDeep, fontSize: 24, lineHeight: 30 },
   next: { padding: 20, gap: 12, borderRadius: 28, backgroundColor: C.neutral100 },
   lessonCard: { backgroundColor: C.neutral100, borderRadius: 14, padding: 16, gap: 12 },
-  lessonMine: { backgroundColor: '#E7EADC' },
+  lessonMine: { backgroundColor: C.sageMuted },
   cardMain: { gap: 5, minHeight: 48 },
   time: { fontWeight: '500', fontVariant: ['tabular-nums'], color: C.accentDark, fontSize: 15, lineHeight: 21 },
   between: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
@@ -282,19 +317,19 @@ const s = StyleSheet.create({
   segment: { minHeight: 44, flex: 1, paddingVertical: 8, paddingHorizontal: 6, borderRadius: 99, alignItems: 'center', justifyContent: 'center' },
   controlsLarge: { flexDirection: 'column', flexWrap: 'nowrap', alignItems: 'stretch', borderRadius: 16 },
   segmentOn: { backgroundColor: C.neutral100 }, segmentText: { alignSelf: 'stretch', textAlign: 'center', fontWeight: '500', fontSize: 15, color: C.text },
-  filters: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 }, filter: { paddingHorizontal: 20, minHeight: 44, paddingVertical: 8, borderRadius: 24, borderWidth: 1, borderColor: C.divider, alignItems: 'center', justifyContent: 'center' },
-  filterOn: { backgroundColor: C.accentDark, borderColor: C.accentDark }, filterText: { alignSelf: 'stretch', textAlign: 'center', fontWeight: '500', fontSize: 15, color: C.text },
+  filters: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 }, filter: { backgroundColor: C.neutral100, paddingHorizontal: 20, minHeight: 44, paddingVertical: 8, borderRadius: 24, borderWidth: 1, borderColor: C.divider, alignItems: 'center', justifyContent: 'center' },
+  filterOn: { backgroundColor: '#FFE1D0', borderColor: C.accentBorder }, filterText: { alignSelf: 'stretch', textAlign: 'center', fontWeight: '500', fontSize: 15, color: C.text },
   attend: { minHeight: 56, padding: 16, borderRadius: 16, backgroundColor: C.accentDark, alignItems: 'center', justifyContent: 'center' },
   attendSelected: { backgroundColor: C.sageDark }, attendLabel: { fontWeight: '600', fontSize: 17, lineHeight: 24, color: C.white },
   agendaSection: { gap: 12 },
   dayHeading: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 4 },
-  dayHeadingText: { flex: 1, fontSize: 17, lineHeight: 24, fontWeight: '600', color: C.text },
-  agendaGroup: { backgroundColor: C.neutral100, borderRadius: 14, overflow: 'hidden' },
+  dayHeadingText: { flex: 1, fontSize: 15, lineHeight: 22, fontWeight: '600', color: C.text },
+  agendaGroup: { backgroundColor: C.neutral100, borderRadius: 20, overflow: 'hidden' },
   agendaRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 13, paddingHorizontal: 12, gap: 10, minHeight: 66 },
   agendaRowLarge: { flexDirection: 'column', alignItems: 'stretch' },
   agendaSeparator: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.divider },
-  agendaSelected: { backgroundColor: '#E7EADC' },
-  agendaTimeColumn: { width: 56, paddingRight: 9, borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: C.divider, alignSelf: 'stretch', justifyContent: 'center' },
+  agendaSelected: { backgroundColor: C.sageMuted },
+  agendaTimeColumn: { width: 50, alignSelf: 'stretch', gap: 3 },
   agendaTimeLarge: { width: 'auto', minWidth: 76, borderRightWidth: 0 },
   agendaTime: { fontSize: 14, fontWeight: '600', fontVariant: ['tabular-nums'], color: '#59564E' },
   agendaContent: { flex: 1, gap: 3 },

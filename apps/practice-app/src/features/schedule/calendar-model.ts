@@ -1,6 +1,6 @@
 import type { Occurrence } from './model.ts';
 
-export const CALENDAR_NOTE = 'Тихая практика · время Израиля. Копия расписания: отмены, переносы и пропуски в приложении не обновляют календарь. Изменяй или удаляй событие в календаре отдельно.';
+export const CALENDAR_NOTE = 'Дейчи · время Израиля. Копия расписания: отмены, переносы и пропуски в приложении не обновляют календарь. Изменяй или удаляй событие в календаре отдельно.';
 
 // Local wall time plus IANA zone preserves school time across DST transitions.
 export function calendarWallTime(value: string): string {

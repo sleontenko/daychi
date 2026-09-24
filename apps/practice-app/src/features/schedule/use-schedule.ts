@@ -97,8 +97,8 @@ export function useSchedule() {
         state.current.prefs = next; setPrefs(next); setAllowed(permission);
         try { await reconcile(); }
         catch { setError('Выбор сохранён, но напоминания не обновились. Нажми «Повторить».'); }
-        if (askPermission && !permission && Platform.OS === 'ios')
-          setError('Занятие сохранено. Чтобы получать напоминания, разреши уведомления в настройках iPhone.');
+        if (askPermission && !permission && Platform.OS !== 'web')
+          setError('Занятие сохранено. Чтобы получать напоминания, разреши уведомления в настройках телефона.');
       });
     } catch { setError('Не удалось сохранить изменения. Попробуй ещё раз.'); }
     finally { writeBusy.current = false; setBusy(false); }

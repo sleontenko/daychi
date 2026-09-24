@@ -51,7 +51,7 @@ class Login(BaseModel):
     password: str = Field(min_length=1, max_length=256)
 
 
-def create_wiki_app(settings=None):
+def create_wiki_app(settings=None, access_authorizer=None):
     cfg = settings or WikiSettings.from_env()
     app = FastAPI(title='Quiet Practice Wiki', docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(CORSMiddleware, allow_origins=list(cfg.origins),
@@ -123,6 +123,9 @@ def create_wiki_app(settings=None):
             raise HTTPException(401, 'Войдите в вики')
         return token
 
+    if access_authorizer is not None:
+        authorize = access_authorizer
+
     @app.exception_handler(RequestValidationError)
     async def invalid_request(request, exc):
         return JSONResponse(status_code=422, content={'detail': 'Некорректный запрос'})
@@ -135,6 +138,8 @@ def create_wiki_app(settings=None):
 
     @app.post('/api/wiki/login')
     def login(body: Login, request: Request):
+        if access_authorizer is not None:
+            raise HTTPException(410, 'Вход по паролю больше не используется')
         if not cfg.username or not cfg.password:
             raise HTTPException(503, 'Вики ещё не подключена')
         host = request.client.host if request.client else 'unknown'
@@ -160,6 +165,8 @@ def create_wiki_app(settings=None):
 
     @app.post('/api/wiki/logout')
     def logout(token=Depends(authorize)):
+        if access_authorizer is not None:
+            raise HTTPException(410, 'Используйте выход из персонального доступа')
         with closing(db()) as con, con:
             con.execute('DELETE FROM sessions WHERE hash=?', (hashlib.sha256(token.encode()).hexdigest(),))
         return {'ok': True}

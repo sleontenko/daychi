@@ -18,13 +18,14 @@ export default function CalendarExport({ event, weekly }: { event: Occurrence; w
       if (native) {
         // Explicit legacy entry point: its form supports timeZone without reading calendars.
         const Calendar = await import('expo-calendar/legacy');
-        if (Number.parseInt(String(Platform.Version), 10) < 17) {
+        if (Platform.OS === 'ios' && Number.parseInt(String(Platform.Version), 10) < 17) {
           const permission = await Calendar.requestCalendarPermissionsAsync();
           if (!permission.granted) { setMessage('Доступ к календарю отключён. Разреши его в настройках iPhone или выбери Google Calendar.'); return; }
         }
         const result = await Calendar.createEventInCalendarAsync({ ...nativeCalendarEvent(event, location),
           ...(repeat ? { recurrenceRule: { frequency: Calendar.Frequency.WEEKLY, interval: 1 } } : {}) });
-        if (result.action === 'saved') setMessage('Событие добавлено в календарь.');
+        if (Platform.OS === 'android') setMessage('Проверь сохранение в приложении календаря.');
+        else if (result.action === 'saved') setMessage('Событие добавлено в календарь.');
       } else {
         await Linking.openURL(googleCalendarURL(event, repeat, location));
         setMessage('Сохрани событие в открывшемся Google Calendar.');
@@ -40,8 +41,8 @@ export default function CalendarExport({ event, weekly }: { event: Occurrence; w
         <Pressable key={String(value)} accessibilityRole="button" accessibilityState={{ selected: repeat === value, disabled: busy }} disabled={busy}
           onPress={() => setOverride(value === true)} style={[s.button, repeat === value && s.selected]}>
           <Text style={[s.label, repeat === value && { color: C.white }]}>{title}</Text></Pressable>)}</View>
-      {Platform.OS === 'ios' && <Pressable accessibilityRole="button" disabled={busy} style={s.button} onPress={() => void exportEvent(true)}>
-        <Text style={s.label}>Календарь iPhone / iCloud</Text></Pressable>}
+      {Platform.OS !== 'web' && <Pressable accessibilityRole="button" disabled={busy} style={s.button} onPress={() => void exportEvent(true)}>
+        <Text style={s.label}>{Platform.OS === 'ios' ? 'Календарь iPhone / iCloud' : 'Календарь телефона'}</Text></Pressable>}
       <Pressable accessibilityRole="button" disabled={busy} style={s.button} onPress={() => void exportEvent(false)}>
         <Text style={s.label}>Google Calendar</Text></Pressable>
       <Text style={s.caption}>Копия {repeat ? 'каждую неделю с этой даты' : 'на эту дату'}. Отмены, переносы и пропуски меняются в календаре отдельно. Повторное добавление может создать дубликат.</Text>

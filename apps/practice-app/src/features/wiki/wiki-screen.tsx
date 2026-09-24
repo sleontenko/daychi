@@ -1,8 +1,8 @@
 import { SymbolView } from 'expo-symbols';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, FlatList, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, AppState, BackHandler, FlatList, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Organic as C } from '../prototype/theme';
 import { Category, Material, Results, Summary, wikiRequest } from './api';
 
@@ -12,7 +12,9 @@ function Button({ title, onPress, selected, disabled }: { title: string; onPress
     style={({ pressed }) => [s.button, selected && s.selected, (pressed || disabled) && { opacity: 0.55 }]}>
     <Text style={[s.link, selected && { color: '#fff' }]}>{title}</Text></Pressable>;
 }
-export default function WikiScreen() {
+export default function WikiScreen({ active = true }: { active?: boolean }) {
+  const [section, setSection] = useState<'materials' | 'dictionary'>('materials');
+  const [termQuery, setTermQuery] = useState('');
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -22,7 +24,6 @@ export default function WikiScreen() {
   const [query, setQuery] = useState('');
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<'new' | 'old'>('new');
-  const [optionsOpen, setOptionsOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [menuCategory, setMenuCategory] = useState('');
   const [savedOnly, setSavedOnly] = useState(false);
@@ -30,6 +31,11 @@ export default function WikiScreen() {
   const [results, setResults] = useState<Results>({ total: 0, items: [], missing_ids: [] });
   const [detail, setDetail] = useState<Material | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
+  useEffect(() => {
+    if (!active || !detailId) return;
+    const handler = BackHandler.addEventListener('hardwareBackPress', () => { setDetailId(null); setDetail(null); return true; });
+    return () => handler.remove();
+  }, [active, detailId]);
   const [revision, setRevision] = useState(0);
   const generation = useRef(0);
   const detailGeneration = useRef(0);
@@ -111,7 +117,7 @@ export default function WikiScreen() {
     {detail ? <><Text style={s.eyebrow}>{detail.category_name.toUpperCase()}</Text>
       <Text accessibilityRole="header" style={s.title}>{detail.title}</Text><Text style={s.meta}>{detail.date}{detail.subtopic ? ` · ${detail.subtopic}` : ''}</Text>
       <Button title={saved.includes(detail.id) ? '✓ Сохранено · Убрать' : 'Сохранить для повторения'} selected={saved.includes(detail.id)} onPress={() => void bookmark(detail.id)} />
-      {!!detail.description && <View style={s.panel}><Text style={s.heading}>О материале</Text><Text selectable style={s.body}>{detail.description}</Text></View>}
+      <View style={s.panel}><Text style={s.heading}>О материале</Text><Text selectable style={s.body}>{detail.description && detail.description.replace(/\s+/g, ' ').trim().toLowerCase() !== detail.title.replace(/\s+/g, ' ').trim().toLowerCase() ? detail.description : 'Описание готовится. Пока можно открыть оригинал материала.'}</Text></View>
       <View style={s.panel}><Text style={s.heading}>Открыть оригинал</Text>
         {detail.links.map((link, index) => <Button key={`${link.url}:${index}`} title={`${link.label} ↗`} onPress={() => {
           void Linking.openURL(link.url).catch(() => setError('Не удалось открыть ссылку. Проверьте доступ к источнику.'));
@@ -123,37 +129,41 @@ export default function WikiScreen() {
   const chosen = categories.find(x => x.id === category);
   const menuChosen = categories.find(x => x.id === menuCategory);
   const header = <View style={s.header}>
-    <View><Text style={s.eyebrow}>ВИКИ</Text><Text accessibilityRole="header" style={s.title}>Живая база знаний</Text></View>
+    <View><Text accessibilityRole="header" style={s.title}>Живая база знаний</Text><Text style={s.meta}>Материалы для практики</Text></View>
+    <View style={s.wrap}><Button title="Материалы" selected onPress={() => setSection('materials')} /><Button title="Словарь" onPress={() => setSection('dictionary')} /></View>
     <View style={s.searchRow}>
       <View style={s.searchWrap}>
         <SymbolView name={{ ios: 'magnifyingglass', android: 'search', web: 'search' }} size={16} tintColor={C.neutral500} />
         <TextInput accessibilityLabel="Поиск по вики" placeholder="тема, практика, занятие…" placeholderTextColor="#756D60" value={query} onChangeText={setQuery} style={s.input} clearButtonMode="while-editing" />
       </View>
-      <Pressable accessibilityRole="button" accessibilityLabel="Настройки вики" accessibilityState={{ expanded: optionsOpen }} onPress={() => setOptionsOpen(x => !x)} style={s.iconButton}>
-        <SymbolView name={{ ios: 'slider.horizontal.3', android: 'tune', web: 'tune' }} size={20} tintColor={optionsOpen ? C.accentDark : C.sageDark} />
-      </Pressable>
     </View>
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>
       <Pressable accessibilityRole="button" accessibilityState={{ selected: !category && !savedOnly }} onPress={() => { setCategory(''); setSubtopic(''); setSavedOnly(false); }} style={[s.chip, !category && !savedOnly && s.selected]}><Text style={[s.chipText, !category && !savedOnly && s.inverse]}>Всё</Text></Pressable>
       <Pressable accessibilityRole="button" accessibilityState={{ selected: savedOnly }} onPress={() => setSavedOnly(x => !x)} style={[s.chip, savedOnly && s.selected]}><Text style={[s.chipText, savedOnly && s.inverse]}>Сохранённые</Text></Pressable>
       {categories.map(c => <Pressable key={c.id} accessibilityRole="button" accessibilityState={{ selected: category === c.id }} onPress={() => { setCategory(category === c.id ? '' : c.id); setSubtopic(''); }} style={[s.chip, category === c.id && s.selected]}><Text style={[s.chipText, category === c.id && s.inverse]}>{c.name}</Text></Pressable>)}
     </ScrollView>
-    <Button title="Все разделы и подтемы" onPress={() => { setMenuCategory(category); setCategoriesOpen(true); }} />
-    {optionsOpen && <View style={s.panel}>
-      <Text style={s.meta}>Найдено: {results.total}</Text>
+    <View style={s.wrap}>
+      <Button title="Все разделы и подтемы" onPress={() => { setMenuCategory(category); setCategoriesOpen(true); }} />
       <Button title={sort === 'new' ? 'Сначала новые' : 'Сначала старые'} onPress={() => setSort(sort === 'new' ? 'old' : 'new')} />
-      {!!chosen?.subtopics.length && <><Text style={s.meta}>Подтемы · {chosen.name}</Text><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>
-        <Button title="Все подтемы" selected={!subtopic} onPress={() => setSubtopic('')} />
-        {chosen.subtopics.map(c => <Button key={c.id} title={c.name} selected={subtopic === c.id} onPress={() => setSubtopic(c.id)} />)}
-      </ScrollView></>}
-    </View>}
+    </View>
+    <Text style={s.meta}>Найдено: {results.total}</Text>
     {!!subtopic && <Button title={`Подтема: ${chosen?.subtopics.find(x => x.id === subtopic)?.name ?? subtopic} · Сбросить`} onPress={() => setSubtopic('')} />}
     {notice}
     {savedOnly && results.missing_ids?.map(id => <View key={id} style={s.panel}><Text style={s.meta}>Сохранённый материал больше не доступен.</Text><Button title="Убрать сохранение" onPress={() => void bookmark(id)} /></View>)}
   </View>;
+  if (section === 'dictionary' && !detailId) return <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={[s.page, { gap: 16 }]}>
+    <Text accessibilityRole="header" style={s.title}>Живая база знаний</Text>
+    <View style={s.wrap}><Button title="Материалы" onPress={() => setSection('materials')} /><Button title="Словарь" selected onPress={() => {}} /></View>
+    <TextInput accessibilityLabel="Поиск по словарю" placeholder="Найти термин…" placeholderTextColor="#756D60" value={termQuery} onChangeText={setTermQuery} style={[s.input, s.searchWrap]} />
+    <Text style={s.meta}>Термины в понимании школы. Определения появляются после сверки с источниками.</Text>
+    <View style={s.panel}><Text style={s.heading}>{termQuery.trim() ? 'Определение пока не опубликовано' : 'Словарь готовится'}</Text>
+      <Text style={s.body}>Проверенные определения ещё не добавлены. Можно поискать термин в названиях материалов.</Text>
+      <Button title="Искать в материалах" onPress={() => { setQuery(termQuery); setCategory(''); setSubtopic(''); setSavedOnly(false); setSection('materials'); }} />
+    </View>
+  </ScrollView>;
   return <View style={{ flex: 1 }}>
     <Modal visible={categoriesOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setCategoriesOpen(false)}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: C.background }}>
+      <SafeAreaProvider><SafeAreaView style={{ flex: 1, backgroundColor: C.background }}>
         <View style={[s.page, { paddingBottom: 12 }]}><Text accessibilityRole="header" style={s.title}>Все разделы</Text>
           <Button title="Закрыть" onPress={() => setCategoriesOpen(false)} /></View>
         <ScrollView contentContainerStyle={[s.page, { gap: 16 }]}>
@@ -170,7 +180,7 @@ export default function WikiScreen() {
           </View>}
           {!categories.length && <Text style={s.body}>Разделы пока не загружены. Закрой меню и нажми «Повторить».</Text>}
         </ScrollView>
-      </SafeAreaView>
+      </SafeAreaView></SafeAreaProvider>
     </Modal>{detailView}<FlatList style={{ display: detailId ? 'none' : 'flex' }} data={results.items} keyExtractor={row => row.id} contentContainerStyle={s.page} keyboardShouldPersistTaps="handled" ListHeaderComponent={header}
     renderItem={({ item }: { item: Summary }) => <Pressable accessibilityRole="button" onPress={() => setDetailId(item.id)} style={({ pressed }) => [s.row, pressed && { opacity: 0.6 }]}>
       <View style={s.top}><View style={s.tag}><Text style={s.tagText}>{item.category_name}</Text></View><Text style={s.date}>{item.date}</Text></View>
@@ -182,16 +192,16 @@ export default function WikiScreen() {
     ListFooterComponent={<View style={s.header}>{busy && <ActivityIndicator color={C.accentDark} />}{results.items.length < results.total && <Button title="Показать ещё" disabled={busy} onPress={() => void more()} />}</View>} /></View>;
 }
 const s = StyleSheet.create({
-  page: { padding: 20, paddingBottom: 40 }, header: { gap: 16, marginBottom: 16 },
+  page: { padding: 16, paddingBottom: 40 }, header: { gap: 16, marginBottom: 16 },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   eyebrow: { fontSize: 11, letterSpacing: 1.7, color: '#756D60', marginBottom: 8 },
-  title: { fontSize: 26, lineHeight: 32, fontWeight: '500', color: C.text, letterSpacing: -0.5 },
+  title: { fontSize: 32, lineHeight: 36, fontWeight: '700', color: C.text, letterSpacing: -0.5 },
   heading: { fontSize: 18, lineHeight: 24, fontWeight: '600', color: C.text },
   body: { fontSize: 17, lineHeight: 25, color: C.text }, meta: { fontSize: 14, lineHeight: 21, color: '#68635B' },
   panel: { backgroundColor: C.neutral100, padding: 18, borderRadius: 14, gap: 14 },
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  searchWrap: { flex: 1, minHeight: 40, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, borderRadius: 999, borderWidth: 1, borderColor: C.divider, backgroundColor: C.surface },
-  input: { flex: 1, minWidth: 0, color: C.text, paddingVertical: 8, fontSize: 14 },
+  searchWrap: { flex: 1, minHeight: 46, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, borderRadius: 999, borderWidth: 1, borderColor: C.divider, backgroundColor: C.surface },
+  input: { flex: 1, minWidth: 0, color: C.text, paddingVertical: 8, fontSize: 17 },
   iconButton: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   chip: { paddingHorizontal: 14, paddingVertical: 8, minHeight: 44, justifyContent: 'center', borderRadius: 999, backgroundColor: C.neutral100 },
   chipText: { fontSize: 12, lineHeight: 16, fontWeight: '600', color: C.text }, inverse: { color: C.white },
@@ -200,6 +210,6 @@ const s = StyleSheet.create({
   summary: { fontSize: 13, lineHeight: 19, color: '#68635B' },
   button: { paddingHorizontal: 12, paddingVertical: 12, minHeight: 44, maxWidth: '100%', justifyContent: 'center', borderRadius: 12, backgroundColor: '#EEE4D4' },
   selected: { backgroundColor: C.sageDeep }, link: { color: C.accentDark, fontSize: 15, fontWeight: '500' },
-  row: { padding: 16, gap: 6, borderRadius: 16, backgroundColor: C.neutral100, marginBottom: 10 },
+  row: { padding: 16, gap: 6, borderRadius: 20, backgroundColor: C.neutral100, marginBottom: 10 },
   chips: { gap: 8 }, wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, notice: { padding: 14, gap: 8, borderRadius: 12, backgroundColor: '#F0DFC9' },
 });

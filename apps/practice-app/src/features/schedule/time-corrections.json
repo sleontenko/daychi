@@ -1,0 +1,20 @@
+[
+  {
+    "seriesId": "f5f6604d9705673de1de",
+    "weekday": 1,
+    "start": "18:30",
+    "end": "19:30"
+  },
+  {
+    "seriesId": "c9ad1965b5ad883ad147",
+    "weekday": 4,
+    "start": "12:00",
+    "end": "13:30"
+  },
+  {
+    "seriesId": "2d41332d55f7f4e78730",
+    "weekday": 5,
+    "start": "18:00",
+    "end": "20:00"
+  }
+]

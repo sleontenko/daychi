@@ -4,15 +4,23 @@ import { retireServerReminders } from './device';
 import { reconcileReminders, reminderPlan, type Preferences } from './reminder-plan';
 import type { Occurrence } from './model';
 
+const CHANNEL = 'practice-reminders';
+async function ensureChannel() {
+  if (Platform.OS === 'android') await Notifications.setNotificationChannelAsync(CHANNEL, {
+    name: 'Напоминания о занятиях', importance: Notifications.AndroidImportance.HIGH, sound: 'default',
+  });
+}
+
 export async function notificationPermission(request = false) {
-  if (Platform.OS !== 'ios') return false;
+  if (Platform.OS === 'web') return false;
+  await ensureChannel();
   const current = await Notifications.getPermissionsAsync();
   if (current.granted) return true;
   return request ? (await Notifications.requestPermissionsAsync({ ios: { allowAlert: true, allowSound: true, allowBadge: false } })).granted : false;
 }
 
 export async function updateReminders(events: Occurrence[], prefs: Preferences) {
-  if (Platform.OS !== 'ios') return 0;
+  if (Platform.OS === 'web') return 0;
   // Existing build-2 users must stop server reminders before enabling local ones.
   // A failed opt-out is visible and retried; never silently double-deliver.
   await retireServerReminders();
@@ -28,14 +36,14 @@ export async function updateReminders(events: Occurrence[], prefs: Preferences) 
       await Notifications.scheduleNotificationAsync({ identifier: item.id,
         content: { title: item.event.title, body: `Занятие в ${time} · время Израиля`, sound: 'default',
           data: { occurrenceId: item.event.id, reminderAt: item.at, classTitle: item.event.title } },
-        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(item.at) } });
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(item.at), ...(Platform.OS === 'android' ? { channelId: CHANNEL } : {}) } });
     },
   });
 }
 
 export async function testReminder() {
-  if (!await notificationPermission(true)) throw new Error('Разреши уведомления в настройках iPhone.');
+  if (!await notificationPermission(true)) throw new Error('Разреши уведомления в настройках телефона.');
   await Notifications.scheduleNotificationAsync({ identifier: 'quiet-test',
-    content: { title: 'Тихая практика', body: 'Всё готово. Здесь будут напоминания о выбранных занятиях.', sound: 'default' },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(Date.now() + 10000) } });
+    content: { title: 'Дейчи', body: 'Всё готово. Здесь будут напоминания о выбранных занятиях.', sound: 'default' },
+    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(Date.now() + 10000), ...(Platform.OS === 'android' ? { channelId: CHANNEL } : {}) } });
 }
