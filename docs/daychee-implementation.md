@@ -245,3 +245,21 @@ QA отозван, его файл с токеном удалён.
 архива 9; Xcode автоматически повысил отправляемый build number до 10.
 Это прежнее содержимое, не новый Дейчи. Новые исходники и native Info.plist
 перенумерованы в 11. Чек-лист: `qa-daychee/testflight-11-checklist.md`.
+
+
+Подписанный архив 11 создан через Xcode Organizer, codesign --verify --deep --strict
+прошёл с доступом к системному trustd. Имя Дейчи, build 11 и production endpoint
+подтверждены; приватные ID и Zoom URL не обнаружены в ресурсах приложения.
+Source commit `9358e17`. Постоянная копия:
+`~/Archives/quiet-practice/daychee-release-11.xcarchive`.
+
+
+## Выпуск подтверждён — 24 сентября 2026
+
+Дейчи 1.0.0 (11): Apple processing Complete, группа «Личное тестирование»
+(4 участника), статус Testing подтверждён через App Store Connect.
+Apple build ID `8b18c448-bb24-40e8-b7f1-27b33a0f0b29`, source `9358e17`,
+tag `testflight/ios-1.0.0-11`. What to Test сохранено. Остались проверки
+физического iPhone и Android, перечисленные в отчёте; они не объявляются пройденными.
+Владельцу выдано отдельное приглашение в ignored private-файле; секрет не в Git.
+Сборка 10 (перезагрузка старого архива 9) в этой задаче группе не назначалась.
