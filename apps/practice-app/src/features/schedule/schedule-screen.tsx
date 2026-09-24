@@ -1,3 +1,6 @@
+import { isChosen, seriesId, subscribed } from './attendance';
+import AttendanceActions from './attendance-actions';
+import CalendarExport from './calendar-export';
 import { classZoom } from './zoom';
 import WikiScreen from '../wiki/wiki-screen';
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
@@ -53,7 +56,7 @@ export default function ScheduleScreen() {
   const all = data?.occurrences ?? [];
   const visible = all.filter(e => matchesFormat(e.title, formatFilter));
   const days = Array.from({ length: 14 }, (_, i) => new Date(Date.parse(`${today}T12:00:00Z`) + i * 86400000).toISOString().slice(0, 10));
-  const mine = all.filter(e => prefs.choices[e.id] && Date.parse(e.ends_at) > now);
+  const mine = all.filter(e => isChosen(e, prefs) && Date.parse(e.ends_at) > now);
   const next = mine.find(e => e.status === 'scheduled' && Date.parse(e.starts_at) > now);
   const lesson = all.find(e => e.id === detail);
   const info = lesson ? classInfo(lesson.title) : null;
@@ -71,7 +74,7 @@ export default function ScheduleScreen() {
       </View>
       {events.length ? <View style={s.agendaGroup}>{events.map((event, index) => {
         const details = classInfo(event.title);
-        const selected = !!prefs.choices[event.id];
+        const selected = isChosen(event, prefs);
         const ended = Date.parse(event.ends_at) <= now;
         const status = event.status === 'cancelled' ? 'Отменено' : ended ? 'Завершилось' : '';
         const meta = details.location ? [details.location, details.online ? 'Онлайн' : null].filter(Boolean).join(' · ') : details.format;
@@ -91,7 +94,7 @@ export default function ScheduleScreen() {
     </View>;
   };
   const card = (event: Occurrence, compact = false) => {
-    const selected = !!prefs.choices[event.id], past = Date.parse(event.starts_at) <= now;
+    const selected = isChosen(event, prefs), past = Date.parse(event.starts_at) <= now;
     return <View key={event.id} style={[s.lessonCard, selected && s.lessonMine]}>
       {!compact && <Pressable accessibilityRole="button" accessibilityLabel={`Открыть ${event.title}, ${time(event.starts_at)}`}
         onPress={() => setDetail(event.id)} style={({ pressed }) => [s.cardMain, pressed && s.pressed]}>
@@ -100,11 +103,11 @@ export default function ScheduleScreen() {
       </Pressable>}
       <View style={s.between}>
         <Text style={s.caption}>{event.status === 'cancelled' ? 'Отменено' : Date.parse(event.ends_at) <= now ? 'Завершилось' : past ? 'Уже началось' : selected ? 'В моём расписании' : 'Занятие школы'}</Text>
-        <Pressable accessibilityRole={Platform.OS === 'web' ? 'checkbox' : 'button'} accessibilityLabel={`Пойду: ${event.title}, ${date(event.starts_at)}`}
+        <Pressable accessibilityRole="button" accessibilityLabel={`${selected ? 'Изменить выбор' : 'Выбрать занятие'}: ${event.title}, ${date(event.starts_at)}`}
           accessibilityState={{ checked: selected, selected, disabled: !ready || busy || (!selected && (past || event.status === 'cancelled')) }}
           disabled={!ready || busy || (!selected && (past || event.status === 'cancelled'))}
-          onPress={() => void model.toggle(event.id)} style={({ pressed }) => [s.choose, selected && s.chosen, pressed && s.pressed]}>
-          <Text style={[s.chooseLabel, selected && s.inverse]}>{selected ? '✓ Пойду' : '+ Пойду'}</Text>
+          onPress={() => setDetail(event.id)} style={({ pressed }) => [s.choose, selected && s.chosen, pressed && s.pressed]}>
+          <Text style={[s.chooseLabel, selected && s.inverse]}>{selected ? '✓ Я иду' : '+ Пойду'}</Text>
         </Pressable>
       </View>
       {selected && prefs.enabled && !past && Date.parse(event.starts_at) - prefs.lead * 60000 <= now &&
@@ -166,18 +169,12 @@ export default function ScheduleScreen() {
               <Text style={s.body}>{info!.description}</Text>
               <Pressable accessibilityRole="link" onPress={() => void Linking.openURL(info!.source)} style={s.textButton}>
                 <Text style={s.link}>Материал школы о направлении</Text></Pressable></View>
-            {lesson.status === 'cancelled' || Date.parse(lesson.starts_at) <= now ? <View style={s.section}>
-              <Text style={s.lessonTitle}>{lesson.status === 'cancelled' ? 'Занятие отменено' : Date.parse(lesson.ends_at) <= now ? 'Занятие завершилось' : 'Занятие уже началось'}</Text>
-              {!!prefs.choices[lesson.id] && <Pressable accessibilityRole="button" disabled={busy} style={s.outlineButton} onPress={() => void model.toggle(lesson.id)}><Text style={s.link}>Убрать из моих занятий</Text></Pressable>}
-            </View> : <View style={s.section}>
-              <Pressable accessibilityRole="button" accessibilityState={{ selected: !!prefs.choices[lesson.id], disabled: busy || !ready }}
-                accessibilityLabel={prefs.choices[lesson.id] ? 'Не пойду — убрать занятие' : 'Пойду на занятие'} disabled={busy || !ready}
-                onPress={() => void model.toggle(lesson.id)} style={({ pressed }) => [s.attend, prefs.choices[lesson.id] && s.attendSelected, pressed && s.pressed, busy && s.pressed]}>
-                <Text style={s.attendLabel}>{busy ? 'Сохраняем…' : prefs.choices[lesson.id] ? 'Я иду · Отменить выбор' : 'Пойду на занятие'}</Text>
-              </Pressable>
-              <Text style={s.caption}>{prefs.choices[lesson.id] ? 'Занятие сохранено в «Мои занятия».' : 'Сохранится только эта дата. Это личный выбор, не запись у преподавателя.'}</Text>
-            </View>}
-            {!!prefs.choices[lesson.id] && reminders}
+            <AttendanceActions key={lesson.id} event={lesson} prefs={prefs} now={now} disabled={busy || !ready}
+              onChoose={weekly => void model.choose(lesson, weekly)} onToggle={() => void model.toggle(lesson.id)}
+              onCancel={() => void model.cancelSubscription(seriesId(lesson.id))} />
+            {lesson.status === 'scheduled' && Date.parse(lesson.starts_at) > now &&
+              <CalendarExport key={`calendar:${lesson.id}`} event={lesson} weekly={subscribed(lesson, prefs)} />}
+            {isChosen(lesson, prefs) && reminders}
           </> : empty('Занятие больше не найдено в расписании.')}
         </> : <>
           <View><Text style={s.eyebrow}>{tab === 'today' ? 'СЕГОДНЯ' : tab === 'schedule' ? 'РАСПИСАНИЕ' : 'МОЯ ПРАКТИКА'}</Text>
@@ -219,6 +216,17 @@ export default function ScheduleScreen() {
           </>}
           {tab === 'mine' && <>
             {reminders}
+            {!!Object.keys(prefs.subscriptions ?? {}).length && <View style={s.section}>
+              <Text style={s.sectionLabel}>КАЖДУЮ НЕДЕЛЮ</Text>
+              <Text style={s.caption}>Подписки действуют до отмены. Ближайшие даты и напоминания обновляются при открытии приложения.</Text>
+              {Object.entries(prefs.subscriptions ?? {}).map(([id, subscription]) => <View key={id} style={s.section}>
+                <Text style={s.lessonTitle}>{subscription.title}</Text>
+                <Text style={s.caption}>{format(subscription.startsAt, { weekday: 'long' })} · с {subscription.from}</Text>
+                {!all.some(e => seriesId(e.id) === id) && <Text style={s.caption}>Сейчас нет в загруженном расписании. Подписка сохранена.</Text>}
+                <Pressable accessibilityRole="button" disabled={busy || !ready} style={s.textButton}
+                  onPress={() => void model.cancelSubscription(id)}><Text style={s.link}>Отменить подписку</Text></Pressable>
+              </View>)}
+            </View>}
             {mine.length ? mine.map(e => <View key={e.id} style={s.section}><Text style={s.sectionLabel}>{date(e.starts_at)}</Text>{card(e)}</View>)
               : <View style={s.next}><Text style={s.nextTitle}>Место для твоей практики</Text><Text style={s.body}>Отметь «Пойду» у занятия — оно появится здесь.</Text>
                 <Pressable accessibilityRole="button" style={s.primary} onPress={() => setTab('schedule')}><Text style={s.primaryLabel}>Выбрать занятия</Text></Pressable></View>}

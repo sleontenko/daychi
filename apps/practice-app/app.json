@@ -10,9 +10,10 @@
     "ios": {
       "icon": "./assets/images/quiet-practice-icon.png",
       "bundleIdentifier": "ai.mypraxis.quietpractice",
-      "buildNumber": "8",
+      "buildNumber": "9",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCalendarsUsageDescription": "Добавлять выбранные занятия в ваш календарь."
       }
     },
     "android": {

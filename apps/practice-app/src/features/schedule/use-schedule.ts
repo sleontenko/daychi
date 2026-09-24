@@ -2,10 +2,11 @@ import { telegramSchedule } from './zoom';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, Platform } from 'react-native';
-import { decodeChoices, decodeSchedule, type Schedule } from './model';
+import { decodeChoices, decodeSchedule, type Schedule, type Occurrence } from './model';
 import { loadSchedule } from './load';
 import { notificationPermission, updateReminders } from './local-reminders';
 import type { Preferences } from './reminder-plan';
+import { cancelWeekly, chooseWeekly, decodeSubscriptions, isChosen, toggleDate } from './attendance';
 
 const CACHE = 'quiet-practice.schedule.v1', PREFS = 'quiet-practice.preferences.v2';
 const initial: Preferences = { choices: {}, enabled: false, lead: 30 };
@@ -58,6 +59,7 @@ export function useSchedule() {
         const old = await AsyncStorage.getItem('quiet-practice.attendance.v1');
         const raw = saved ? JSON.parse(saved) : null;
         const restored: Preferences = { choices: decodeChoices(raw?.choices ?? (old ? JSON.parse(old) : {})),
+          subscriptions: decodeSubscriptions(raw?.subscriptions), skipped: decodeChoices(raw?.skipped),
           enabled: raw?.enabled === true, lead: [0, 15, 30, 60].includes(raw?.lead) ? raw.lead : 30 };
         state.current.prefs = restored;
         if (alive.current) setPrefs(restored);
@@ -102,12 +104,21 @@ export function useSchedule() {
     finally { writeBusy.current = false; setBusy(false); }
   };
   const toggle = (id: string) => change(current => {
+    const event = state.current.data?.occurrences.find(e => e.id === id);
+    if (event) return toggleDate(current, event);
     const choices = { ...current.choices };
     if (choices[id]) delete choices[id]; else choices[id] = true;
     return { ...current, choices };
-  }, !state.current.prefs.choices[id] && !Object.keys(state.current.prefs.choices).length && !state.current.prefs.enabled);
+  });
 
-  return { data, prefs, now, ready, loading, busy, offline, error, allowed, scheduled, refresh, toggle,
+  const choose = (event: Occurrence, weekly: boolean) => change(current => {
+    if (event.status !== 'scheduled' || Date.parse(event.starts_at) <= Date.now()) return current;
+    return weekly ? chooseWeekly(current, event) : isChosen(event, current) ? current : toggleDate(current, event);
+  }, !state.current.prefs.enabled && !Object.keys(state.current.prefs.choices).length &&
+    !Object.keys(state.current.prefs.subscriptions ?? {}).length);
+
+  return { data, prefs, now, ready, loading, busy, offline, error, allowed, scheduled, refresh, toggle, choose,
+    cancelSubscription: (id: string) => change(current => cancelWeekly(current, id)),
     setEnabled: (enabled: boolean) => change(current => ({ ...current, enabled }), enabled),
     setLead: (lead: number) => change(current => ({ ...current, lead })),
     retry: () => change(current => current), setError };

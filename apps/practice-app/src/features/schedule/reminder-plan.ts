@@ -1,12 +1,13 @@
 import type { Occurrence } from './model.ts';
+import { isChosen, type Attendance } from './attendance.ts';
 
-export type Preferences = { choices: Record<string, boolean>; enabled: boolean; lead: number };
+export type Preferences = Attendance & { enabled: boolean; lead: number };
 export type PlannedReminder = { id: string; at: number; event: Occurrence };
 export const REMINDER_PREFIX = 'quiet-class:';
 
 export function reminderPlan(events: Occurrence[], prefs: Preferences, now: number): PlannedReminder[] {
   if (!prefs.enabled) return [];
-  return events.filter(e => prefs.choices[e.id] && e.status === 'scheduled')
+  return events.filter(e => isChosen(e, prefs) && e.status === 'scheduled')
     .map(event => ({ id: `${REMINDER_PREFIX}${event.id}`, event,
       at: Date.parse(event.starts_at) - prefs.lead * 60000 }))
     .filter(item => item.at > now).sort((a, b) => a.at - b.at);

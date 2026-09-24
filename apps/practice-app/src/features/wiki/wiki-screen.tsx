@@ -1,7 +1,8 @@
 import { SymbolView } from 'expo-symbols';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, FlatList, Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, AppState, FlatList, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Organic as C } from '../prototype/theme';
 import { Category, Material, Results, Summary, wikiRequest } from './api';
 
@@ -22,6 +23,8 @@ export default function WikiScreen() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<'new' | 'old'>('new');
   const [optionsOpen, setOptionsOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [menuCategory, setMenuCategory] = useState('');
   const [savedOnly, setSavedOnly] = useState(false);
   const [saved, setSaved] = useState<string[]>([]);
   const [results, setResults] = useState<Results>({ total: 0, items: [], missing_ids: [] });
@@ -118,6 +121,7 @@ export default function WikiScreen() {
     {notice}{!detail && !!error && saved.includes(detailId) && <Button title="Убрать сохранение" onPress={() => void bookmark(detailId)} />}
   </ScrollView> : null;
   const chosen = categories.find(x => x.id === category);
+  const menuChosen = categories.find(x => x.id === menuCategory);
   const header = <View style={s.header}>
     <View><Text style={s.eyebrow}>ВИКИ</Text><Text accessibilityRole="header" style={s.title}>Живая база знаний</Text></View>
     <View style={s.searchRow}>
@@ -134,6 +138,7 @@ export default function WikiScreen() {
       <Pressable accessibilityRole="button" accessibilityState={{ selected: savedOnly }} onPress={() => setSavedOnly(x => !x)} style={[s.chip, savedOnly && s.selected]}><Text style={[s.chipText, savedOnly && s.inverse]}>Сохранённые</Text></Pressable>
       {categories.map(c => <Pressable key={c.id} accessibilityRole="button" accessibilityState={{ selected: category === c.id }} onPress={() => { setCategory(category === c.id ? '' : c.id); setSubtopic(''); }} style={[s.chip, category === c.id && s.selected]}><Text style={[s.chipText, category === c.id && s.inverse]}>{c.name}</Text></Pressable>)}
     </ScrollView>
+    <Button title="Все разделы и подтемы" onPress={() => { setMenuCategory(category); setCategoriesOpen(true); }} />
     {optionsOpen && <View style={s.panel}>
       <Text style={s.meta}>Найдено: {results.total}</Text>
       <Button title={sort === 'new' ? 'Сначала новые' : 'Сначала старые'} onPress={() => setSort(sort === 'new' ? 'old' : 'new')} />
@@ -146,7 +151,27 @@ export default function WikiScreen() {
     {notice}
     {savedOnly && results.missing_ids?.map(id => <View key={id} style={s.panel}><Text style={s.meta}>Сохранённый материал больше не доступен.</Text><Button title="Убрать сохранение" onPress={() => void bookmark(id)} /></View>)}
   </View>;
-  return <View style={{ flex: 1 }}>{detailView}<FlatList style={{ display: detailId ? 'none' : 'flex' }} data={results.items} keyExtractor={row => row.id} contentContainerStyle={s.page} keyboardShouldPersistTaps="handled" ListHeaderComponent={header}
+  return <View style={{ flex: 1 }}>
+    <Modal visible={categoriesOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setCategoriesOpen(false)}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: C.background }}>
+        <View style={[s.page, { paddingBottom: 12 }]}><Text accessibilityRole="header" style={s.title}>Все разделы</Text>
+          <Button title="Закрыть" onPress={() => setCategoriesOpen(false)} /></View>
+        <ScrollView contentContainerStyle={[s.page, { gap: 16 }]}>
+          <Button title="Все материалы" selected={!category && !savedOnly} onPress={() => { setCategory(''); setSubtopic(''); setSavedOnly(false); setCategoriesOpen(false); }} />
+          <Button title="Сохранённые" selected={savedOnly} onPress={() => { setCategory(''); setSubtopic(''); setSavedOnly(true); setCategoriesOpen(false); }} />
+          <View style={s.wrap}>{categories.map(c => <Button key={c.id} title={`${c.name} · ${c.count}`}
+            selected={menuCategory === c.id} onPress={() => setMenuCategory(c.id)} />)}</View>
+          {menuChosen && <View style={s.panel}>
+            <Text accessibilityRole="header" style={s.heading}>{menuChosen.name}</Text>
+            <Button title="Все материалы раздела" onPress={() => { setCategory(menuChosen.id); setSubtopic(''); setCategoriesOpen(false); }} />
+            <View style={s.wrap}>{menuChosen.subtopics.map(topic => <Button key={topic.id} title={`${topic.name} · ${topic.count}`}
+              selected={category === menuChosen.id && subtopic === topic.id}
+              onPress={() => { setCategory(menuChosen.id); setSubtopic(topic.id); setCategoriesOpen(false); }} />)}</View>
+          </View>}
+          {!categories.length && <Text style={s.body}>Разделы пока не загружены. Закрой меню и нажми «Повторить».</Text>}
+        </ScrollView>
+      </SafeAreaView>
+    </Modal>{detailView}<FlatList style={{ display: detailId ? 'none' : 'flex' }} data={results.items} keyExtractor={row => row.id} contentContainerStyle={s.page} keyboardShouldPersistTaps="handled" ListHeaderComponent={header}
     renderItem={({ item }: { item: Summary }) => <Pressable accessibilityRole="button" onPress={() => setDetailId(item.id)} style={({ pressed }) => [s.row, pressed && { opacity: 0.6 }]}>
       <View style={s.top}><View style={s.tag}><Text style={s.tagText}>{item.category_name}</Text></View><Text style={s.date}>{item.date}</Text></View>
       <Text style={s.heading}>{item.title}</Text>
@@ -173,7 +198,7 @@ const s = StyleSheet.create({
   tag: { flexShrink: 1, backgroundColor: C.sageSoft, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
   tagText: { color: C.sageDark, fontSize: 11, lineHeight: 15 }, date: { fontSize: 11, lineHeight: 16, color: '#756D60' },
   summary: { fontSize: 13, lineHeight: 19, color: '#68635B' },
-  button: { paddingHorizontal: 12, paddingVertical: 12, minHeight: 44, justifyContent: 'center', borderRadius: 12, backgroundColor: '#EEE4D4' },
+  button: { paddingHorizontal: 12, paddingVertical: 12, minHeight: 44, maxWidth: '100%', justifyContent: 'center', borderRadius: 12, backgroundColor: '#EEE4D4' },
   selected: { backgroundColor: C.sageDeep }, link: { color: C.accentDark, fontSize: 15, fontWeight: '500' },
   row: { padding: 16, gap: 6, borderRadius: 16, backgroundColor: C.neutral100, marginBottom: 10 },
   chips: { gap: 8 }, wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, notice: { padding: 14, gap: 8, borderRadius: 12, backgroundColor: '#F0DFC9' },
