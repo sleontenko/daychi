@@ -14,7 +14,10 @@ Railway API подключён в конфигурации, форма дост�
 Проверены успешный вход по ссылке, вики, сохранение сессии, Zoom-пароль и отзыв.
 Исправлен светлый переключатель выбора занятия по утверждённому экрану Zoom.
 TypeScript, lint, 31 JS-тест прошли. Реальный Railway invalid/401 и возврат проверены
-на Release Simulator. Источник пока working tree, commit/tag/Apple build ID отсутствуют.
+на Release Simulator. Source commit: `eefbcc4`; source tag/Apple build ID пока отсутствуют.
+Финальный архив 28 сентября 14:13, подпись проверена. Попытка отправки
+TestFlight Internal Only остановлена до upload: истекла сессия App Store Connect.
+В Xcode открыт повторный вход владельца; build 12 ещё не доступен тестировщикам.
 Подробности и непройденные пути: [подготовка 12](testflight-12-preparation.md).
 Не считать запись выпуском или подтверждением входа на физическом iPhone.
 
