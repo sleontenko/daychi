@@ -27,3 +27,24 @@ Build 7 is an owner-authorized closed beta with a private bundled wiki snapshot
 and no manual login. Generated catalog stays ignored by Git. Do not publish web
 exports or widen distribution of this snapshot; restore server authorization
 before a broader release. See docs/wiki-closed-beta.md.
+
+## Design acceptance and navigation — owner instruction 2026-09-24
+
+Implementation is not accepted just because it builds. Before handing off a
+UI change, compare EACH affected screen and state with the latest owner-approved
+Claude Design export identified in docs/DESIGN.md. Save paired reference/runtime
+screenshots, list discrepancies and fix them; do not infer complete fidelity from
+one schedule screenshot. Include «Мои занятия»: empty, regular series, next date,
+skipped/restored date, one-off dates, and a series absent from the loaded window.
+A new designer candidate is not automatically an approved reference.
+
+Exercise every affected back arrow/close control and Android Back through its
+actual entry points. Check nested screens, direct shortcuts, tab changes and
+scrolling: return to the real previous screen with selection, filters, scroll
+position and draft preserved. Back controls must stay reachable inside safe areas.
+Record actual results and untested paths in the QA report. A known visual or
+navigation mismatch blocks acceptance/release; do not call the design fully ported.
+
+Missing UX is assigned to Claude Design in a separate candidate, with entry/exit,
+loading/offline/error/recovery states and transition table, before implementation.
+Keep real wiki content, invitation credentials and Zoom links out of design prompts.

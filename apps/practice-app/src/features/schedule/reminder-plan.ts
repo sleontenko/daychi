@@ -15,7 +15,7 @@ export function reminderPlan(events: Occurrence[], prefs: Preferences, now: numb
 
 // Dependency-injected to test cancel/reschedule/error behaviour without iOS.
 export async function reconcileReminders(plan: PlannedReminder[], port: {
-  pending: () => Promise<{ id: string; at: number; title: string }[]>;
+  pending: () => Promise<{ id: string; at: number; title: string; stale?: boolean }[]>;
   cancel: (id: string) => Promise<void>;
   schedule: (item: PlannedReminder) => Promise<void>;
 }) {
@@ -25,13 +25,13 @@ export async function reconcileReminders(plan: PlannedReminder[], port: {
   for (const current of existing) {
     if (!current.id.startsWith(REMINDER_PREFIX)) continue;
     const next = desired.get(current.id);
-    if (!next || next.at !== current.at || next.event.title !== current.title) await port.cancel(current.id);
+    if (current.stale || !next || next.at !== current.at || next.event.title !== current.title) await port.cancel(current.id);
   }
   for (const next of plan) {
-    if (!existing.some(item => item.id === next.id && item.at === next.at && item.title === next.event.title))
+    if (!existing.some(item => !item.stale && item.id === next.id && item.at === next.at && item.title === next.event.title))
       await port.schedule(next);
   }
   const confirmed = new Set((await port.pending()).map(item => item.id));
-  if (plan.some(item => !confirmed.has(item.id))) throw new Error('iPhone не подтвердил напоминания. Повтори попытку.');
+  if (plan.some(item => !confirmed.has(item.id))) throw new Error('Телефон не подтвердил напоминания. Повтори попытку.');
   return plan.length;
 }

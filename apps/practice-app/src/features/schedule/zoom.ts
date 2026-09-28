@@ -32,8 +32,8 @@ export function useClassZoom(event: Occurrence | undefined) {
     let active = true;
     privateRequest<ZoomClass[]>('/api/access/zoom').then(rows => {
       if (active) { setResult({ id: event.id, room: zoomForOccurrence(event, rows) }); setError(''); }
-    }).catch(() => { if (active) setError('Не удалось загрузить подключение к занятию.'); });
+    }).catch(() => { if (active) { setResult(null); setError('Не удалось загрузить подключение к занятию. Проверьте интернет и повторите попытку.'); } });
     return () => { active = false; };
   }, [access, event, revision]);
-  return { room: access === 'active' && result?.id === event?.id ? result?.room : null, error: access === 'active' ? error : '', retry: () => setRevision(x => x + 1) };
+  return { loading: access === 'active' && !!event && result?.id !== event.id && !error, room: access === 'active' && result?.id === event?.id ? result?.room : null, error: access === 'active' ? error : '', retry: () => setRevision(x => x + 1) };
 }

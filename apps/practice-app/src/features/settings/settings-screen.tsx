@@ -1,3 +1,4 @@
+import BackButton from '../../components/back-button';
 import AccessScreen from '../access/access-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
@@ -9,14 +10,22 @@ import { Organic as C } from '../prototype/theme';
 export type SettingsPage = 'settings' | 'reminders' | 'feedback' | 'about' | 'access';
 const DRAFT = 'daychee.feedback.draft.v1';
 const kinds = ['Ошибка', 'Идея', 'Вопрос'] as const;
-export default function SettingsScreen({ page, onPage, reminders, view, onView }: {
-  page: SettingsPage | null; onPage: (page: SettingsPage | null) => void; reminders: ReactNode;
+export default function SettingsScreen({ page, onPage, onBack, backLabel, bottomTabs, reminders, view, onView, accessReturnLabel, onAccessDone }: {
+  page: SettingsPage | null; onPage: (page: SettingsPage | null) => void; onBack: () => void; backLabel: string; bottomTabs: ReactNode; reminders: ReactNode;
+  accessReturnLabel?: string; onAccessDone: () => void;
   view: 'day' | 'week' | 'calendar'; onView: (view: 'day' | 'week' | 'calendar') => void;
 }) {
   const [kind, setKind] = useState<string>('Ошибка'), [message, setMessage] = useState(''), [contact, setContact] = useState('');
   const [error, setError] = useState(''), [status, setStatus] = useState('');
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false);
   const queue = useRef(Promise.resolve());
+  const offsets = useRef<Partial<Record<SettingsPage, number>>>({});
+  const pageScroll = useRef<ScrollView>(null);
+  useEffect(() => {
+    const y = page ? offsets.current[page] ?? 0 : 0;
+    const frame = requestAnimationFrame(() => pageScroll.current?.scrollTo({ y, animated: false }));
+    return () => cancelAnimationFrame(frame);
+  }, [page]);
   useEffect(() => {
     let active = true;
     AsyncStorage.getItem(DRAFT).then(raw => {
@@ -51,11 +60,12 @@ export default function SettingsScreen({ page, onPage, reminders, view, onView }
     accessibilityState={{ disabled }} disabled={disabled} onPress={action} style={[s.button, primary && s.primary, disabled && { opacity: 0.5 }]}>
     <Text style={[s.link, primary && { color: C.white }]}>{label}</Text></Pressable>;
   const version = Constants.expoConfig?.version ?? '1.0.0';
-  return <Modal visible={page !== null} animationType="slide" onRequestClose={() => onPage(page === 'settings' ? null : 'settings')}>
-    <SafeAreaProvider><SafeAreaView style={s.safe}><KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={s.page}>
-        <Pressable accessibilityRole="button" onPress={() => onPage(page === 'settings' ? null : 'settings')} style={s.back}><Text style={s.link}>‹ Назад</Text></Pressable>
-        <Text accessibilityRole="header" style={s.title}>{page === 'settings' ? 'Настройки' : page === 'reminders' ? 'Напоминания' : page === 'feedback' ? 'Обратная связь' : page === 'about' ? 'О приложении' : 'Доступ'}</Text>
+  return <Modal visible={page !== null} animationType="slide" onRequestClose={onBack}>
+    <SafeAreaProvider><SafeAreaView edges={['top']} style={s.safe}><KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <BackButton label={backLabel} onPress={onBack} />
+      <ScrollView key={page} ref={pageScroll} keyboardShouldPersistTaps="handled" contentContainerStyle={s.page}
+        onScroll={event => { if (page) offsets.current[page] = event.nativeEvent.contentOffset.y; }} scrollEventThrottle={16}>
+        {page !== 'access' && <Text accessibilityRole="header" style={s.title}>{page === 'settings' ? 'Настройки' : page === 'reminders' ? 'Напоминания' : page === 'feedback' ? 'Обратная связь' : page === 'about' ? 'О приложении' : 'Доступ'}</Text>}
         {page === 'settings' && <>
           <View style={s.group}>{([['reminders', 'Напоминания'], ['feedback', 'Обратная связь'], ['access', 'Доступ'], ['about', 'О приложении']] as const).map(([key, label]) =>
             <Pressable key={key} accessibilityRole="button" onPress={() => onPage(key)} style={s.row}><Text style={s.body}>{label}</Text><Text style={s.link}>›</Text></Pressable>)}</View>
@@ -72,7 +82,7 @@ export default function SettingsScreen({ page, onPage, reminders, view, onView }
           <Text style={s.caption}>Учебные материалы принадлежат их авторам. Версия {version}.</Text>
           {button('Обратная связь', () => onPage('feedback'))}
         </>}
-        {page === 'access' && <AccessScreen />}
+        {page === 'access' && <AccessScreen embedded returnLabel={accessReturnLabel ?? 'Готово'} onDone={onAccessDone} />}
         {page === 'feedback' && <>
           <Text style={s.body}>Ошибка, идея или вопрос</Text>
           <View style={s.options}>{kinds.map(value => <Pressable key={value} disabled={!ready || busy} accessibilityRole="button" accessibilityState={{ selected: kind === value }}
@@ -90,7 +100,7 @@ export default function SettingsScreen({ page, onPage, reminders, view, onView }
           <Pressable accessibilityRole="button" disabled={!ready || busy} onPress={() => { setMessage(''); setContact(''); setStatus(''); setError(''); save({ kind, message: '', contact: '' }); }} style={s.button}><Text style={s.link}>Очистить черновик</Text></Pressable>
         </>}
       </ScrollView>
-    </KeyboardAvoidingView></SafeAreaView></SafeAreaProvider>
+    </KeyboardAvoidingView>{bottomTabs}</SafeAreaView></SafeAreaProvider>
   </Modal>;
 }
 const s = StyleSheet.create({

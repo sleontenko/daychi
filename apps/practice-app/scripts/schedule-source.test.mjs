@@ -53,3 +53,21 @@ test('scheduling/cancellation failures surface instead of pretending success',as
   await assert.rejects(reconcileReminders(plan,{pending:async()=>[],cancel:async()=>{},schedule:async()=>{}}));
   await assert.rejects(reconcileReminders([],{pending:async()=>[{id:plan[0].id,at:1,title:'x'}],cancel:async()=>{throw Error('no');},schedule:async()=>{}}));
 });
+test('precision permission changes replace an existing reminder once, without duplicating it', async () => {
+  const plan = reminderPlan([event], prefs, now);
+  const item = plan[0];
+  const pending = new Map([[item.id, { id: item.id, at: item.at, title: event.title, stale: true }]]);
+  const calls = [];
+  const port = {
+    pending: async () => [...pending.values()],
+    cancel: async id => { calls.push(['cancel', id]); pending.delete(id); },
+    schedule: async next => {
+      calls.push(['schedule', next.id]);
+      pending.set(next.id, { id: next.id, at: next.at, title: next.event.title, stale: false });
+    },
+  };
+  await reconcileReminders(plan, port);
+  await reconcileReminders(plan, port);
+  assert.deepEqual(calls, [['cancel', item.id], ['schedule', item.id]]);
+  assert.equal(pending.size, 1);
+});

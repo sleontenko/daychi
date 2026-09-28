@@ -1,9 +1,14 @@
+import { useLocalSearchParams } from 'expo-router';
+import BackButton from '../../components/back-button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAccess } from '../access/session';
-import AccessScreen from '../access/access-screen';
+import { setAccessReturn, clearAccessReturn, resumeAccessReturn } from '../access/return-target';
+import * as Clipboard from 'expo-clipboard';
+import { getInvitation, subscribeInvitation } from '../access/invitation-link';
 import SettingsScreen, { type SettingsPage } from '../settings/settings-screen';
 import { isChosen, seriesId, subscribed } from './attendance';
 import AttendanceActions from './attendance-actions';
+import MyClasses from './my-classes';
 import CalendarExport from './calendar-export';
 import { useClassZoom } from './zoom';
 import WikiScreen from '../wiki/wiki-screen';
@@ -14,6 +19,7 @@ import { ActivityIndicator, BackHandler, Linking, Platform, Pressable, RefreshCo
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Organic as C } from '../prototype/theme';
 import { dayKey, type Occurrence } from './model';
+import { openExactAlarmSettings } from './exact-alarms';
 import { testReminder } from './local-reminders';
 import { useSchedule } from './use-schedule';
 import { classInfo, matchesFormat, type FormatFilter } from './class-info';
@@ -27,7 +33,7 @@ const iconNames = {
   settings: { ios: 'gearshape', android: 'settings', web: 'settings' },
   feedback: { ios: 'bubble', android: 'chat_bubble_outline', web: 'chat_bubble_outline' },
   schedule: { ios: 'calendar', android: 'calendar_month', web: 'calendar_month' },
-  mine: { ios: 'checkmark.circle', android: 'check_circle', web: 'check_circle' },
+  mine: { ios: 'calendar.badge.checkmark', android: 'event_available', web: 'event_available' },
   wiki: { ios: 'book.closed', android: 'menu_book', web: 'menu_book' },
   bell: { ios: 'bell', android: 'notifications', web: 'notifications' },
   back: { ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' },
@@ -39,16 +45,40 @@ function Icon({ name, active = false, size = 21, color }: { name: keyof typeof i
   return <SymbolView name={iconNames[name] as SymbolViewProps['name']} size={size} tintColor={color ?? (active ? C.accentDark : '#77716A')} />;
 }
 
+function ZoomPassword({ password }: { password: string }) {
+  const [copied, setCopied] = useState(false);
+  const [error, setError] = useState(false);
+  return <View>
+    <View style={s.zoomPassword}>
+      <View style={{ flex: 1 }}><Text style={s.caption}>Пароль встречи</Text><Text selectable style={s.lessonTitle}>{password}</Text></View>
+      <Pressable accessibilityRole="button" accessibilityLabel="Скопировать пароль встречи" style={s.copyButton} onPress={() => {
+        setError(false); void Clipboard.setStringAsync(password).then(ok => { setCopied(ok); setError(!ok); }).catch(() => setError(true));
+      }}><Text style={s.link}>{copied ? 'Скопировано' : 'Скопировать'}</Text></Pressable>
+    </View>
+    {error && <Text accessibilityRole="alert" style={s.caption}>Не удалось скопировать. Нажмите и удерживайте пароль, чтобы выделить его.</Text>}
+  </View>;
+}
+
 export default function ScheduleScreen() {
   const access = useAccess();
   const model = useSchedule();
   const { data, prefs, now, busy, ready, offline, loading } = model;
   const { fontScale } = useWindowDimensions();
-  const [tab, setTab] = useState<Tab>('schedule');
-  const [settingsPage, setSettingsPage] = useState<SettingsPage | null>(null);
+  const params = useLocalSearchParams<{ tab?: string }>();
+  const [tab, setTab] = useState<Tab>(params.tab === 'wiki' ? 'wiki' : 'schedule');
+  const [settingsStack, setSettingsStack] = useState<SettingsPage[]>([]);
+  const settingsPage = settingsStack.at(-1) ?? null;
+  const setSettingsPage = (page: SettingsPage | null) => { if (page === 'access') { clearAccessReturn(); setAccessLabel('Готово'); } setSettingsStack(stack => page === null ? [] : [...stack, page]); };
+  const settingsBack = () => { if (settingsPage === 'access') clearAccessReturn(); setSettingsStack(stack => stack.slice(0, -1)); };
+  const [accessLabel, setAccessLabel] = useState('Готово');
+  useEffect(() => subscribeInvitation(() => { if (getInvitation()) setSettingsStack([]); }), []);
   const [cancelSeries, setCancelSeries] = useState<string | null>(null);
   const [week, setWeek] = useState(0);
-  const [wikiOpened, setWikiOpened] = useState(false);
+  const [wikiOpened, setWikiOpened] = useState(params.tab === 'wiki');
+  const [wikiDetail, setWikiDetail] = useState(false);
+  // The external Router target is consumed when a cold invitation finishes.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { if (params.tab === 'wiki') { setTab('wiki'); setWikiOpened(true); } }, [params.tab]);
   const [view, setView] = useState<'day' | 'week' | 'calendar'>('week');
   const viewRevision = useRef(0);
   const viewQueue = useRef(Promise.resolve());
@@ -67,26 +97,36 @@ export default function ScheduleScreen() {
   const [formatFilter, setFormatFilter] = useState<FormatFilter>('all');
   const [selectedDay, setSelectedDay] = useState(dayKey(now));
   const [detail, setDetailId] = useState<string | null>(null);
+  const listOffsets = useRef<Partial<Record<Tab, number>>>({});
+  const tabDetails = useRef<Partial<Record<Tab, { id: string | null; offset: number }>>>({});
+  const currentOffset = useRef(0);
+  const restoreOffset = useRef<number | null>(null);
   const [zoomError, setZoomError] = useState('');
-  const setDetail = (id: string | null) => { setZoomError(''); setDetailId(id); };
+  const setDetail = (id: string | null) => {
+    if (id && !detail) listOffsets.current[tab] = currentOffset.current;
+    restoreOffset.current = id ? 0 : (listOffsets.current[tab] ?? 0);
+    setZoomError(''); setDetailId(id);
+  };
   const [testState, setTestState] = useState('');
   const scroll = useRef<ScrollView>(null);
   useEffect(() => {
-    scroll.current?.scrollTo({ y: 0, animated: false });
+    const y = restoreOffset.current ?? (detail ? 0 : (listOffsets.current[tab] ?? 0));
+    const frame = requestAnimationFrame(() => { scroll.current?.scrollTo({ y, animated: false }); restoreOffset.current = null; });
+    return () => cancelAnimationFrame(frame);
   }, [tab, detail]);
 
   useEffect(() => {
-    if (!detail) return;
-    const handler = BackHandler.addEventListener('hardwareBackPress', () => { setDetailId(null); return true; });
+    if (!detail || settingsPage) return;
+    const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+      restoreOffset.current = listOffsets.current[tab] ?? 0; setZoomError(''); setDetailId(null); return true;
+    });
     return () => handler.remove();
-  }, [detail]);
+  }, [detail, settingsPage, tab]);
 
   const today = dayKey(now);
   const all = data?.occurrences ?? [];
   const visible = all.filter(e => matchesFormat(e.title, formatFilter));
   const days = Array.from({ length: 14 }, (_, i) => new Date(Date.parse(`${today}T12:00:00Z`) + i * 86400000).toISOString().slice(0, 10));
-  const mine = all.filter(e => isChosen(e, prefs) && Date.parse(e.ends_at) > now);
-  const next = mine.find(e => e.status === 'scheduled' && Date.parse(e.starts_at) > now);
   const lesson = all.find(e => e.id === detail);
   const info = lesson ? classInfo(lesson.title) : null;
   const zoomState = useClassZoom(lesson);
@@ -154,13 +194,21 @@ export default function ScheduleScreen() {
         trackColor={{ false: C.neutral300, true: C.sage }} onValueChange={value => void model.setEnabled(value)} />
     </View>
     {prefs.enabled && model.allowed && <>
+      {Platform.OS === 'android' && !model.exactAllowed && <>
+        <Text style={s.caption}>Android может задерживать напоминания. Разреши точные напоминания, чтобы получать их вовремя.</Text>
+        <Pressable accessibilityRole="button" style={s.textButton} onPress={() => {
+          void openExactAlarmSettings().catch(() => setTestState('Не удалось открыть настройки точных напоминаний. Попробуй ещё раз.'));
+        }}><Text style={s.link}>Настроить точные напоминания</Text></Pressable>
+      </>}
       <Text style={s.sectionLabel}>КОГДА НАПОМНИТЬ</Text>
       <View style={[s.segments, fontScale > 1.2 && s.controlsLarge]}>{[[0, 'В начале'], [15, '15 мин'], [30, '30 мин'], [60, '1 час']].map(([lead, label]) =>
         <Pressable key={lead} accessibilityRole={Platform.OS === 'web' ? 'radio' : 'button'} accessibilityState={{ checked: prefs.lead === lead, selected: prefs.lead === lead }} disabled={busy}
           onPress={() => void model.setLead(Number(lead))} style={[s.segment, prefs.lead === lead && s.segmentOn]}>
           <Text style={s.segmentText}>{label}</Text></Pressable>)}</View>
       <Pressable accessibilityRole="button" onPress={() => {
-        void testReminder().then(() => setTestState('Сверни приложение — через 10 секунд придёт уведомление.'))
+        void testReminder().then(() => setTestState(Platform.OS === 'android' && !model.exactAllowed
+          ? 'Тест запланирован. Сверни приложение; Android может задержать уведомление.'
+          : 'Сверни приложение — через 10 секунд придёт уведомление.'))
           .catch(() => setTestState('Не удалось отправить проверку. Проверь разрешение уведомлений.'));
       }} style={s.textButton}><Text style={s.link}>Проверить уведомление</Text></Pressable>
       {!!testState && <Text accessibilityRole="text" style={s.caption}>{testState}</Text>}
@@ -169,18 +217,43 @@ export default function ScheduleScreen() {
       onPress={() => void Linking.openSettings()}><Text style={s.link}>Настройки уведомлений телефона</Text></Pressable>}
   </View>;
 
+  const openAccess = (label: string) => {
+    setAccessLabel(label);
+    setAccessReturn({ label, resume: () => setSettingsStack([]) });
+    setSettingsStack(stack => [...stack, 'access']);
+  };
+
+  const selectTab = (key: Tab) => {
+    if (key === 'wiki') setWikiOpened(true);
+    clearAccessReturn();
+    setCancelSeries(null); setSettingsStack([]);
+    if (key === tab) return;
+    tabDetails.current[tab] = { id: detail, offset: currentOffset.current };
+    const saved = tabDetails.current[key];
+    restoreOffset.current = saved?.id ? saved.offset : (listOffsets.current[key] ?? 0);
+    setDetailId(saved?.id ?? null); setZoomError(''); setTab(key);
+  };
+
+  const bottomTabs = <SafeAreaView edges={['bottom']} style={s.tabSafe}><View style={s.tabs}>
+      {([['schedule', 'Расписание'], ['mine', 'Мои занятия'], ['wiki', 'Вики']] as const).map(([key, label]) =>
+        <Pressable key={key} accessibilityRole={Platform.OS === 'web' ? 'tab' : 'button'} accessibilityState={{ selected: tab === key }} accessibilityLabel={label} onPress={() => selectTab(key)} style={s.tab}>
+          <Icon name={key} active={tab === key} /><Text maxFontSizeMultiplier={1.2} style={[s.tabText, tab === key && s.tabOn]}>{label}</Text></Pressable>)}
+    </View></SafeAreaView>;
+
   return <SafeAreaView edges={['top']} style={s.safe}>
-    <SettingsScreen page={settingsPage} onPage={setSettingsPage} reminders={reminders} view={view} onView={changeView} />
-    {!detail && <View style={s.rootBar}>
+    <SettingsScreen bottomTabs={bottomTabs} page={settingsPage} onPage={setSettingsPage} onBack={settingsBack} backLabel={settingsStack.length > 1 ? 'Назад' : detail ? 'Назад' : tab === 'mine' ? 'Мои занятия' : tab === 'wiki' ? 'Вики' : 'Расписание'} accessReturnLabel={accessLabel} onAccessDone={() => { if (!resumeAccessReturn()) settingsBack(); }} reminders={reminders} view={view} onView={changeView} />
+    {!detail && !(tab === 'wiki' && wikiDetail) && <View style={s.rootBar}>
       <Pressable accessibilityRole="button" accessibilityLabel="Настройки" onPress={() => setSettingsPage('settings')} style={s.roundButton}><Icon name="settings" color={C.text} size={24} /></Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel="Обратная связь" onPress={() => setSettingsPage('feedback')} style={s.roundButton}><Icon name="feedback" color={C.text} size={24} /></Pressable>
     </View>}
-    {wikiOpened && <View style={{ flex: 1, display: tab === 'wiki' ? 'flex' : 'none' }}>{access === 'active' ? <WikiScreen active={tab === 'wiki' && !settingsPage} /> : <AccessScreen />}</View>}
+    {wikiOpened && <View style={{ flex: 1, display: tab === 'wiki' ? 'flex' : 'none' }}><WikiScreen active={tab === 'wiki' && !settingsPage} onDetailChange={setWikiDetail} onOpenAccess={() => openAccess(wikiDetail ? 'Вернуться к материалу' : 'Вернуться в вики')} /></View>}
+    {detail && <BackButton label={tab === 'mine' ? 'Мои занятия' : 'Расписание'} onPress={() => setDetail(null)} />}
     <ScrollView style={{ display: tab === 'wiki' ? 'none' : 'flex' }} ref={scroll} contentContainerStyle={s.page} showsVerticalScrollIndicator={false}
+      scrollEventThrottle={16} onScroll={event => { currentOffset.current = event.nativeEvent.contentOffset.y; if (!detail && restoreOffset.current === null) listOffsets.current[tab] = currentOffset.current; }}
+      onContentSizeChange={() => { if (restoreOffset.current !== null) { scroll.current?.scrollTo({ y: restoreOffset.current, animated: false }); restoreOffset.current = null; } }}
       refreshControl={<RefreshControl refreshing={loading} onRefresh={model.refresh} tintColor={C.accent} />}>
       <View style={s.screen}>
         {detail ? <>
-          <Pressable accessibilityRole="button" onPress={() => setDetail(null)} style={s.back}><Icon name="back" active /><Text style={s.link}>Назад</Text></Pressable>
           {lesson ? <>
             <View style={s.filters}><Text style={s.detailTag}>{info!.format}</Text></View>
             <Text style={s.detailTitle}>{info!.title}</Text>
@@ -189,17 +262,19 @@ export default function ScheduleScreen() {
             <View style={s.section}>
               {!!info!.location && <Text style={s.body}>{info!.location}</Text>}
               <Text style={s.caption}>Время Израиля · {Math.round((Date.parse(lesson.ends_at) - Date.parse(lesson.starts_at)) / 60000)} мин</Text></View>
-            {info!.online && access !== 'active' && <Pressable accessibilityRole="button" style={s.outlineButton} onPress={() => setSettingsPage('access')}><Text style={s.link}>{access === 'offline' ? 'Проверить доступ к Zoom · нужен интернет' : access === 'loading' ? 'Проверяем доступ к Zoom…' : 'Подключение доступно по приглашению'}</Text></Pressable>}
+            {info!.online && lesson.status !== 'cancelled' && Date.parse(lesson.ends_at) > now && access !== 'active' && <Pressable accessibilityRole="button" style={s.outlineButton} onPress={() => openAccess(`Вернуться к занятию «${info!.title}»`)}><Text style={s.link}>{access === 'offline' ? 'Проверить доступ к Zoom · нужен интернет' : access === 'loading' ? 'Проверяем доступ к Zoom…' : 'Подключение доступно по приглашению'}</Text></Pressable>}
+            {info!.online && (lesson.status === 'cancelled' || Date.parse(lesson.ends_at) <= now) && <Text style={s.caption}>{lesson.status === 'cancelled' ? 'Занятие отменено' : 'Встреча закончилась'}</Text>}
+            {info!.online && access === 'active' && lesson.status !== 'cancelled' && Date.parse(lesson.ends_at) > now && !zoomState.error && !zoom && <Text style={s.caption}>{zoomState.loading ? 'Загружаем подключение…' : 'Ссылка на встречу пока не добавлена. Проверьте позже или уточните в школе.'}</Text>}
             {!!zoomState.error && <View><Text accessibilityRole="alert" style={s.caption}>{zoomState.error}</Text><Pressable accessibilityRole="button" onPress={zoomState.retry} style={s.textButton}><Text style={s.link}>Повторить</Text></Pressable></View>}
-            {zoom && Date.parse(lesson.ends_at) > now && <View style={s.section}>
-              <Text style={s.lessonTitle}>Подключение к занятию</Text>
-              <Text selectable style={s.body}>Пароль Zoom: {zoom.password}</Text>
+            {zoom && lesson.status !== 'cancelled' && Date.parse(lesson.ends_at) > now && <View style={s.zoomPanel}>
+              <Text style={s.lessonTitle}>Онлайн-встреча</Text>
               <Pressable accessibilityRole="link" accessibilityLabel="Открыть занятие в Zoom"
-                style={({ pressed }) => [s.outlineButton, pressed && s.pressed]}
+                style={({ pressed }) => [s.zoomButton, pressed && s.pressed]}
                 onPress={() => { setZoomError(''); void Linking.openURL(zoom.url).catch(() =>
                   setZoomError('Не удалось открыть Zoom. Проверьте интернет или откройте ссылку вручную.')); }}>
-                <Text style={s.link}>Открыть Zoom ↗</Text>
+                <Text style={s.zoomLabel}>Открыть Zoom</Text>
               </Pressable>
+              <ZoomPassword key={`${lesson.id}:${zoom.password}`} password={zoom.password} />
               {!!zoomError && <><Text accessibilityRole="alert" style={s.caption}>{zoomError}</Text>
                 <Text selectable style={s.link}>{zoom.url}</Text></>}
             </View>}
@@ -213,7 +288,7 @@ export default function ScheduleScreen() {
           </> : empty('Занятие больше не найдено в расписании.')}
         </> : <>
           <View><Text accessibilityRole="header" style={s.title}>{tab === 'schedule' ? 'Расписание' : 'Мои занятия'}</Text>
-            <Text style={s.caption}>Время Израиля{data ? ` · ${offline ? 'сохранено' : 'обновлено'} ${format(data.fetched_at, { hour: '2-digit', minute: '2-digit' })}` : ''}</Text></View>
+            <Text style={[s.caption, tab === 'mine' && { fontSize: 15, lineHeight: 21 }]}>{tab === 'mine' ? 'Личный выбор в приложении — это не запись у преподавателя.' : `Время Израиля${offline ? ' · без сети' : ''}`}</Text></View>
 
           {tab === 'schedule' && <>
             <View accessibilityLabel="Формат занятий" style={[s.filters, fontScale > 1.2 && s.controlsLarge]}>{([['all', 'Все'], ['online', 'Онлайн'], ['in-person', 'Очно']] as const).map(([key, label]) =>
@@ -243,22 +318,9 @@ export default function ScheduleScreen() {
             </>}
           </>}
           {tab === 'mine' && <>
-            {next && <Pressable accessibilityRole="button" onPress={() => setDetail(next.id)} style={s.next}><Text style={s.sectionLabel}>БЛИЖАЙШЕЕ МОЁ ЗАНЯТИЕ</Text><Text style={s.lessonTitle}>{next.title}</Text><Text style={s.caption}>{date(next.starts_at)} · {time(next.starts_at)}</Text></Pressable>}
-            {!!Object.keys(prefs.subscriptions ?? {}).length && <View style={s.section}>
-              <Text style={s.sectionLabel}>КАЖДУЮ НЕДЕЛЮ</Text>
-              <Text style={s.caption}>Регулярный выбор действует до отмены. Ближайшие даты и напоминания обновляются при открытии приложения.</Text>
-              {Object.entries(prefs.subscriptions ?? {}).map(([id, subscription]) => <View key={id} style={s.section}>
-                <Text style={s.lessonTitle}>{subscription.title}</Text>
-                <Text style={s.caption}>{format(subscription.startsAt, { weekday: 'long' })} · с {subscription.from}</Text>
-                {!all.some(e => seriesId(e.id) === id) && <Text style={s.caption}>Сейчас нет в загруженном расписании. Регулярный выбор сохранён.</Text>}
-                <Pressable accessibilityRole="button" disabled={busy || !ready} style={s.textButton}
-                  onPress={() => setCancelSeries(id)}><Text style={s.link}>Больше не ходить каждую неделю</Text></Pressable>
-                {cancelSeries === id && <View style={s.section}><Text style={s.body}>Убрать регулярный выбор и будущие напоминания?</Text><Pressable accessibilityRole="button" disabled={busy || !ready} style={s.outlineButton} onPress={() => { void model.cancelSubscription(id); setCancelSeries(null); }}><Text style={s.link}>Да, убрать регулярный выбор</Text></Pressable><Pressable accessibilityRole="button" style={s.textButton} onPress={() => setCancelSeries(null)}><Text style={s.link}>Оставить</Text></Pressable></View>}
-              </View>)}
-            </View>}
-            {mine.length ? mine.map(e => <View key={e.id} style={s.section}><Text style={s.sectionLabel}>{date(e.starts_at)}</Text>{card(e)}</View>)
-              : <View style={s.next}><Text style={s.nextTitle}>Место для твоей практики</Text><Text style={s.body}>Отметь «Пойду» у занятия — оно появится здесь.</Text>
-                <Pressable accessibilityRole="button" style={s.primary} onPress={() => setTab('schedule')}><Text style={s.primaryLabel}>Выбрать занятия</Text></Pressable></View>}
+            <MyClasses all={all} prefs={prefs} now={now} disabled={busy || !ready} cancelSeries={cancelSeries}
+              onCancelPrompt={setCancelSeries} onCancel={id => { void model.cancelSubscription(id); setCancelSeries(null); }}
+              onOpen={setDetail} onRestore={id => void model.toggle(id)} onSchedule={() => setTab('schedule')} />
             {unavailable.map(id => <View key={id} style={s.section}><Text style={s.body}>Выбранное занятие на {id.split(':').at(-1)} больше не найдено.</Text>
               <Pressable accessibilityRole="button" disabled={busy} onPress={() => void model.toggle(id)} style={s.textButton}><Text style={s.link}>Убрать из выбранных</Text></Pressable></View>)}
           </>}
@@ -269,25 +331,26 @@ export default function ScheduleScreen() {
           <Pressable accessibilityRole="button" style={s.textButton} onPress={model.refresh}><Text style={s.link}>Повторить загрузку</Text></Pressable></>}</View>}
         {!!model.error && <View accessibilityRole="alert" style={s.notice}><Text style={s.body}>{model.error}</Text>
           <Pressable accessibilityRole="button" onPress={() => void model.retry()} style={s.textButton}><Text style={s.link}>Повторить</Text></Pressable></View>}
-        {!!data && <View style={s.footer}>
+        {!!data && offline && <View style={s.footer}>
           <Text style={s.caption}>{offline ? 'Без связи · сохранено' : 'Обновлено'} {format(data.fetched_at, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</Text>
           <Text style={s.footnote}>Регулярное расписание школы. Отмены из Telegram пока не учитываются. Изменения проверяются при открытии приложения.</Text>
           {offline && <Pressable accessibilityRole="button" style={s.textButton} onPress={model.refresh}><Text style={s.link}>Обновить</Text></Pressable>}
         </View>}
       </View>
     </ScrollView>
-    {!detail && <SafeAreaView edges={['bottom']} style={s.tabSafe}><View style={s.tabs}>
-      {([['schedule', 'Расписание'], ['mine', 'Мои занятия'], ['wiki', 'Вики']] as const).map(([key, label]) =>
-        <Pressable key={key} accessibilityRole={Platform.OS === 'web' ? 'tab' : 'button'} accessibilityState={{ selected: tab === key }} accessibilityLabel={label} onPress={() => { if (key === 'wiki') setWikiOpened(true); setTab(key); }} style={s.tab}>
-          <Icon name={key} active={tab === key} /><Text maxFontSizeMultiplier={1.2} style={[s.tabText, tab === key && s.tabOn]}>{label}</Text></Pressable>)}
-    </View></SafeAreaView>}
+    {bottomTabs}
   </SafeAreaView>;
 }
 
 const s = StyleSheet.create({
+  zoomButton: { minHeight: 52, borderRadius: 99, backgroundColor: '#AD602D', justifyContent: 'center', padding: 14 },
+  zoomLabel: { color: C.white, textAlign: 'center', fontSize: 16, fontWeight: '600' },
+  zoomPanel: { backgroundColor: C.neutral100, borderRadius: 22, padding: 16, gap: 12 },
+  zoomPassword: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 10, backgroundColor: '#EEE9DD', borderRadius: 16, padding: 12 },
+  copyButton: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 12, borderRadius: 99, backgroundColor: C.neutral100, borderWidth: 1, borderColor: C.divider },
   detailTitle: { color: C.text, fontSize: 26, lineHeight: 32, fontWeight: '700' },
   detailTag: { color: C.accentDark, backgroundColor: '#FFE1D0', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 99, fontSize: 14, fontWeight: '600' },
-  rootBar: { paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between' },
+  rootBar: { height: 48, paddingHorizontal: 8, flexDirection: 'row', justifyContent: 'space-between' },
   roundButton: { minHeight: 44, minWidth: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 99 },
   weekLabel: { flex: 1, alignItems: 'center', gap: 2 },
   agendaEnd: { fontSize: 13, color: '#645C50', fontVariant: ['tabular-nums'] },
@@ -349,7 +412,7 @@ const s = StyleSheet.create({
   footer: { paddingTop: 16, gap: 7, borderTopWidth: StyleSheet.hairlineWidth, borderColor: C.divider },
   footnote: { color: '#68635B', fontSize: 12, lineHeight: 18 },
   back: { flexDirection: 'row', gap: 6, alignItems: 'center', minHeight: 44 },
-  tabSafe: { backgroundColor: C.neutral100, borderTopWidth: StyleSheet.hairlineWidth, borderColor: C.divider },
+  tabSafe: { backgroundColor: C.background, borderTopWidth: StyleSheet.hairlineWidth, borderColor: C.divider },
   tabs: { height: 60, flexDirection: 'row' }, tab: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4 },
   tabText: { alignSelf: 'stretch', textAlign: 'center', fontSize: 11, color: '#68635B' }, tabOn: { fontWeight: '600', color: C.accentDark },
 });

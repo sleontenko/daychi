@@ -1,3 +1,6 @@
+import { useAccess } from '../access/session';
+import { AccessGate } from '../access/access-screen';
+import BackButton from '../../components/back-button';
 import { SymbolView } from 'expo-symbols';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -12,7 +15,8 @@ function Button({ title, onPress, selected, disabled }: { title: string; onPress
     style={({ pressed }) => [s.button, selected && s.selected, (pressed || disabled) && { opacity: 0.55 }]}>
     <Text style={[s.link, selected && { color: '#fff' }]}>{title}</Text></Pressable>;
 }
-export default function WikiScreen({ active = true }: { active?: boolean }) {
+export default function WikiScreen({ active = true, onDetailChange, onOpenAccess }: { active?: boolean; onDetailChange?: (open: boolean) => void; onOpenAccess: () => void }) {
+  const access = useAccess();
   const [section, setSection] = useState<'materials' | 'dictionary'>('materials');
   const [termQuery, setTermQuery] = useState('');
   const [ready, setReady] = useState(false);
@@ -31,9 +35,16 @@ export default function WikiScreen({ active = true }: { active?: boolean }) {
   const [results, setResults] = useState<Results>({ total: 0, items: [], missing_ids: [] });
   const [detail, setDetail] = useState<Material | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
+  const list = useRef<FlatList<Summary>>(null);
+  const listOffset = useRef(0);
+  const retainedLimit = useRef(40);
+  const lastQuery = useRef<unknown>(null);
+  const detailScroll = useRef<ScrollView>(null);
+  const detailOffsets = useRef<Record<string, number>>({});
+  useEffect(() => { onDetailChange?.(!!detailId); return () => onDetailChange?.(false); }, [detailId, onDetailChange]);
   useEffect(() => {
     if (!active || !detailId) return;
-    const handler = BackHandler.addEventListener('hardwareBackPress', () => { setDetailId(null); setDetail(null); return true; });
+    const handler = BackHandler.addEventListener('hardwareBackPress', () => { setDetailId(null); setDetail(null); setError(''); return true; });
     return () => handler.remove();
   }, [active, detailId]);
   const [revision, setRevision] = useState(0);
@@ -60,10 +71,11 @@ export default function WikiScreen({ active = true }: { active?: boolean }) {
     return () => subscription.remove();
   }, []);
   useEffect(() => {
+    if (access !== 'active') return;
     let active = true;
     wikiRequest<Category[]>('/categories').then(rows => { if (active) setCategories(rows); }).catch(e => { if (active) fail(e); });
     return () => { active = false; };
-  }, [revision, fail]);
+  }, [revision, fail, access]);
   const savedFilter = savedOnly ? (saved.length ? saved.join(',') : 'none') : '';
   const makePath = useCallback((offset: number) => {
     const params = new URLSearchParams({ q: search, category, subtopic, sort, offset: String(offset), limit: '40' });
@@ -72,26 +84,47 @@ export default function WikiScreen({ active = true }: { active?: boolean }) {
   }, [search, category, subtopic, sort, savedFilter]);
   useEffect(() => {
     const id = ++generation.current;
+    if (lastQuery.current !== makePath) {
+      lastQuery.current = makePath; listOffset.current = 0; retainedLimit.current = 40;
+    }
+    if (access !== 'active') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setResults({ total: 0, items: [], missing_ids: [] }); setCategories([]); return;
+    }
     // Clear results before applying a different catalog query.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+
     setBusy(true); setError(''); setResults({ total: 0, items: [], missing_ids: [] });
-    wikiRequest<Results>(makePath(0)).then(rows => { if (generation.current === id) setResults(rows); })
+    async function restorePage() {
+      let rows = await wikiRequest<Results>(makePath(0));
+      while (generation.current === id && rows.items.length < retainedLimit.current && rows.items.length < rows.total) {
+        const next = await wikiRequest<Results>(makePath(rows.items.length));
+        const added = next.items.filter(row => !rows.items.some(old => old.id === row.id));
+        if (!added.length) break;
+        rows = { ...next, items: [...rows.items, ...added] };
+      }
+      return rows;
+    }
+    restorePage().then(rows => { if (generation.current === id) setResults(rows); })
       .catch(e => { if (generation.current === id) fail(e); })
       .finally(() => { if (generation.current === id) setBusy(false); });
     const requests = generation;
     return () => { requests.current++; };
-  }, [makePath, revision, fail]);
+  }, [makePath, revision, fail, access]);
   useEffect(() => {
+    if (access !== 'active') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDetail(null); return;
+    }
     if (!detailId) return;
     const id = ++detailGeneration.current;
     // Clear the previous material while the new request is pending.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+
     setDetail(null); setError('');
     wikiRequest<Material>(`/materials/${encodeURIComponent(detailId)}`).then(row => { if (id === detailGeneration.current) setDetail(row); })
       .catch(e => { if (id === detailGeneration.current) fail(e); });
     const requests = detailGeneration;
     return () => { requests.current++; };
-  }, [detailId, revision, fail]);
+  }, [detailId, revision, fail, access]);
   async function bookmark(id: string) {
     if (bookmarkBusy.current) return;
     bookmarkBusy.current = true;
@@ -105,15 +138,22 @@ export default function WikiScreen({ active = true }: { active?: boolean }) {
     const id = generation.current;
     paging.current = true; setBusy(true); setError('');
     try { const next = await wikiRequest<Results>(makePath(results.items.length));
-      if (id === generation.current) setResults(old => ({ total: next.total, missing_ids: next.missing_ids, items: [...old.items, ...next.items.filter(r => !old.items.some(x => x.id === r.id))] }));
+      if (id === generation.current) {
+        retainedLimit.current = results.items.length + next.items.length;
+        setResults(old => ({ total: next.total, missing_ids: next.missing_ids, items: [...old.items, ...next.items.filter(r => !old.items.some(x => x.id === r.id))] }));
+      }
     } catch (e) { if (id === generation.current) fail(e); }
     finally { paging.current = false; if (id === generation.current) setBusy(false); }
   }
   const notice = error ? <View accessibilityRole="alert" style={s.notice}><Text style={s.body}>{error}</Text>
     <Button title="Повторить" onPress={() => setRevision(x => x + 1)} /></View> : null;
+  if (access !== 'active') return <View style={{ flex: 1 }}>{detailId && <BackButton label="Вики" onPress={() => setDetailId(null)} />}<AccessGate onOpen={onOpenAccess} /></View>;
   if (!ready) return <ActivityIndicator style={s.page} color={C.accentDark} />;
-  const detailView = detailId ? <ScrollView contentContainerStyle={[s.page, { gap: 16 }]}>
-    <Button title="‹ Назад к материалам" onPress={() => { setDetailId(null); setDetail(null); setError(''); }} />
+  const detailView = detailId ? <View style={{ flex: 1 }}>
+    <BackButton label="Вики" onPress={() => { setDetailId(null); setDetail(null); setError(''); }} />
+    <ScrollView ref={detailScroll} contentContainerStyle={[s.page, { gap: 16 }]}
+      scrollEventThrottle={16} onScroll={event => { if (detail) detailOffsets.current[detailId] = event.nativeEvent.contentOffset.y; }}
+      onContentSizeChange={() => { if (detail) detailScroll.current?.scrollTo({ y: detailOffsets.current[detailId] ?? 0, animated: false }); }}>
     {detail ? <><Text style={s.eyebrow}>{detail.category_name.toUpperCase()}</Text>
       <Text accessibilityRole="header" style={s.title}>{detail.title}</Text><Text style={s.meta}>{detail.date}{detail.subtopic ? ` · ${detail.subtopic}` : ''}</Text>
       <Button title={saved.includes(detail.id) ? '✓ Сохранено · Убрать' : 'Сохранить для повторения'} selected={saved.includes(detail.id)} onPress={() => void bookmark(detail.id)} />
@@ -125,7 +165,7 @@ export default function WikiScreen({ active = true }: { active?: boolean }) {
         {!!detail.zoom_password && <><Text style={s.meta}>Код доступа к Zoom · удерживай, чтобы скопировать</Text><Text selectable style={s.body}>{detail.zoom_password}</Text></>}
       </View></> : !error && <ActivityIndicator color={C.accentDark} />}
     {notice}{!detail && !!error && saved.includes(detailId) && <Button title="Убрать сохранение" onPress={() => void bookmark(detailId)} />}
-  </ScrollView> : null;
+  </ScrollView></View> : null;
   const chosen = categories.find(x => x.id === category);
   const menuChosen = categories.find(x => x.id === menuCategory);
   const header = <View style={s.header}>
@@ -181,7 +221,9 @@ export default function WikiScreen({ active = true }: { active?: boolean }) {
           {!categories.length && <Text style={s.body}>Разделы пока не загружены. Закрой меню и нажми «Повторить».</Text>}
         </ScrollView>
       </SafeAreaView></SafeAreaProvider>
-    </Modal>{detailView}<FlatList style={{ display: detailId ? 'none' : 'flex' }} data={results.items} keyExtractor={row => row.id} contentContainerStyle={s.page} keyboardShouldPersistTaps="handled" ListHeaderComponent={header}
+    </Modal>{detailView}<FlatList ref={list} style={{ display: detailId ? 'none' : 'flex' }} data={results.items} keyExtractor={row => row.id} contentContainerStyle={s.page} keyboardShouldPersistTaps="handled" ListHeaderComponent={header}
+    scrollEventThrottle={16} onScroll={event => { if (!detailId && !busy && results.items.length) listOffset.current = event.nativeEvent.contentOffset.y; }}
+    onContentSizeChange={() => { if (!detailId && results.items.length) list.current?.scrollToOffset({ offset: listOffset.current, animated: false }); }}
     renderItem={({ item }: { item: Summary }) => <Pressable accessibilityRole="button" onPress={() => setDetailId(item.id)} style={({ pressed }) => [s.row, pressed && { opacity: 0.6 }]}>
       <View style={s.top}><View style={s.tag}><Text style={s.tagText}>{item.category_name}</Text></View><Text style={s.date}>{item.date}</Text></View>
       <Text style={s.heading}>{item.title}</Text>

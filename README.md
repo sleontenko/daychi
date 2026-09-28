@@ -24,7 +24,9 @@ iOS-приложение школы: расписание → выбор зан�
 ## Запуск приложения
 
 Настройте локальный `.env.local` приложения: `EXPO_PUBLIC_DAYCHEE_API_URL`
-указывает на `https://mac-mini-server.tail07600a.ts.net/daychee`.
+указывает на `https://daychee-api-production.up.railway.app`.
+`EXPO_PUBLIC_SCHEDULE_API_URL` указывает на тот же origin. Это конфигурация
+следующей сборки; выпущенный build 11 ещё использует прежний адрес.
 Вики и Zoom требуют персонального приглашения и интернета; приватный снимок
 в новую сборку не включается. Подробности: [реализация Дейчи](docs/daychee-implementation.md).
 

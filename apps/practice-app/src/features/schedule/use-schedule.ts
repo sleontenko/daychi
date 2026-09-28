@@ -5,6 +5,7 @@ import { AppState, Platform } from 'react-native';
 import { decodeChoices, decodeSchedule, type Schedule, type Occurrence } from './model';
 import { loadSchedule } from './load';
 import { notificationPermission, updateReminders } from './local-reminders';
+import { exactAlarmsAllowed } from './exact-alarms';
 import type { Preferences } from './reminder-plan';
 import { cancelWeekly, chooseWeekly, decodeSubscriptions, isChosen, toggleDate } from './attendance';
 
@@ -17,6 +18,7 @@ export function useSchedule() {
   const [ready, setReady] = useState(false), [loading, setLoading] = useState(true), [busy, setBusy] = useState(false);
   const [offline, setOffline] = useState(false), [error, setError] = useState('');
   const [allowed, setAllowed] = useState(false), [scheduled, setScheduled] = useState(0);
+  const [exactAllowed, setExactAllowed] = useState(() => exactAlarmsAllowed());
   const [now, setNow] = useState(() => Date.now());
   const state = useRef<{ data: Schedule | null; prefs: Preferences }>({ data: null, prefs: initial });
   const fetchBusy = useRef(false), writeBusy = useRef(false), alive = useRef(true);
@@ -29,7 +31,7 @@ export function useSchedule() {
   const reconcile = useCallback(async () => {
     const permission = await notificationPermission();
     const count = await updateReminders(state.current.data?.occurrences ?? [], state.current.prefs);
-    if (alive.current) { setAllowed(permission); setScheduled(count); }
+    if (alive.current) { setAllowed(permission); setScheduled(count); setExactAllowed(exactAlarmsAllowed()); }
   }, []);
 
   const refresh = useCallback(async () => {
@@ -117,7 +119,7 @@ export function useSchedule() {
   }, !state.current.prefs.enabled && !Object.keys(state.current.prefs.choices).length &&
     !Object.keys(state.current.prefs.subscriptions ?? {}).length);
 
-  return { data, prefs, now, ready, loading, busy, offline, error, allowed, scheduled, refresh, toggle, choose,
+  return { data, prefs, now, ready, loading, busy, offline, error, allowed, exactAllowed, scheduled, refresh, toggle, choose,
     cancelSubscription: (id: string) => change(current => cancelWeekly(current, id)),
     setEnabled: (enabled: boolean) => change(current => ({ ...current, enabled }), enabled),
     setLead: (lead: number) => change(current => ({ ...current, lead })),

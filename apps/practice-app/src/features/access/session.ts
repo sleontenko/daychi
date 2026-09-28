@@ -1,6 +1,8 @@
+import { AccessError, invitationErrors } from './access-errors';
 import * as SecureStore from 'expo-secure-store';
 import { useSyncExternalStore } from 'react';
 import { Platform } from 'react-native';
+import { isInvitationCode } from './invitation-code';
 
 const KEY = 'daychee.access.session.v1';
 const endpoint = process.env.EXPO_PUBLIC_DAYCHEE_API_URL ?? '';
@@ -22,9 +24,20 @@ async function request<T>(path: string, body?: unknown, credential?: string): Pr
       method: body === undefined ? 'GET' : 'POST', signal: controller.signal, cache: 'no-store',
       headers: { 'Content-Type': 'application/json', ...(credential ? { Authorization: `Bearer ${credential}` } : {}) },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    }).catch((error: unknown) => {
+      if (controller.signal.aborted) throw new Error('Сервер не ответил вовремя. Попробуйте ещё раз.');
+      if (/TLS|SSL|secure connection|certificate/i.test(String(error))) {
+        throw new Error('Не удалось установить защищённое соединение с сервером. Попробуйте другую сеть или сообщите организатору.');
+      }
+      throw new Error('Не удалось связаться с сервером. Проверьте интернет и попробуйте ещё раз.');
     });
     if (result.status === 401) {
       if (credential && credential === token) { generation++; token = null; publish('locked'); await SecureStore.deleteItemAsync(KEY); }
+      if (path.startsWith('/api/access/redeem')) {
+        const payload = await result.json().catch(() => ({}));
+        const code = payload?.detail?.code;
+        if (typeof code === 'string' && Object.hasOwn(invitationErrors, code)) throw new AccessError(code, invitationErrors[code].message);
+      }
       throw new Error('Приглашение недействительно, использовано или доступ отозван. Попросите новое приглашение.');
     }
     if (!result.ok) throw new Error(result.status === 429 ? 'Слишком много попыток. Повторите позже.' : 'Сервис временно недоступен. Попробуйте ещё раз.');
@@ -47,7 +60,8 @@ export async function restoreAccess() {
 export function suspendAccess() { generation++; publish(token ? 'offline' : 'locked'); }
 export async function redeemInvitation(invitation: string) {
   if (Platform.OS === 'web') throw new Error('Откройте приглашение в приложении на телефоне.');
-  const result = await request<{ token: string }>('/api/access/redeem', { token: invitation });
+  const code = isInvitationCode(invitation);
+  const result = await request<{ token: string }>(code ? '/api/access/redeem-code' : '/api/access/redeem', code ? { code: invitation } : { token: invitation });
   if (!/^[\w-]{32,128}$/.test(result.token)) throw new Error('Не удалось подтвердить доступ.');
   await SecureStore.setItemAsync(KEY, result.token, { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY });
   generation++; token = result.token; publish('active');

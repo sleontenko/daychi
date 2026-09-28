@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { retireServerReminders } from './device';
+import { exactAlarmsAllowed } from './exact-alarms';
 import { reconcileReminders, reminderPlan, type Preferences } from './reminder-plan';
 import type { Occurrence } from './model';
 
@@ -25,17 +26,20 @@ export async function updateReminders(events: Occurrence[], prefs: Preferences) 
   // A failed opt-out is visible and retried; never silently double-deliver.
   await retireServerReminders();
   const allowed = await notificationPermission();
+  const exact = exactAlarmsAllowed();
   const plan = reminderPlan(events, { ...prefs, enabled: prefs.enabled && allowed }, Date.now());
   return reconcileReminders(plan, {
     pending: async () => (await Notifications.getAllScheduledNotificationsAsync()).map(n => ({
       id: n.identifier, at: Number(n.content.data?.reminderAt), title: String(n.content.data?.classTitle ?? ''),
+      stale: Platform.OS === 'android' && n.content.data?.exactAlarmAllowed !== exact,
     })),
     cancel: Notifications.cancelScheduledNotificationAsync,
     schedule: async item => {
       const time = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Asia/Jerusalem', hour: '2-digit', minute: '2-digit' }).format(new Date(item.event.starts_at));
       await Notifications.scheduleNotificationAsync({ identifier: item.id,
         content: { title: item.event.title, body: `Занятие в ${time} · время Израиля`, sound: 'default',
-          data: { occurrenceId: item.event.id, reminderAt: item.at, classTitle: item.event.title } },
+          data: { occurrenceId: item.event.id, reminderAt: item.at, classTitle: item.event.title,
+            ...(Platform.OS === 'android' ? { exactAlarmAllowed: exact } : {}) } },
         trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(item.at), ...(Platform.OS === 'android' ? { channelId: CHANNEL } : {}) } });
     },
   });
