@@ -21,6 +21,7 @@ const REJECT = { used: "Этот код уже использован. Попр�
 function showView(name) {
   ["login", "loading", "error", "app"].forEach((v) => { $("#view-" + v).hidden = v !== name; });
   $("#logout").hidden = !token;
+  document.body.classList.toggle("in-app", name === "app");
 }
 function showLogin(message) {
   showView("login");
@@ -36,7 +37,7 @@ $("#login").addEventListener("submit", async (e) => {
   try {
     const r = await fetch("/api/access/redeem-code", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code }) });
     const body = await r.json().catch(() => ({}));
-    if (r.ok) { token = body.token; store.set(token); boot(); return; }
+    if (r.ok) { token = body.token; store.set(token); $("#code").value = ""; boot(); return; }
     $("#login-error").textContent = r.status === 429 ? "Слишком много попыток. Повторите через 10 минут."
       : r.status === 422 ? "Проверьте код приглашения: 12 букв и цифр." : REJECT[body.detail?.code] || REJECT.invalid;
   } catch { $("#login-error").textContent = "Нет связи с сервером. Проверьте интернет."; }
@@ -44,7 +45,7 @@ $("#login").addEventListener("submit", async (e) => {
 });
 $("#logout").addEventListener("click", async () => {
   try { await fetch("/api/access/logout", { method: "POST", headers: { Authorization: "Bearer " + token } }); } catch { /* выходим локально */ }
-  token = null; store.set(null); location.hash = ""; location.reload();
+  token = null; store.set(null); location.replace(location.pathname);
 });
 $("#retry").addEventListener("click", () => boot());
 
@@ -75,7 +76,9 @@ function start(DATA) {
   const C = { dim: "#e2d8c8", dimEdge: "#ece3d4", text: "#201e1d", other: "#82796a", structure: "#cbbfab", series: "#8fa073" };
   const TYPE_LABEL = { section: "Раздел", subtopic: "Подтема", material: "Материал" };
   const EDGE_LABEL = { structure: "структура", series: "серия" };
-  const narrow = matchMedia("(max-width: 760px)").matches;
+  const ALL_SECTIONS = DATA.sections.map((s) => s.id);
+  const narrowQuery = matchMedia("(max-width: 900px)");
+  const touch = matchMedia("(hover: none)").matches; // на тач-экранах «наведения» нет — только выбор
 
   const byId = new Map(DATA.nodes.map((n) => [n.id, n]));
   const adj = new Map(DATA.nodes.map((n) => [n.id, []]));
@@ -83,22 +86,31 @@ function start(DATA) {
   const colorOf = (n) => (n.sec && SEC[n.sec] ? SEC[n.sec].color : C.other);
   const sizeOf = (n) => n.type === "section" ? 13 : n.type === "subtopic" ? 3 + Math.sqrt(n.count || 1) * 0.9 : 3;
 
-  // Состояние живёт в адресе, как в таблице переходов дизайна
-  const state = { structure: true, series: true, orphans: true, sections: new Set(DATA.sections.map((s) => s.id)),
+  // ---- Состояние в адресе. Выбор и режим — новые записи истории (Back возвращает), фильтры — замена ----
+  const state = { structure: true, series: true, orphans: true, sections: new Set(ALL_SECTIONS),
     mode: "global", depth: 1, selected: null, hovered: null };
-  const p = new URLSearchParams(location.hash.slice(1));
-  ["structure", "series", "orphans"].forEach((k) => { if (p.has(k)) state[k] = p.get(k) === "1"; });
-  if (p.get("sec")) state.sections = new Set(p.get("sec").split(",").filter((s) => SEC[s]));
-  if (p.get("sel") && byId.has(p.get("sel"))) state.selected = p.get("sel");
-  if (p.get("mode") === "local" && state.selected) state.mode = "local";
-  state.depth = p.get("depth") === "2" ? 2 : 1;
-  function writeHash() {
+  function readHash() {
+    const p = new URLSearchParams(location.hash.slice(1));
+    ["structure", "series", "orphans"].forEach((k) => { state[k] = p.has(k) ? p.get(k) === "1" : true; });
+    const secs = p.get("sec") ? p.get("sec").split(",").filter((s) => SEC[s]) : [];
+    state.sections = new Set(secs.length ? secs : ALL_SECTIONS);
+    state.selected = p.get("sel") && byId.has(p.get("sel")) ? p.get("sel") : null;
+    state.mode = p.get("mode") === "local" && state.selected ? "local" : "global";
+    state.depth = p.get("depth") === "2" ? 2 : 1;
+  }
+  function hashNow() {
     const q = new URLSearchParams();
-    ["structure", "series", "orphans"].forEach((k) => q.set(k, state[k] ? "1" : "0"));
-    if (state.sections.size !== DATA.sections.length) q.set("sec", [...state.sections].join(","));
+    ["structure", "series", "orphans"].forEach((k) => { if (!state[k]) q.set(k, "0"); });
+    if (state.sections.size !== ALL_SECTIONS.length) q.set("sec", [...state.sections].join(","));
     if (state.selected) q.set("sel", state.selected);
     if (state.mode === "local") { q.set("mode", "local"); q.set("depth", state.depth); }
-    history.replaceState(null, "", "#" + q.toString());
+    const s = q.toString();
+    return s ? "#" + s : location.pathname;
+  }
+  function writeHash(push = false) {
+    const next = hashNow();
+    if (next === (location.hash || location.pathname)) return;
+    push ? history.pushState(null, "", next) : history.replaceState(null, "", next);
   }
 
   const edgeOn = (k) => state[k];
@@ -131,6 +143,7 @@ function start(DATA) {
   }
 
   let sim = null, simNodes = [], dragged = null, dragMoved = false, visibleInfo = { ids: [], total: 0 }, matches = null;
+  let focusOnSettle = null;
   function rebuild({ refit = true } = {}) {
     if (sim) sim.stop();
     visibleInfo = visibleSet();
@@ -141,9 +154,11 @@ function start(DATA) {
     for (const id of ids) {
       const n = byId.get(id), g = pos.get(id) || seed(n);
       const at = local && origin ? { x: (g.x - origin.x) * 0.3, y: (g.y - origin.y) * 0.3 } : g;
-      simNodes.push({ id, x: at.x, y: at.y });
-      graph.addNode(id, { x: at.x, y: at.y, size: sizeOf(n), color: colorOf(n), label: n.label,
-        forceLabel: n.type === "section" && !narrow, zIndex: n.type === "material" ? 0 : 1 });
+      const sn = { id, x: at.x, y: at.y };
+      if (local && id === state.selected) { sn.x = sn.fx = 0; sn.y = sn.fy = 0; } // центр локального графа закреплён
+      simNodes.push(sn);
+      graph.addNode(id, { x: sn.x, y: sn.y, size: sizeOf(n), color: colorOf(n), label: n.label,
+        forceLabel: n.type === "section" && !narrowQuery.matches, zIndex: n.type === "material" ? 0 : 1 });
     }
     const links = [];
     for (const e of DATA.edges) {
@@ -151,24 +166,30 @@ function start(DATA) {
       graph.addEdge(e.s, e.t, { kind: e.k, color: C[e.k], size: e.k === "structure" ? 0.5 : 1.2 });
       links.push({ source: e.s, target: e.t, k: e.k });
     }
+    // Чем меньше узлов, тем раньше появляются подписи материалов
+    const order = graph.order, narrow = narrowQuery.matches;
+    renderer.setSetting("labelRenderedSizeThreshold", order <= 150 ? 0 : order <= 500 ? 4 : narrow ? 10 : 7);
     sim = forceSimulation(simNodes)
       .force("link", forceLink(links).id((d) => d.id)
-        .distance((l) => l.k === "structure" ? (byId.get(l.source.id ?? l.source).type === "subtopic" ? 70 : 22) : 14)
+        // в локальном графе узлов мало — разносим их шире, чтобы подписи не налезали
+        .distance((l) => (local ? 3 : 1) * (l.k === "structure" ? (byId.get(l.source.id ?? l.source).type === "subtopic" ? 70 : 22) : 14))
         .strength((l) => l.k === "structure" ? 0.5 : 0.9))
       .force("charge", forceManyBody().strength(local ? -220 : -26).theta(0.9).distanceMax(local ? 600 : 260))
       .force("x", forceX(0).strength(local ? 0.08 : 0.035))
       .force("y", forceY(0).strength(local ? 0.08 : 0.035))
-      .force("collide", forceCollide((d) => sizeOf(byId.get(d.id)) + 1.5).iterations(1))
+      .force("collide", forceCollide((d) => sizeOf(byId.get(d.id)) + (local ? 18 : 1.5)).iterations(local ? 2 : 1))
       .alphaDecay(0.025)
       .on("tick", syncPositions)
-      .on("end", () => { if (refit && !dragged) fitCamera(); });
+      .on("end", () => {
+        if (refit && !dragged) fitCamera();
+        if (focusOnSettle && graph.hasNode(focusOnSettle)) { centerOn(focusOnSettle); focusOnSettle = null; }
+      });
     const fresh = simNodes.filter((sn) => !pos.has(sn.id)).length;
     if (fresh > 50 || local) { sim.stop(); sim.tick(140); sim.alpha(0.35).restart(); } // «прогрев» без мельтешения
     else sim.alpha(0.4).restart();
     syncPositions();
     if (refit) { fitCamera(); setTimeout(() => sim.alpha() > 0.05 && fitCamera(), 900); }
     renderCounter();
-    writeHash();
   }
   function syncPositions() {
     if (state.mode !== "local") for (const sn of simNodes) pos.set(sn.id, { x: sn.x, y: sn.y });
@@ -179,7 +200,7 @@ function start(DATA) {
   const container = $("#graph");
   const renderer = new Sigma(graph, container, {
     labelFont: "Figtree, system-ui, sans-serif", labelSize: 13, labelWeight: "600", labelColor: { color: C.text },
-    labelRenderedSizeThreshold: narrow ? 10 : 7, labelDensity: narrow ? 0.35 : 0.6, labelGridCellSize: narrow ? 140 : 110,
+    labelRenderedSizeThreshold: 7, labelDensity: 0.6, labelGridCellSize: 110,
     defaultEdgeType: "line", zIndex: true, minCameraRatio: 0.05, maxCameraRatio: 6, nodeReducer, edgeReducer,
   });
   function fitCamera() {
@@ -187,71 +208,135 @@ function start(DATA) {
     let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
     graph.forEachNode((_, a) => { x0 = Math.min(x0, a.x); x1 = Math.max(x1, a.x); y0 = Math.min(y0, a.y); y1 = Math.max(y1, a.y); });
     if (!isFinite(x0)) return;
-    const pad = Math.max(x1 - x0, y1 - y0, 200) * 0.08;
-    renderer.setCustomBBox({ x: [x0 - pad, x1 + pad * 3.5], y: [y0 - pad, y1 + pad] }); // справа место под подписи
-    renderer.getCamera().animatedReset({ duration: 400 });
+    const pad = Math.max(x1 - x0, y1 - y0, 200) * 0.12;
+    renderer.setCustomBBox({ x: [x0 - pad, x1 + pad * 3], y: [y0 - pad, y1 + pad] }); // справа место под подписи
+    const cam = renderer.getCamera(), before = cam.getState();
+    cam.setState({ x: 0.5, y: 0.5, ratio: 1, angle: 0 });
+    const target = liftAboveSheet({ x: 0.5, y: 0.5, ratio: sheetHeight() ? 1.15 : 1 });
+    cam.setState(before);
+    cam.animate(target, { duration: 400 });
+  }
+  // Камера вписывает узел вместе с соседями: плотное кольцо соседей раскрывается и подписи не слипаются
+  function centerOn(id) {
+    const pts = [id, ...graph.neighbors(id)].map((x) => renderer.getNodeDisplayData(x)).filter(Boolean);
+    if (!pts.length) return;
+    const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y);
+    const w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys);
+    const ratio = Math.min(1, Math.max(0.06, Math.max(w, h) * 1.8));
+    const target = { x: (Math.max(...xs) + Math.min(...xs)) / 2, y: (Math.max(...ys) + Math.min(...ys)) / 2, ratio };
+    renderer.getCamera().animate(liftAboveSheet(target), { duration: 450 });
+  }
+  // На узком экране нижнюю часть графа закрывает панель — сдвигаем фокус в видимую область над ней
+  function sheetHeight() {
+    const panel = $("#panel");
+    return narrowQuery.matches && document.body.classList.contains("has-selection") ? panel.getBoundingClientRect().height : 0;
+  }
+  function liftAboveSheet(target) {
+    const lift = sheetHeight() / 2;
+    if (!lift) return target;
+    const cam = renderer.getCamera(), before = cam.getState(), { height } = renderer.getDimensions();
+    cam.setState(target);
+    const a = renderer.viewportToFramedGraph({ x: 0, y: height / 2 }), b = renderer.viewportToFramedGraph({ x: 0, y: height / 2 + lift });
+    cam.setState(before);
+    return { ...target, x: target.x + (b.x - a.x), y: target.y + (b.y - a.y) };
   }
 
-  // Наведение или выбор приглушает всё, кроме соседей — как в Obsidian
-  function focusSet() {
-    const f = state.hovered || state.selected;
-    return f && graph.hasNode(f) ? new Set([f, ...graph.neighbors(f)]) : null;
+  // ---- Подсветка: наведение или выбор приглушает всё, кроме соседей (как в Obsidian).
+  // В локальном графе весь граф — окружение выбранного, поэтому приглушает только наведение.
+  function focusNode() {
+    const f = state.hovered || (state.mode === "local" ? null : state.selected);
+    return f && graph.hasNode(f) ? f : null;
+  }
+  let focusCache = { key: null, set: null, labels: null };
+  function focusSets() {
+    const f = focusNode();
+    if (focusCache.key === f) return focusCache;
+    if (!f) return (focusCache = { key: null, set: null, labels: null });
+    const nbs = graph.neighbors(f);
+    // Подписи соседей только когда их немного, иначе — разделы/подтемы; остальное видно в панели
+    const labels = new Set([f, ...(nbs.length <= 12 ? nbs : nbs.filter((id) => byId.get(id).type !== "material"))]);
+    return (focusCache = { key: f, set: new Set([f, ...nbs]), labels });
   }
   function nodeReducer(id, a) {
-    const res = { ...a }, focus = focusSet();
-    if (focus && !focus.has(id)) { res.color = C.dim; res.label = null; res.zIndex = -1; }
-    else if (focus) { res.forceLabel = true; res.zIndex = 2; }
-    if (matches && !focus) {
-      if (matches.has(id)) { res.forceLabel = true; res.highlighted = true; res.zIndex = 2; }
+    const res = { ...a }, { set, labels } = focusSets();
+    if (set && !set.has(id)) { res.color = C.dim; res.label = null; res.zIndex = -1; }
+    else if (set) { res.forceLabel = labels.has(id); res.zIndex = 2; }
+    if (matches && !set) {
+      if (matches.has(id)) { res.forceLabel = matches.size <= 30; res.highlighted = true; res.zIndex = 2; }
       else { res.color = C.dim; res.label = null; }
     }
-    if (id === state.selected) { res.highlighted = true; res.size = a.size * 1.5; }
+    if (state.mode === "local" && graph.order <= 20 && !(set && !set.has(id))) res.forceLabel = true; // маленький локальный граф подписан целиком
+    if (id === state.selected) { res.highlighted = true; res.forceLabel = true; res.size = a.size * 1.5; res.zIndex = 3; }
     return res;
   }
   function edgeReducer(id, a) {
-    const res = { ...a }, f = state.hovered || state.selected;
-    if (f && graph.hasNode(f)) {
+    const res = { ...a }, f = focusNode();
+    if (f) {
       const [s, t] = graph.extremities(id);
       if (s !== f && t !== f) res.hidden = true; else res.size = a.size + 1;
     } else if (matches) res.color = C.dimEdge;
     return res;
   }
+  const refresh = () => { focusCache.key = undefined; renderer.refresh({ skipIndexation: true }); };
 
-  renderer.on("enterNode", ({ node }) => { state.hovered = node; container.classList.add("pointer"); renderer.refresh({ skipIndexation: true }); });
-  renderer.on("leaveNode", () => { state.hovered = null; container.classList.remove("pointer"); renderer.refresh({ skipIndexation: true }); });
+  // ---- Мышь, касания, перетаскивание узла с «оживлением» физики ----
+  renderer.on("enterNode", ({ node }) => { if (touch) return; state.hovered = node; container.classList.add("pointer"); refresh(); });
+  renderer.on("leaveNode", () => { if (touch) return; state.hovered = null; container.classList.remove("pointer"); refresh(); });
   renderer.on("clickNode", ({ node }) => { if (!dragMoved) select(node === state.selected ? null : node); });
   renderer.on("clickStage", () => { if (!dragMoved) select(null); });
-  renderer.on("downNode", ({ node }) => {
-    dragged = simNodes.find((s) => s.id === node); dragMoved = false;
-    if (dragged) { dragged.fx = dragged.x; dragged.fy = dragged.y; sim.alphaTarget(0.25).restart(); }
+  renderer.on("downStage", () => { dragMoved = false; });
+  renderer.on("downNode", ({ node, event }) => {
+    dragMoved = false;
+    if (touch || event?.original?.type?.startsWith("touch")) return; // на тач-экране палец двигает камеру
+    dragged = simNodes.find((s) => s.id === node);
+    if (dragged) { dragged.fx = dragged.x; dragged.fy = dragged.y; dragged.start = { x: event.x, y: event.y }; sim.alphaTarget(0.25).restart(); }
   });
   renderer.getMouseCaptor().on("mousemovebody", (e) => {
     if (!dragged) return;
+    if (!dragMoved && Math.hypot(e.x - dragged.start.x, e.y - dragged.start.y) < 4) return; // дрожание руки — это клик
     const q = renderer.viewportToGraph(e);
     dragged.fx = q.x; dragged.fy = q.y; dragMoved = true;
     e.preventSigmaDefault(); e.original.preventDefault(); e.original.stopPropagation();
   });
-  const release = () => { if (!dragged) return; dragged.fx = null; dragged.fy = null; dragged = null; sim.alphaTarget(0); };
-  renderer.getMouseCaptor().on("mouseup", release);
+  const release = () => {
+    if (!dragged) return;
+    const pinned = state.mode === "local" && dragged.id === state.selected;
+    if (pinned) { dragged.fx = 0; dragged.fy = 0; } else { dragged.fx = null; dragged.fy = null; }
+    dragged = null; sim.alphaTarget(0);
+  };
+  window.addEventListener("pointerup", release);
+  window.addEventListener("pointercancel", release);
+  window.addEventListener("blur", release);
 
-  function select(id) {
+  function select(id, { push = true } = {}) {
+    const before = state.selected, wasLocal = state.mode === "local";
     state.selected = id;
-    if (!id && state.mode === "local") { state.mode = "global"; rebuild(); }
-    renderPanel(); renderer.refresh({ skipIndexation: true }); writeHash(); renderModes();
-    if (id && graph.hasNode(id)) {
-      const d = renderer.getNodeDisplayData(id);
-      renderer.getCamera().animate({ x: d.x, y: d.y, ratio: Math.min(renderer.getCamera().ratio, 0.6) }, { duration: 450 });
-    }
+    state.hovered = null;
+    if (!id && wasLocal) state.mode = "global";
+    if (wasLocal && before !== id) rebuild(); // локальный граф следует за выбранным узлом, как в Obsidian
+    renderPanel(); refresh(); renderModes();
+    writeHash(push && before !== id);
+    if (id && graph.hasNode(id) && state.mode !== "local") centerOn(id);
   }
-  function reveal(id) { if (!graph.hasNode(id)) { state.selected = id; rebuild(); } select(id); }
+  // Показать узел, даже если его скрывают фильтры: включаем его раздел и структуру
+  function reveal(id) {
+    const n = byId.get(id);
+    let changed = false;
+    if (n.sec && !state.sections.has(n.sec)) { state.sections.add(n.sec); changed = true; }
+    if (n.type !== "material" && !state.structure) { state.structure = true; changed = true; }
+    if (changed) { syncControls(); writeHash(); }
+    if (changed || (state.mode !== "local" && !graph.hasNode(id))) { state.selected = null; rebuild(); focusOnSettle = id; }
+    select(id);
+  }
 
   // ---- Панель узла ----
   let detailRequest = 0;
   function renderPanel() {
     const el = $("#panel"), n = state.selected && byId.get(state.selected);
+    document.body.classList.toggle("has-selection", !!n);
     if (!n) {
       el.innerHTML = `<p class="hint-title">Выберите узел</p>
-        <p class="muted">Наведение подсвечивает соседей. Узлы можно перетаскивать — граф «оживёт». Подписи материалов появляются при приближении.</p>
+        <p class="muted">${touch ? "Коснитесь узла, чтобы увидеть соседей и описание." : "Наведение подсвечивает соседей. Узлы можно перетаскивать — граф «оживёт»."} Подписи материалов появляются при приближении.</p>
         <dl class="legend">
           <dt><i class="dot big" data-color="#8c491a"></i></dt><dd>Раздел или подтема — цвет раздела</dd>
           <dt><i class="dot" data-color="#c67139"></i></dt><dd>Материал</dd>
@@ -261,9 +346,11 @@ function start(DATA) {
       paint(el);
       return;
     }
-    const nbs = adj.get(n.id).filter(([, k]) => edgeOn(k)).map(([id, k]) => ({ n: byId.get(id), k }));
+    const nbs = adj.get(n.id).filter(([, k]) => edgeOn(k)).map(([id, k]) => ({ n: byId.get(id), k }))
+      .sort((a, b) => (a.n.type === "material") - (b.n.type === "material") || (b.n.ts || 0) - (a.n.ts || 0));
     const sec = n.sec && SEC[n.sec];
     el.innerHTML = `
+      <button class="close" id="panel-close" aria-label="Закрыть">×</button>
       <div class="tags"><span class="tag"><i class="dot" data-color="${colorOf(n)}"></i>${TYPE_LABEL[n.type]}</span>
         ${sec && n.type !== "section" ? `<span class="tag soft">${esc(sec.name)}</span>` : ""}
         ${n.type === "material" && n.sub ? `<span class="tag soft">${esc(n.sub)}</span>` : ""}</div>
@@ -274,11 +361,13 @@ function start(DATA) {
       <div class="row"><button class="btn" id="to-local">${state.mode === "local" ? "К общему графу" : "Локальный граф"}</button></div>
       <p class="muted small">Связи: ${nbs.length}</p>
       <div class="nbs">${nbs.slice(0, 40).map(({ n: m, k }) =>
-        `<button class="chip" data-id="${esc(m.id)}" title="${EDGE_LABEL[k]}"><i class="dot" data-color="${colorOf(m)}"></i>${esc(m.label.length > 42 ? m.label.slice(0, 41) + "…" : m.label)}</button>`).join("")}
+        `<button class="chip" data-id="${esc(m.id)}" title="${esc(m.label)} · ${EDGE_LABEL[k]}"><i class="dot" data-color="${colorOf(m)}"></i><span>${esc(m.label)}</span></button>`).join("")}
         ${nbs.length > 40 ? `<span class="muted small">… и ещё ${nbs.length - 40}</span>` : ""}</div>`;
     paint(el);
+    el.scrollTop = 0;
     el.querySelectorAll(".chip").forEach((b) => b.addEventListener("click", () => reveal(b.dataset.id)));
-    $("#to-local").addEventListener("click", () => { state.mode = state.mode === "local" ? "global" : "local"; rebuild(); renderPanel(); renderModes(); });
+    $("#panel-close").addEventListener("click", () => select(null));
+    $("#to-local").addEventListener("click", () => setMode(state.mode === "local" ? "global" : "local"));
     if (n.type === "material") loadDetail(n.id);
   }
   async function loadDetail(id) {
@@ -290,15 +379,20 @@ function start(DATA) {
       const text = d.description && d.description !== d.title ? d.description : "";
       const links = (d.links || []).filter((l) => l.type !== "zoom");
       box.innerHTML = (text ? `<p class="desc">${esc(text.length > 700 ? text.slice(0, 699) + "…" : text)}</p>` : "")
-        + links.map((l) => `<a class="open" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">Открыть: ${esc(l.label || l.type)}</a>`).join("");
+        + links.map((l) => `<a class="open" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">Открыть: ${esc(l.label || l.type)} ↗</a>`).join("");
     } catch (e) {
       if (ticket !== detailRequest) return;
       if (e.auth) return showLogin("Доступ закончился или был отозван. Введите новый код.");
-      box.innerHTML = `<p class="muted small">Описание не загрузилось.</p>`;
+      box.innerHTML = `<p class="muted small">Описание не загрузилось. <button class="link-inline" id="detail-retry">Повторить</button></p>`;
+      $("#detail-retry").addEventListener("click", () => loadDetail(id));
     }
   }
 
   // ---- Панель управления ----
+  function setMode(mode) {
+    state.mode = mode;
+    rebuild(); renderPanel(); renderModes(); writeHash(true);
+  }
   function renderCounter() {
     const extra = state.mode === "local" && visibleInfo.total > graph.order ? ` — ближайшие ${graph.order} из ${visibleInfo.total}` : "";
     $("#counter").textContent = `Показано ${graph.order} из ${DATA.nodes.length} узлов · ${graph.size} связей${extra}`;
@@ -307,51 +401,86 @@ function start(DATA) {
     document.querySelectorAll("[data-mode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === state.mode)));
     $("#depth").hidden = state.mode !== "local";
     document.querySelectorAll("[data-depth]").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.depth === state.depth)));
-    $('[data-mode="local"]').disabled = !state.selected;
+    const local = $('[data-mode="local"]');
+    local.disabled = !state.selected;
+    local.title = state.selected ? "" : "Сначала выберите узел";
+  }
+  function syncControls() {
+    ["structure", "series", "orphans"].forEach((k) => { $(`#t-${k}`).checked = state[k]; });
+    // Пока включена структура, у каждого узла есть связь — переключатель ничего бы не менял
+    $("#t-orphans").disabled = state.structure;
+    $("#t-orphans").closest("label").title = state.structure ? "Все узлы связаны структурой — выключите «Разделы и подтемы»" : "";
+    renderSections();
+    renderFilterBadge();
   }
   ["structure", "series", "orphans"].forEach((k) => {
-    const cb = $(`#t-${k}`); cb.checked = state[k];
-    cb.addEventListener("change", () => { state[k] = cb.checked; rebuild({ refit: k !== "series" }); renderPanel(); });
+    $(`#t-${k}`).addEventListener("change", (e) => {
+      state[k] = e.target.checked;
+      syncControls(); rebuild({ refit: k !== "series" }); renderPanel(); writeHash();
+    });
   });
   const secs = $("#sections");
   function renderSections() {
-    secs.innerHTML = DATA.sections.map((s) => `<button class="sec" data-sec="${esc(s.id)}" aria-pressed="${state.sections.has(s.id)}">
-      <i class="dot" data-color="${SEC[s.id].color}"></i>${esc(s.name)} <span>${s.count}</span></button>`).join("")
-      + `<button class="sec all" id="sec-all">Все</button>`;
+    const all = state.sections.size === ALL_SECTIONS.length;
+    secs.innerHTML = `<button class="sec all" data-all aria-pressed="${all}">Все разделы</button>` + DATA.sections.map((s) =>
+      `<button class="sec" data-sec="${esc(s.id)}" aria-pressed="${!all && state.sections.has(s.id)}"><i class="dot" data-color="${SEC[s.id].color}"></i>${esc(s.name)} <span>${s.count}</span></button>`).join("");
     paint(secs);
-    secs.querySelectorAll("[data-sec]").forEach((b) => b.addEventListener("click", (ev) => {
-      const id = b.dataset.sec;
-      if (ev.altKey || ev.metaKey) state.sections = new Set([id]);
-      else if (state.sections.has(id)) state.sections.delete(id); else state.sections.add(id);
-      secs.querySelectorAll("[data-sec]").forEach((x) => x.setAttribute("aria-pressed", String(state.sections.has(x.dataset.sec))));
-      rebuild();
-    }));
-    $("#sec-all").addEventListener("click", () => { state.sections = new Set(DATA.sections.map((s) => s.id)); renderSections(); rebuild(); });
   }
-  renderSections();
-  document.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => { state.mode = b.dataset.mode; rebuild(); renderPanel(); renderModes(); }));
-  document.querySelectorAll("[data-depth]").forEach((b) => b.addEventListener("click", () => { state.depth = +b.dataset.depth; rebuild(); renderModes(); }));
+  secs.addEventListener("click", (ev) => {
+    const b = ev.target.closest("button"); if (!b) return;
+    const id = b.dataset.sec, all = state.sections.size === ALL_SECTIONS.length;
+    if (b.hasAttribute("data-all")) state.sections = new Set(ALL_SECTIONS);
+    else if (ev.shiftKey || ev.metaKey || ev.ctrlKey) { // добавить/убрать раздел к выбранным
+      if (all) state.sections = new Set([id]);
+      else if (state.sections.has(id) && state.sections.size > 1) state.sections.delete(id);
+      else state.sections.add(id);
+    } else state.sections = !all && state.sections.size === 1 && state.sections.has(id) ? new Set(ALL_SECTIONS) : new Set([id]);
+    if (state.mode === "local") state.mode = "global";
+    syncControls(); rebuild(); renderPanel(); renderModes(); writeHash();
+  });
+  function renderFilterBadge() {
+    const n = (state.sections.size !== ALL_SECTIONS.length) + !state.structure + !state.series;
+    $("#filters-toggle").textContent = n ? `Фильтры · ${n}` : "Фильтры";
+  }
+  $("#filters-toggle").addEventListener("click", () => {
+    const open = document.body.classList.toggle("filters-open");
+    $("#filters-toggle").setAttribute("aria-expanded", String(open));
+    requestAnimationFrame(() => renderer.resize());
+  });
+  document.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => { if (b.dataset.mode !== state.mode) setMode(b.dataset.mode); }));
+  document.querySelectorAll("[data-depth]").forEach((b) => b.addEventListener("click", () => {
+    state.depth = +b.dataset.depth; rebuild(); renderModes(); writeHash();
+  }));
 
+  // ---- Поиск ----
   const q = $("#q"), list = $("#results");
   const rank = { section: 0, material: 1, subtopic: 2 };
+  function closeResults() { list.innerHTML = ""; q.setAttribute("aria-expanded", "false"); }
   function search() {
     const s = norm(q.value.trim());
-    if (s.length < 2) { matches = null; list.innerHTML = ""; renderer.refresh({ skipIndexation: true }); return; }
+    if (s.length < 2) { matches = null; closeResults(); refresh(); return; }
     const found = DATA.nodes.filter((n) => norm(n.label).includes(s)).sort((a, b) => rank[a.type] - rank[b.type] || (b.ts || 0) - (a.ts || 0));
     matches = new Set(found.map((n) => n.id));
     list.innerHTML = found.slice(0, 8).map((n) => `<li><button data-id="${esc(n.id)}"><i class="dot" data-color="${colorOf(n)}"></i><span>${esc(n.label)}</span><small>${TYPE_LABEL[n.type]}${n.sec && n.type !== "section" ? " · " + esc(SEC[n.sec].name) : ""}</small></button></li>`).join("")
       + (found.length > 8 ? `<li class="muted small">Найдено ${found.length}, показаны первые 8 — остальные подсвечены на графе</li>` : "")
       + (!found.length ? `<li class="muted small">Ничего не найдено</li>` : "");
+    q.setAttribute("aria-expanded", "true");
     paint(list);
-    list.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => { list.innerHTML = ""; matches = null; reveal(b.dataset.id); }));
-    renderer.refresh({ skipIndexation: true });
+    refresh();
   }
+  list.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-id]"); if (!b) return;
+    closeResults(); matches = null; q.blur(); reveal(b.dataset.id);
+  });
   q.addEventListener("input", search);
+  q.addEventListener("focus", () => { if (q.value.trim().length >= 2) search(); });
   q.addEventListener("keydown", (e) => {
     if (e.key === "Enter") list.querySelector("button")?.click();
-    if (e.key === "Escape") { q.value = ""; search(); }
+    if (e.key === "Escape") { q.value = ""; search(); q.blur(); }
   });
+  document.addEventListener("pointerdown", (e) => { if (!e.target.closest(".search")) closeResults(); });
 
+  // ---- Камера и клавиатура ----
   const cam = renderer.getCamera();
   $("#zin").addEventListener("click", () => cam.animatedZoom({ duration: 250 }));
   $("#zout").addEventListener("click", () => cam.animatedUnzoom({ duration: 250 }));
@@ -363,10 +492,23 @@ function start(DATA) {
     else if (e.key === "0") fitCamera();
     else if (e.key === "Escape") select(null);
   });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && state.selected && document.activeElement !== q) select(null); });
 
+  // Back/Forward: восстанавливаем выбор, режим и фильтры из адреса
+  window.addEventListener("popstate", () => {
+    readHash(); syncControls(); rebuild(); renderPanel(); renderModes();
+    if (state.selected) focusOnSettle = state.selected;
+  });
+  narrowQuery.addEventListener("change", () => { renderer.resize(); rebuild(); });
+
+  readHash();
+  syncControls();
   rebuild();
   renderPanel();
   renderModes();
+  if (state.selected && state.mode !== "local") focusOnSettle = state.selected;
+  window.__graphTest = { renderer, graph, state, byId,
+    pinned: () => simNodes.filter((sn) => sn.fx != null && !(state.mode === "local" && sn.id === state.selected)).length }; // для браузерных проверок; данных сверх видимых на странице нет
 }
 
 boot();

@@ -44,13 +44,17 @@ header h1 { margin: 0; font-size: clamp(24px, 3.4vw, 34px); letter-spacing: -0.0
 .toggles { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
 .toggles label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
 .toggles input { accent-color: var(--accent); width: 16px; height: 16px; }
-#sections { padding: 0 24px 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+.toggles label:has(input:disabled) { opacity: .45; cursor: not-allowed; }
+.filters-toggle { display: none; font: inherit; font-size: 14px; font-weight: 600; border: 1px solid var(--line); background: var(--surface); color: var(--text); padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+#filters { padding: 0 24px 10px; display: flex; flex-direction: column; gap: 8px; }
+#sections { display: flex; gap: 6px; flex-wrap: wrap; }
 .sec { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--surface); padding: 5px 11px; border-radius: 999px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
 .sec span { color: var(--muted); }
-.sec[aria-pressed="false"] { opacity: .45; background: transparent; }
+.sec[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.sec[aria-pressed="true"] span { color: var(--line); }
 .sec.all { font-weight: 600; }
 
-main { padding: 0 24px 24px; display: flex; gap: 16px; align-items: stretch; flex-wrap: wrap; }
+main { padding: 0 24px 24px; display: flex; gap: 16px; align-items: stretch; position: relative; }
 .stage { flex: 999 1 560px; min-width: 0; position: relative; background: var(--surface); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); }
 #graph { width: 100%; height: calc(100vh - 230px); min-height: 460px; outline: none; }
 #graph.pointer { cursor: pointer; }
@@ -61,7 +65,7 @@ main { padding: 0 24px 24px; display: flex; gap: 16px; align-items: stretch; fle
 .zoom button:hover { background: var(--accent-100); }
 #counter { position: absolute; left: 14px; bottom: 12px; font-size: 13px; color: var(--muted); background: var(--surface); padding: 5px 12px; border-radius: 999px; }
 
-#panel { flex: 1 1 300px; min-width: 0; max-width: 100%; background: var(--surface); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow); max-height: calc(100vh - 230px); overflow: auto; }
+#panel { flex: 0 0 320px; min-width: 0; position: relative; background: var(--surface); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow); max-height: calc(100vh - 230px); overflow: auto; }
 #panel h2 { margin: 6px 0; font-size: 21px; line-height: 1.25; overflow-wrap: anywhere; }
 .hint-title { font-weight: 700; font-size: 18px; margin: 0 0 6px; }
 .muted { color: var(--muted); font-size: 14px; margin: 4px 0; line-height: 1.45; }
@@ -81,14 +85,40 @@ main { padding: 0 24px 24px; display: flex; gap: 16px; align-items: stretch; fle
 .btn:hover { background: var(--accent-700); }
 .btn:disabled { opacity: .6; cursor: progress; }
 .nbs { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font: inherit; font-size: 13px; min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); cursor: pointer; display: inline-flex; gap: 6px; align-items: center; max-width: 100%; }
+.chip { font: inherit; font-size: 13px; min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); cursor: pointer; display: inline-flex; gap: 6px; align-items: center; max-width: 100%; text-align: left; }
+.chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.close { display: none; position: absolute; right: 12px; top: 10px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--surface-2); font: inherit; font-size: 22px; line-height: 1; cursor: pointer; }
+.link-inline { font: inherit; font-size: inherit; color: var(--accent-700); font-weight: 600; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
 .chip:hover { background: var(--accent-100); }
 footer { padding: 0 24px 24px; font-size: 13px; color: var(--muted); max-width: 980px; line-height: 1.5; }
 
-@media (max-width: 760px) {
-  header, .bar, #sections, main, footer { padding-left: 16px; padding-right: 16px; }
-  #sections { flex-wrap: nowrap; overflow-x: auto; }
+@media (max-width: 900px) {
+  header, .bar, #filters, main, footer { padding-left: 16px; padding-right: 16px; }
+  header { padding-top: 12px; padding-bottom: 4px; }
+  header h1 { font-size: 22px; }
+  /* Приложение на весь экран: граф не «перехватывает» прокрутку страницы, панель выезжает снизу */
+  body.in-app { height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+  body.in-app #view-app { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .bar { gap: 8px; padding-top: 6px; padding-bottom: 8px; }
+  .search { flex: 1 1 100%; max-width: none; }
+  .filters-toggle { display: inline-block; margin-left: auto; }
+  #filters { display: none; padding-bottom: 8px; }
+  body.filters-open #filters { display: flex; }
+  #sections { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
   .sec { flex: none; }
-  #graph { height: 62vh; min-height: 380px; }
-  #panel { max-height: none; }
+  main { flex: 1; min-height: 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+  .stage { flex: 1; }
+  #graph { height: 100%; min-height: 0; }
+  #counter { top: 10px; bottom: auto; font-size: 12px; }
+  #panel { display: none; position: absolute; left: 16px; right: 16px; bottom: max(12px, env(safe-area-inset-bottom));
+    max-height: 52%; padding: 16px 16px 20px; box-shadow: 0 -2px 24px rgba(32,30,29,.18); z-index: 4; }
+  body.has-selection #panel { display: block; }
+  #panel h2 { padding-right: 40px; font-size: 19px; }
+  .close { display: block; }
+  footer { display: none; }
+}
+
+/* На тач-экранах масштаб — щипком; оставляем только «вписать», чтобы кнопки не закрывали подписи */
+@media (hover: none) {
+  #zin, #zout { display: none; }
 }

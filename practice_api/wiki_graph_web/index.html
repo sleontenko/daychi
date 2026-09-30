@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Дейчи · Граф вики</title>
 <link rel="stylesheet" href="/wiki-graph-assets/graph.css">
@@ -13,7 +13,7 @@
   <a class="brand" href="/">Дейчи</a>
   <h1>Граф вики</h1>
   <span class="badge">Прототип</span>
-  <button id="logout" class="link">Выйти</button>
+  <button id="logout" class="link" hidden>Выйти</button>
 </header>
 
 <section id="view-loading" class="center" hidden>
@@ -41,7 +41,7 @@
 <div id="view-app" hidden>
   <div class="bar">
     <div class="search">
-      <input id="q" type="search" placeholder="Поиск по названиям — «веер», «дыхание»…" aria-label="Поиск узла" autocomplete="off">
+      <input id="q" type="search" placeholder="Поиск по названиям — «веер», «дыхание»…" aria-label="Поиск узла" aria-controls="results" aria-expanded="false" autocomplete="off" enterkeyhint="search">
       <ul id="results"></ul>
     </div>
     <div class="seg" role="group" aria-label="Режим">
@@ -52,13 +52,16 @@
       <button data-depth="1">1 шаг</button>
       <button data-depth="2">2 шага</button>
     </div>
+    <button id="filters-toggle" class="filters-toggle" aria-expanded="false" aria-controls="filters">Фильтры</button>
+  </div>
+  <div id="filters">
     <div class="toggles">
       <label><input type="checkbox" id="t-structure"> Разделы и подтемы</label>
       <label><input type="checkbox" id="t-series"> Серии</label>
       <label><input type="checkbox" id="t-orphans"> Узлы без связей</label>
     </div>
+    <div id="sections" aria-label="Разделы: клик — только этот раздел, Shift или ⌘ + клик — добавить к выбранным"></div>
   </div>
-  <div id="sections" aria-label="Разделы (Alt или ⌘ + клик — только этот)"></div>
   <main>
     <div class="stage">
       <div id="graph" aria-label="Граф связей. Колесо — масштаб, перетаскивание — сдвиг или перемещение узла, плюс и минус — масштаб, 0 — вписать, Esc — снять выбор."></div>
