@@ -20,6 +20,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+from .wiki_graph import mount_wiki_graph
+
 
 @dataclass
 class WikiSettings:
@@ -207,6 +209,7 @@ def create_wiki_app(settings=None, access_authorizer=None):
                 return row
         raise HTTPException(404, 'Материал больше не доступен')
 
+    mount_wiki_graph(app, load, authorize)
     return app
 
 

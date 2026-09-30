@@ -11,6 +11,7 @@ iOS-приложение школы: расписание → выбор зан�
 - [План вики на основе индекса](docs/WIKI_PLAN.md)
 - [Вики без входа: закрытая бета](docs/wiki-closed-beta.md)
 - [Вики: серверная реализация](docs/wiki-implementation.md)
+- [Граф вики на сайте школы (прототип)](docs/wiki-graph-2026-09-30.md)
 - [Принятый дизайн и референсы](docs/DESIGN.md)
 - [Журнал версий TestFlight](docs/TESTFLIGHT_CHANGELOG.md)
 - [Проверки сборки 3](docs/schedule-build3.md)
