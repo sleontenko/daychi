@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Дейчи · Вики</title>
+<link rel="stylesheet" href="/wiki-graph-assets/graph.css">
+<script src="/wiki-graph-assets/graph.js" defer></script>
+</head>
+<body>
+<header>
+  <a class="brand" href="/">Дейчи</a>
+  <h1>Вики</h1>
+  <span class="badge">Прототип</span>
+  <nav id="wiki-nav" class="seg" aria-label="Разделы вики" hidden><button id="nav-catalog">Каталог</button><button id="nav-graph">Граф связей</button></nav>
+  <button id="logout" class="link" hidden>Выйти</button>
+</header>
+
+<section id="view-loading" class="center" hidden>
+  <p class="muted">Загружаем вики…</p>
+</section>
+
+<section id="view-error" class="center card" hidden>
+  <p class="hint-title">Вики временно недоступна</p>
+  <p class="muted">Проверьте интернет и попробуйте ещё раз.</p>
+  <button id="retry" class="btn">Повторить</button>
+</section>
+
+<section id="view-login" class="center card" hidden>
+  <p class="hint-title">Вход по приглашению</p>
+  <p class="muted">Вики доступна ученикам школы. Введите код из 12 букв и цифр или вставьте ссылку приглашения.</p>
+  <form id="login" autocomplete="off">
+    <label for="code" class="sr">Код приглашения</label>
+    <input id="code" name="code" required maxlength="200" placeholder="XXXX-XXXX-XXXX" autocapitalize="characters" spellcheck="false">
+    <button class="btn" type="submit">Войти</button>
+  </form>
+  <p id="login-error" class="error" role="alert"></p>
+  <p class="muted small">Код одноразовый: он откроет доступ в этом браузере.</p>
+</section>
+
+<div id="view-app" hidden>
+  <div id="library" hidden></div>
+  <div id="graph-workspace">
+  <div class="bar">
+    <div class="search">
+      <input id="q" type="search" placeholder="Поиск по названиям — «веер», «дыхание»…" aria-label="Поиск узла" aria-controls="results" aria-expanded="false" autocomplete="off" enterkeyhint="search">
+      <ul id="results"></ul>
+    </div>
+    <div class="seg" role="group" aria-label="Режим">
+      <button data-mode="global">Общий граф</button>
+      <button data-mode="local">Локальный</button>
+    </div>
+    <div class="seg" role="group" aria-label="Глубина" id="depth">
+      <button data-depth="1">1 шаг</button>
+      <button data-depth="2">2 шага</button>
+    </div>
+    <button id="filters-toggle" class="filters-toggle" aria-expanded="false" aria-controls="filters">Фильтры</button>
+  </div>
+  <div id="filters">
+    <div class="toggles">
+      <label><input type="checkbox" id="t-structure"> Разделы и подтемы</label>
+      <label><input type="checkbox" id="t-series"> Серии</label>
+      <label><input type="checkbox" id="t-orphans"> Узлы без связей</label>
+    </div>
+    <div id="sections" aria-label="Разделы: клик — только этот раздел, Shift или ⌘ + клик — добавить к выбранным"></div>
+  </div>
+  <main>
+    <div class="stage">
+      <div id="graph" aria-label="Граф связей. Колесо — масштаб, перетаскивание — сдвиг или перемещение узла, плюс и минус — масштаб, 0 — вписать, Esc — снять выбор."></div>
+      <div class="zoom">
+        <button id="zin" aria-label="Приблизить">+</button>
+        <button id="zout" aria-label="Отдалить">−</button>
+        <button id="zfit" aria-label="Вписать граф" class="fit">⤢</button>
+      </div>
+      <div id="counter" role="status"></div>
+    </div>
+    <aside id="panel" aria-label="Просмотр узла"></aside>
+  </main>
+  <footer>
+    Связи строятся только из структуры каталога и номеров серий в названиях — без смысловых догадок.
+    Проверенные описания и термины появятся после редакторской проверки.
+  </footer>
+</div>
+</div>
+</body>
+</html>

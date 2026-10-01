@@ -1,0 +1,450 @@
+[
+  {
+    "path": "apps/practice-app/app.json",
+    "sha256": "97789b19092aecd63725bcdb26958f2f79c182255d42a8609693a8679e0ab92b"
+  },
+  {
+    "path": "apps/practice-app/assets/expo.icon/Assets/expo-symbol 2.svg",
+    "sha256": "ad117d20fd819f4ec71876ce09c0e8b9275b1f20c5ec3c9d7d1914977ceffec6"
+  },
+  {
+    "path": "apps/practice-app/assets/expo.icon/Assets/grid.png",
+    "sha256": "8247d79a2b31328fe4e330a973e6fae16924ed9aebd72c64d464d6856ab18c72"
+  },
+  {
+    "path": "apps/practice-app/assets/expo.icon/icon.json",
+    "sha256": "747c56e178222a6255c6dd61c5de011b286cdc935febe89f04d1b191c3d076fe"
+  },
+  {
+    "path": "apps/practice-app/assets/fonts/Caprasimo-Regular.ttf",
+    "sha256": "786ab84ee787d40df55be78cb4361e485a1c6687195cbcccf3538cb5e46ced90"
+  },
+  {
+    "path": "apps/practice-app/assets/fonts/Figtree-Bold.ttf",
+    "sha256": "71a35e2bd92a05427e2dc9897bab41f8a865800e148238007735b5934508198a"
+  },
+  {
+    "path": "apps/practice-app/assets/fonts/Figtree-Regular.ttf",
+    "sha256": "448d74e778cc9774db27bd86cf451bba982b2e4dc348f610390eb6e3439cf6ca"
+  },
+  {
+    "path": "apps/practice-app/assets/fonts/Figtree-SemiBold.ttf",
+    "sha256": "35fc4508d627f8402a7d5ae91d842d1adb36846eea902c0a849642afecd0ac74"
+  },
+  {
+    "path": "apps/practice-app/assets/images/android-icon-background.png",
+    "sha256": "fb139c2dee362ebf2070e23b96da6fc0d43f8492de38b8af1fd7223e19b5861d"
+  },
+  {
+    "path": "apps/practice-app/assets/images/android-icon-foreground.png",
+    "sha256": "9e3d0315a33c6799de601dd34cd8bf8cc3a8d16f3bf75592baec2ceb7240b391"
+  },
+  {
+    "path": "apps/practice-app/assets/images/android-icon-monochrome.png",
+    "sha256": "6371fc2c12e33ad2215a86c281db3d682a81bebe7c957a842c13b8bf00cceb83"
+  },
+  {
+    "path": "apps/practice-app/assets/images/expo-badge-white.png",
+    "sha256": "d9ba28c5e93aea3c2dabd901ee96fea3bb296ad8e648f6f64706dae11a1a62bd"
+  },
+  {
+    "path": "apps/practice-app/assets/images/expo-badge.png",
+    "sha256": "ff353c7efadbd379903923cb604fca11c908cba0d4658cc2bd1f147d98317249"
+  },
+  {
+    "path": "apps/practice-app/assets/images/expo-logo.png",
+    "sha256": "27b060a757a29038c9618586baa0ba3894dbe60d084c6059df497ff429c2d92f"
+  },
+  {
+    "path": "apps/practice-app/assets/images/favicon.png",
+    "sha256": "a4e030697a7571b3e95d31860e4da55d2f98e5e861e2b55e414f45a8556828ba"
+  },
+  {
+    "path": "apps/practice-app/assets/images/icon.png",
+    "sha256": "7a667804bb80a6a424a5daf18a2599c4f32237cf06fe78fc0de45dbb09e0eccf"
+  },
+  {
+    "path": "apps/practice-app/assets/images/logo-glow.png",
+    "sha256": "bbd98a3f3c12d090f4df6065b7462fcdf6bc266209d002b4ef5fe554c245f66c"
+  },
+  {
+    "path": "apps/practice-app/assets/images/quiet-practice-icon.md",
+    "sha256": "9808f981d95a2f8d99e3a611e2405e477a8c0ee640ff14d5b64bd0dbf1df7138"
+  },
+  {
+    "path": "apps/practice-app/assets/images/quiet-practice-icon.png",
+    "sha256": "5e4bc85f9519042bc3597cc4ef877ec1aaad023bb9dda393567aea41814d9735"
+  },
+  {
+    "path": "apps/practice-app/assets/images/react-logo.png",
+    "sha256": "224b7636b15e672801579b5b418077cbc2ca42f0146389062364356b0ecb5c5c"
+  },
+  {
+    "path": "apps/practice-app/assets/images/react-logo@2x.png",
+    "sha256": "fa600be9ad2f869c7a8dbaffc78bb15af741123e1319c948f0be51753a153cde"
+  },
+  {
+    "path": "apps/practice-app/assets/images/react-logo@3x.png",
+    "sha256": "cd84e02a5d542a3e71b7fa10a685c1b9fb51db4aff92aca6c0da6461ce17be16"
+  },
+  {
+    "path": "apps/practice-app/assets/images/splash-icon.png",
+    "sha256": "27b060a757a29038c9618586baa0ba3894dbe60d084c6059df497ff429c2d92f"
+  },
+  {
+    "path": "apps/practice-app/assets/images/tabIcons/explore.png",
+    "sha256": "e2dea1c2d20929d83e8eebd74818e808b1b72e376d3a1f3a03679fff0255d073"
+  },
+  {
+    "path": "apps/practice-app/assets/images/tabIcons/explore@2x.png",
+    "sha256": "1b54913b3a0acc3e1fb72d3b9b79ad04814304b35bbb9d03a533e6130ad6c26a"
+  },
+  {
+    "path": "apps/practice-app/assets/images/tabIcons/explore@3x.png",
+    "sha256": "2f3e43801df70ebe83273b90a7d170bacf5ca74a8a8dc5c154a020c2c8b06609"
+  },
+  {
+    "path": "apps/practice-app/assets/images/tabIcons/home.png",
+    "sha256": "3829632ec7d495225395f5da3d0942935d7d055979b174613d1ade82fe420e76"
+  },
+  {
+    "path": "apps/practice-app/assets/images/tabIcons/home@2x.png",
+    "sha256": "21c5a07df9017d97464a0a8256e265288f2fca0741ca651de05e12b32f32f5ab"
+  },
+  {
+    "path": "apps/practice-app/assets/images/tabIcons/home@3x.png",
+    "sha256": "fe5b397975e7cb70ae7a122472d174ed12ec2ae106f7b49c968225ad37f8b3b8"
+  },
+  {
+    "path": "apps/practice-app/assets/images/tutorial-web.png",
+    "sha256": "e372ec23ad6262e2e0dc2799ce416b495a631a565bcd24f0615d4afc04dac3bd"
+  },
+  {
+    "path": "apps/practice-app/eslint.config.js",
+    "sha256": "6ea734f0e3f5b7c3c5720b3c467695516b14935724a78386b8534abc2959da12"
+  },
+  {
+    "path": "apps/practice-app/export-options.plist",
+    "sha256": "e979155a1acf26d83f41a8035087876531944e735e67f29fdde6d3f224b24ab5"
+  },
+  {
+    "path": "apps/practice-app/modules/daychee-exact-alarms/README.md",
+    "sha256": "3bab6f1f50ee682e96d330e71441eba9e7f43bda29f101bcbba80b80d698a4a8"
+  },
+  {
+    "path": "apps/practice-app/modules/daychee-exact-alarms/android/build.gradle",
+    "sha256": "a263606c7f2b0f77d586da8bb4b783207db4a6b79cac4151ba7a445ae6bf5412"
+  },
+  {
+    "path": "apps/practice-app/modules/daychee-exact-alarms/android/src/main/AndroidManifest.xml",
+    "sha256": "343d5be1ac17cdd45d1a2f2ddc616c509290e655869125a9422a96d88aa66066"
+  },
+  {
+    "path": "apps/practice-app/modules/daychee-exact-alarms/android/src/main/java/ai/mypraxis/exactalarms/ExactAlarmsModule.kt",
+    "sha256": "6f3d1adceb0ee72adcf1fc1fae7666e79be8378291949de773a76483b294191b"
+  },
+  {
+    "path": "apps/practice-app/modules/daychee-exact-alarms/expo-module.config.json",
+    "sha256": "51d46eb3edef86577c5c52095857ca2abbda9a395b907df25b0fdc8dc51e060d"
+  },
+  {
+    "path": "apps/practice-app/modules/daychee-exact-alarms/package.json",
+    "sha256": "b675dc408d68c727b02d79dbed2966b1f8b86fba80bf9141db39baa9f9a5a100"
+  },
+  {
+    "path": "apps/practice-app/package-lock.json",
+    "sha256": "6d25f672cf81ce205dd2f40f2d429e3822bb616b0504386a02b83272a24c6757"
+  },
+  {
+    "path": "apps/practice-app/package.json",
+    "sha256": "4607a328da0d65e26aa36d023b56bf01c5259c5c5fce003058054c0610b704c2"
+  },
+  {
+    "path": "apps/practice-app/scripts/access-link.test.mjs",
+    "sha256": "9e99cd4145b439575c20553115bc3e4a38356ea6b070171b5437bc59f38abc5d"
+  },
+  {
+    "path": "apps/practice-app/scripts/access-request-client.test.mjs",
+    "sha256": "881c21d084c4014e4a31fa1664a95c9c08af2ab0f76bf77d594035b93e36b8b7"
+  },
+  {
+    "path": "apps/practice-app/scripts/access-session.test.mjs",
+    "sha256": "5410f1f4f41fbaf37a29b61c67487603f14c79f85c470212d87aa3bb5d46ba26"
+  },
+  {
+    "path": "apps/practice-app/scripts/reset-project.js",
+    "sha256": "549922a40b983de34068b36d7879fcc8aed6c60b8d45b3c7b866267e766ae9fe"
+  },
+  {
+    "path": "apps/practice-app/scripts/schedule-attendance.test.mjs",
+    "sha256": "bdd43fca3c73efb6178150d60a27a02f62808699e73461679a5642b6eab53dd3"
+  },
+  {
+    "path": "apps/practice-app/scripts/schedule-class-info.test.mjs",
+    "sha256": "263e45c55301f65b2b8500fc766e56081431be5cb1a0b0374a95fe334f9cc4c4"
+  },
+  {
+    "path": "apps/practice-app/scripts/schedule-model.test.mjs",
+    "sha256": "119741e38346b3ccaf4a40bb04934a43dee7e41008e7c8ab4b619c0a9d545959"
+  },
+  {
+    "path": "apps/practice-app/scripts/schedule-source.test.mjs",
+    "sha256": "ae451c90ab645b9d42c3e383cbf2e6b8718b1aba2373937a298cc57021feeca7"
+  },
+  {
+    "path": "apps/practice-app/scripts/schedule-zoom.test.mjs",
+    "sha256": "e3d0db938efa201f74672cc2fbb2404f68f38d29f5114560d9dc147d33f34912"
+  },
+  {
+    "path": "apps/practice-app/scripts/wiki-catalog.test.mjs",
+    "sha256": "93621f1c84564690be165d6fd436a9b40b7b071b7e9e72d93d737e210658271f"
+  },
+  {
+    "path": "apps/practice-app/src/app/+native-intent.tsx",
+    "sha256": "dd425547e7ed23d57c82666b99b38194b2073d5efa38ffc65b51be7271675d53"
+  },
+  {
+    "path": "apps/practice-app/src/app/_layout.tsx",
+    "sha256": "e24e700f71d254cc21fe2dabfabe9c435117789dde259d1082bd7504872928ab"
+  },
+  {
+    "path": "apps/practice-app/src/app/explore.tsx",
+    "sha256": "1fd49abe35d9c7980a0a45b35e4dbadae38b1d167792a9d7485e31867288d2f5"
+  },
+  {
+    "path": "apps/practice-app/src/app/index.tsx",
+    "sha256": "101f2ea11db3d7eb1d7f49e9f087f73cc61b7db5debc96eceb30d9c5662478f9"
+  },
+  {
+    "path": "apps/practice-app/src/app/invite.tsx",
+    "sha256": "3471664c47cd35d93cf663e9b6da70da101abe7fc3bfe70a2ec8a935ae818d6d"
+  },
+  {
+    "path": "apps/practice-app/src/app/prototype.tsx",
+    "sha256": "5db2e9db838c13794857a901f2881bd7b1306304e7385b0ef9777a2ba5ce58bc"
+  },
+  {
+    "path": "apps/practice-app/src/components/animated-icon.module.css",
+    "sha256": "a70d5b1b0561336e53541e4fcca0431fa9e3671fc29dd232a44d546ff488423c"
+  },
+  {
+    "path": "apps/practice-app/src/components/animated-icon.tsx",
+    "sha256": "53772b1cfee876e9e79be0456fc6a4500b76a88e12990c63b3cc96d9ba9842b5"
+  },
+  {
+    "path": "apps/practice-app/src/components/animated-icon.web.tsx",
+    "sha256": "d99b902d487bb7a0c6357b201cc5c5fda1fd1a482e6edea3d896324e949712d2"
+  },
+  {
+    "path": "apps/practice-app/src/components/app-tabs.tsx",
+    "sha256": "0d700031136bf55c31da777fe0dcb0b7bd6563622054218442ea4608f043b099"
+  },
+  {
+    "path": "apps/practice-app/src/components/app-tabs.web.tsx",
+    "sha256": "31ac2fc3a346984518e54aa2267756adaba879149a263b05aeea2c50ded8409d"
+  },
+  {
+    "path": "apps/practice-app/src/components/back-button.tsx",
+    "sha256": "a09469e7f8e6c497f1d43d9501aca6b7b47c5f17b0138eddd8ca209aafca2803"
+  },
+  {
+    "path": "apps/practice-app/src/components/external-link.tsx",
+    "sha256": "2838582e2dc21877652b710d4aee5f4ba5a795b17fcf63bd7ac9c25a749c8c26"
+  },
+  {
+    "path": "apps/practice-app/src/components/hint-row.tsx",
+    "sha256": "2b5b1bbd4da6d9946e9a267587d7d6279059b0fab01dfeca144cd8cc3653a099"
+  },
+  {
+    "path": "apps/practice-app/src/components/themed-text.tsx",
+    "sha256": "a8ff3da42cfc9fc19b6d74927b34d8227637db658d32ed2c8c2a3ddd580b5237"
+  },
+  {
+    "path": "apps/practice-app/src/components/themed-view.tsx",
+    "sha256": "e13930b2f4dfd4dab093d1a86c1586825a97d56e895ba8cb9c89233e654138c9"
+  },
+  {
+    "path": "apps/practice-app/src/components/ui/collapsible.tsx",
+    "sha256": "73613fbb9c2d64215f7c365683ec790dbf6f04160bea48bc7273cc0a36d4a95b"
+  },
+  {
+    "path": "apps/practice-app/src/components/web-badge.tsx",
+    "sha256": "0af7715337e070c7c476202c8dd77f2fd6a3514255ace1ead9f832ccc8351a7f"
+  },
+  {
+    "path": "apps/practice-app/src/constants/theme.ts",
+    "sha256": "bd55235e5283d4f08569f0289ea02042d637527ad2cbfd577996ae8ec953af8e"
+  },
+  {
+    "path": "apps/practice-app/src/features/access/access-errors.ts",
+    "sha256": "b8490c45a72ca11bea1396eb32e71c382c99d2be3c858305f48825ef117bee3b"
+  },
+  {
+    "path": "apps/practice-app/src/features/access/access-screen.tsx",
+    "sha256": "90eccc3f0f3dc4770e0484e84a68cc2e4d29d81b55f9b24efc6cfb9c406dac97"
+  },
+  {
+    "path": "apps/practice-app/src/features/access/invitation-code.ts",
+    "sha256": "9c13951095c1ad4bf512870f9ce7c3a4900b8f93665efc5314ebd6d1349cbf2c"
+  },
+  {
+    "path": "apps/practice-app/src/features/access/invitation-link.ts",
+    "sha256": "8a0ed8d0a1ce5e93c586b459977bdfafc2113d31d5406375da0727573b7e7d2c"
+  },
+  {
+    "path": "apps/practice-app/src/features/access/request-client.ts",
+    "sha256": "405a72afc7fc8344abb25545555007034812d5936c3984be36a7704175bf77a8"
+  },
+  {
+    "path": "apps/practice-app/src/features/access/request-screen.tsx",
+    "sha256": "794f0451f0ccedd07b3aa5bc339d2e7b2172c2c7b321fabe4bd12dcb40cf0bb7"
+  },
+  {
+    "path": "apps/practice-app/src/features/access/return-target.ts",
+    "sha256": "e21940555d43188f7fbcd4e5598bbfdf34f793239129ad39aacae07fb752b804"
+  },
+  {
+    "path": "apps/practice-app/src/features/access/session.ts",
+    "sha256": "a29edc1a381ef73a3665b1309884e5ba906352abebd4807dbf32c047b4e0d873"
+  },
+  {
+    "path": "apps/practice-app/src/features/prototype/data.ts",
+    "sha256": "a110819e4c034cacb0e5b312128e91ca2dd15b64322be0fb477226d4715a60bb"
+  },
+  {
+    "path": "apps/practice-app/src/features/prototype/practice-prototype.tsx",
+    "sha256": "0ab02451c46dde87055e315839d7fe0cfef1bcd5226c0334b9a9520986a86414"
+  },
+  {
+    "path": "apps/practice-app/src/features/prototype/theme.ts",
+    "sha256": "19f46c51f826a9cc4903e39ff3af00185b114ff6c09baf4ef3b116d58f72b394"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/attendance-actions.tsx",
+    "sha256": "8c747d685fc08b8ac828098a80568d8316fb21a2e4bd4573588d31810782c038"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/attendance.ts",
+    "sha256": "53d79fd40872537664f036060f2417b52b0b5983752feea373077bebd763ada0"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/calendar-export.tsx",
+    "sha256": "452e726204d0194d9f325c008955736952b99e1bb5cac1f9d2f8eda0f5f0b3da"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/calendar-model.ts",
+    "sha256": "33933d02faed3acb5dc18f3f9e6b32f6dbbe167f6019b7ef651a35bf0018cc16"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/class-info.ts",
+    "sha256": "f286662e73046df351cbc4cda1a42a727f4db3ed2160e6e58766aca1a92b4e63"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/device.ts",
+    "sha256": "295892b35090ad43f070678e4b93d2940990b6087c0598e520bced8529d9c1a8"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/exact-alarms.ts",
+    "sha256": "b1e6b3b35d99830e41c499572f4c783b794a0329c0f2658f7f85bd5384c58e05"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/load.ts",
+    "sha256": "383703e47f83a880021e73d1fde219fcdac950d43fc1a6d8473107c3daf59bb3"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/local-reminders.ts",
+    "sha256": "7000eb9cbf26e2e659341b797978ce2c365fff1eb8f10d07625709122820bac7"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/model.ts",
+    "sha256": "557476669f5b342619570e24c42468610bd52d344e24a3f743abadca16080888"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/my-classes.tsx",
+    "sha256": "984cc96f7bc06bba54d0cab3043fad6fa781799cdee86620c5ff8974c5e7930f"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/reminder-panel.tsx",
+    "sha256": "3d29588486129b05b0bca453df2a74ab2a8c0f5f01923c0b7e892940de0a5fda"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/reminder-plan.ts",
+    "sha256": "4da43f4ca0dc852fa2af98e6a4bf03ec0cfd254609c115d0c1298588507d2c61"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/schedule-screen.tsx",
+    "sha256": "a73016043e5d25727c0ba13d1ae18e8af172821a66a4b8a0d3140187b9a44853"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/source.ts",
+    "sha256": "f1ae22925184ef1bc76308ce40b35435051e9aa830ca6f5553106956a9c97349"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/time-corrections.json",
+    "sha256": "97467f4099ba5cdbcb39eb69a1f6c1febe842fce2488586aa0e4c0c95b0b13c9"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/use-schedule.ts",
+    "sha256": "65d43d4dd928935cd514e1eec44172e876111d274d7edc3a449df53b8e737c84"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/zoom-model.ts",
+    "sha256": "5e3814502f8fa8c10064878261bd2f2dbc919b0422bce4341491ddaf78130f80"
+  },
+  {
+    "path": "apps/practice-app/src/features/schedule/zoom.ts",
+    "sha256": "0fb407518baa63861d9e936a164e04e59f07f1fbc5094266829f3b34c63d4174"
+  },
+  {
+    "path": "apps/practice-app/src/features/settings/feedback-client.ts",
+    "sha256": "3943280055d6b9fecbb895b5696b487a7b9c84ce5e7243fe226031b6d65841d5"
+  },
+  {
+    "path": "apps/practice-app/src/features/settings/settings-screen.tsx",
+    "sha256": "c4ac89371eebc1fb190cedf57f3b8c5dd2f9e761f94ee7d1d7ec4a2a144c14f4"
+  },
+  {
+    "path": "apps/practice-app/src/features/wiki/api.ts",
+    "sha256": "a5cad3dff694c0eb2d354e26bc1e025dfe208ff1e535ddd7e0fb4a9aaef548dd"
+  },
+  {
+    "path": "apps/practice-app/src/features/wiki/catalog-model.ts",
+    "sha256": "141b58129166fc2e98c0e00920b52dfd125784561a39a130f2bd1ec702737920"
+  },
+  {
+    "path": "apps/practice-app/src/features/wiki/wiki-login.tsx",
+    "sha256": "75776c87a94d64a67ff2a7399dc6cdbeb0a3f19f2ca27617f5793a8d5d17a62a"
+  },
+  {
+    "path": "apps/practice-app/src/features/wiki/wiki-screen.tsx",
+    "sha256": "0b3e2574b88932f32ff20338313a56cce6287fddc96bf503c6d741c1c24e359c"
+  },
+  {
+    "path": "apps/practice-app/src/global.css",
+    "sha256": "46221b3c3cbbca54d055d3ec7b90879f821c0e77619a8e5f8ad5c081788dcc47"
+  },
+  {
+    "path": "apps/practice-app/src/hooks/use-color-scheme.ts",
+    "sha256": "33beb965500ae5fdfe5c8699805a6be94c8c126a751fbe2ed7bcae87df394882"
+  },
+  {
+    "path": "apps/practice-app/src/hooks/use-color-scheme.web.ts",
+    "sha256": "77cb09a54a752586d2443f50d3497ad8f481dee4059048c2a11a0b2dcbe9fd27"
+  },
+  {
+    "path": "apps/practice-app/src/hooks/use-theme.ts",
+    "sha256": "743840d9284fed86effe5b7b30dd6ec10042d6c68de389d58e91f7a1d132bd75"
+  },
+  {
+    "path": "apps/practice-app/src/lib/api.ts",
+    "sha256": "44b40574905865ee116ef3242f3a676586526ba8c0301ed7bc19719c5fd47485"
+  },
+  {
+    "path": "apps/practice-app/src/types/styles.d.ts",
+    "sha256": "d8745f6b324d9c77e64389a7a02028e4fcb5ed5cbbef607f1dde3b74c325edcc"
+  },
+  {
+    "path": "apps/practice-app/tsconfig.json",
+    "sha256": "be487ba51ea2992d20feb9f859e1db0b0780b6dd46aced66f3fe04cb599fa62b"
+  }
+]

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/organic-c92d12e8-7b98-42d5-a71a-72dca3333732/styles.css">
+  <script src="_ds/organic-c92d12e8-7b98-42d5-a71a-72dca3333732/_ds_bundle.js"></script>
+  <style>
+    body { background: var(--color-neutral-300); margin: 0; }
+    a { color: var(--color-accent-700); }
+    a:hover { color: var(--color-accent-800); }
+    button:focus-visible, input:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  </style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:36px;padding:32px 20px;background:var(--color-neutral-300);font-family:var(--font-body);color:var(--color-text)">
+
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="font-size:13px;font-weight:600;color:var(--color-neutral-800);padding-left:8px">Приложение · участник</div>
+    <div lang="ru" style="width:390px;height:844px;flex-shrink:0;border-radius:48px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:var(--color-bg);box-shadow:0 0 0 10px var(--color-neutral-900), var(--shadow-lg)">
+      <sc-if value="{{ isIOS }}" hint-placeholder-val="{{ true }}">
+        <div style="height:54px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 30px 0 38px;font-size:17px;font-weight:600">
+          <span>{{ clock }}</span>
+          <span style="position:absolute;left:50%;top:11px;transform:translateX(-50%);width:124px;height:36px;border-radius:20px;background:var(--color-neutral-900)"></span>
+          <span style="font-size:13px">{{ netIcon }}</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isAndroid }}">
+        <div style="height:36px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:14px;font-weight:500">
+          <span>{{ clock }}</span>
+          <span style="position:absolute;left:50%;top:10px;transform:translateX(-50%);width:14px;height:14px;border-radius:99px;background:var(--color-neutral-900)"></span>
+          <span style="font-size:12px">{{ netIcon }}</span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showAppNav }}">
+        <div style="height:48px;flex-shrink:0;display:flex;align-items:center;padding:0 6px">
+          <button onClick="{{ appBack }}" style="min-height:44px;display:flex;align-items:center;gap:4px;padding:0 12px 0 4px;background:none;border:none;font:inherit;font-size:17px;color:var(--color-accent-700);cursor:pointer">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+            <span>{{ appBackLabel }}</span>
+          </button>
+        </div>
+      </sc-if>
+
+      <div ref="{{ appRef }}" style="flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none">
+
+        <sc-if value="{{ scrSchedule }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:12px 16px 24px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div role="heading" aria-level="1" style="font-size:30px;line-height:1.12;font-weight:700;letter-spacing:-0.01em">Расписание</div>
+              <div style="font-size:14px;color:var(--color-neutral-700)">Вторник, 29 сентября · время Израиля</div>
+            </div>
+            <sc-for list="{{ lessons }}" as="l" hint-placeholder-count="3">
+              <button onClick="{{ l.open }}" style="text-align:left;min-height:72px;padding:14px 16px;border-radius:22px;border:none;background:var(--color-neutral-100);font:inherit;color:inherit;display:flex;gap:14px;align-items:center;cursor:pointer" style-hover="background:var(--color-accent-100)">
+                <span style="width:48px;font-size:16px;font-weight:700">{{ l.time }}</span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:17px;font-weight:600">{{ l.title }}</span><span style="font-size:14px;color:var(--color-neutral-700)">{{ l.kind }}</span></span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-500)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ scrWiki }}">
+          <div style="padding:12px 16px 24px;display:flex;flex-direction:column;gap:14px">
+            <div role="heading" aria-level="1" style="font-size:30px;line-height:1.12;font-weight:700;letter-spacing:-0.01em">Вики</div>
+            <sc-if value="{{ wikiLocked }}">
+              <div style="padding:20px;border-radius:24px;background:var(--color-neutral-100);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;gap:12px;align-items:center">
+                  <span aria-hidden="true" style="width:40px;height:40px;flex-shrink:0;border-radius:50%;background:var(--color-accent-2-200);color:var(--color-accent-2-900);display:grid;place-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="3"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+                  <span style="font-size:18px;font-weight:700;line-height:1.25">{{ lk.title }}</span>
+                </div>
+                <div style="font-size:15px;line-height:1.45;color:var(--color-neutral-800)">{{ lk.text }}</div>
+                <button onClick="{{ lk.primary }}" style="min-height:50px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-700)">{{ lk.primaryLabel }}</button>
+                <sc-if value="{{ lk.showInvite }}">
+                  <button onClick="{{ openInvite }}" style="min-height:44px;border-radius:999px;border:none;background:none;color:var(--color-accent-700);font:inherit;font-size:15px;font-weight:600;cursor:pointer">У меня есть приглашение</button>
+                </sc-if>
+              </div>
+            </sc-if>
+            <sc-for list="{{ materials }}" as="m" hint-placeholder-count="3">
+              <button onClick="{{ m.open }}" style="text-align:left;padding:16px;border-radius:22px;border:none;background:var(--color-neutral-100);font:inherit;color:inherit;display:flex;flex-direction:column;gap:4px;cursor:pointer" style-hover="background:var(--color-accent-100)">
+                <span style="font-size:17px;font-weight:600;line-height:1.3">{{ m.title }}</span>
+                <span style="font-size:14px;color:var(--color-neutral-700)">{{ m.note }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ scrDetail }}">
+          <div style="padding:4px 16px 24px;display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:14px;font-weight:600;color:var(--color-accent-700)">{{ det.kicker }}</div>
+              <div role="heading" aria-level="1" style="font-size:26px;line-height:1.18;font-weight:700">{{ det.title }}</div>
+              <div style="font-size:15px;line-height:1.45;color:var(--color-neutral-800)">{{ det.desc }}</div>
+            </div>
+            <sc-if value="{{ det.hasMeta }}"><div style="padding:14px 16px;border-radius:20px;background:var(--color-neutral-100);font-size:15px;font-weight:600">{{ det.meta }}</div></sc-if>
+            <sc-if value="{{ lk.granted }}">
+              <sc-if value="{{ det.isLesson }}">
+                <button onClick="{{ zoomTap }}" style="min-height:52px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-700)">Подключиться к Zoom</button>
+              </sc-if>
+              <sc-if value="{{ det.isMaterial }}">
+                <div style="padding:18px;border-radius:22px;background:var(--color-neutral-100);font-size:15px;line-height:1.5;color:var(--color-neutral-800)">Здесь открывается текст материала.</div>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{ lk.locked }}">
+              <div style="padding:20px;border-radius:24px;background:var(--color-neutral-100);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;gap:12px;align-items:center">
+                  <span aria-hidden="true" style="width:40px;height:40px;flex-shrink:0;border-radius:50%;background:var(--color-accent-2-200);color:var(--color-accent-2-900);display:grid;place-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="3"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+                  <span style="font-size:18px;font-weight:700;line-height:1.25">{{ lk.title }}</span>
+                </div>
+                <div style="font-size:15px;line-height:1.45;color:var(--color-neutral-800)">{{ lk.text }}</div>
+                <button onClick="{{ lk.primary }}" style="min-height:50px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-700)">{{ lk.primaryLabel }}</button>
+                <sc-if value="{{ lk.showInvite }}">
+                  <button onClick="{{ openInvite }}" style="min-height:44px;border-radius:999px;border:none;background:none;color:var(--color-accent-700);font:inherit;font-size:15px;font-weight:600;cursor:pointer">У меня есть приглашение</button>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ scrRequest }}">
+          <form onSubmit="{{ submit }}" noValidate="{{ true }}" style="padding:4px 16px 24px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div role="heading" aria-level="1" style="font-size:26px;line-height:1.18;font-weight:700">Заявка на доступ</div>
+              <div style="font-size:15px;line-height:1.45;color:var(--color-neutral-800)">К вики и Zoom. Организатор рассмотрит заявку и откроет доступ этому телефону.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="rq-first" style="font-size:14px;font-weight:600;padding:0 6px">Имя</label>
+              <input id="rq-first" name="given-name" autoComplete="given-name" maxLength="60" value="{{ draft.first }}" onChange="{{ onFirst }}" onFocus="{{ onFocus }}" onBlur="{{ onBlur }}" aria-invalid="{{ fe.hasFirst }}" style="height:50px;padding:0 18px;border-radius:999px;border:1.5px solid var(--color-neutral-300);background:var(--color-neutral-100);font:inherit;font-size:17px;color:inherit;outline:none" style-focus="border-color:var(--color-accent)">
+              <sc-if value="{{ fe.hasFirst }}"><div role="alert" style="font-size:14px;color:var(--color-accent-800);padding:0 6px">{{ fe.first }}</div></sc-if>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="rq-last" style="font-size:14px;font-weight:600;padding:0 6px">Фамилия</label>
+              <input id="rq-last" name="family-name" autoComplete="family-name" maxLength="60" value="{{ draft.last }}" onChange="{{ onLast }}" onFocus="{{ onFocus }}" onBlur="{{ onBlur }}" aria-invalid="{{ fe.hasLast }}" style="height:50px;padding:0 18px;border-radius:999px;border:1.5px solid var(--color-neutral-300);background:var(--color-neutral-100);font:inherit;font-size:17px;color:inherit;outline:none" style-focus="border-color:var(--color-accent)">
+              <sc-if value="{{ fe.hasLast }}"><div role="alert" style="font-size:14px;color:var(--color-accent-800);padding:0 6px">{{ fe.last }}</div></sc-if>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="rq-tg" style="font-size:14px;font-weight:600;padding:0 6px">Telegram <span style="font-weight:400;color:var(--color-neutral-700)">— необязательно</span></label>
+              <input id="rq-tg" autoCapitalize="none" autoCorrect="off" maxLength="33" placeholder="@имя" value="{{ draft.tg }}" onChange="{{ onTg }}" onFocus="{{ onFocus }}" onBlur="{{ onBlur }}" aria-invalid="{{ fe.hasTg }}" aria-describedby="rq-tg-hint" style="height:50px;padding:0 18px;border-radius:999px;border:1.5px solid var(--color-neutral-300);background:var(--color-neutral-100);font:inherit;font-size:17px;color:inherit;outline:none" style-focus="border-color:var(--color-accent)">
+              <sc-if value="{{ fe.hasTg }}"><div role="alert" style="font-size:14px;color:var(--color-accent-800);padding:0 6px">{{ fe.tg }}</div></sc-if>
+              <div id="rq-tg-hint" style="font-size:13px;line-height:1.4;color:var(--color-neutral-700);padding:0 6px">Чтобы организатор мог написать вам. Мы его не проверяем.</div>
+            </div>
+            <sc-if value="{{ hasSendErr }}">
+              <div role="alert" style="padding:14px 16px;border-radius:18px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);color:var(--color-accent-900);font-size:15px;line-height:1.45">{{ sendErrText }}</div>
+            </sc-if>
+            <button type="submit" disabled="{{ sending }}" style="min-height:52px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-700)">{{ sendLabel }}</button>
+            <button type="button" onClick="{{ openInvite }}" style="min-height:44px;border-radius:999px;border:none;background:none;color:var(--color-accent-700);font:inherit;font-size:15px;font-weight:600;cursor:pointer">У меня есть персональное приглашение</button>
+            <div style="font-size:13px;line-height:1.4;color:var(--color-neutral-700);text-align:center">Расписание доступно и без заявки.</div>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ scrPending }}">
+          <div style="padding:12px 16px 24px;display:flex;flex-direction:column;gap:16px">
+            <span aria-hidden="true" style="width:64px;height:64px;border-radius:50%;background:var(--color-accent-2-200);display:grid;place-items:center;color:var(--color-accent-2-900)">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="{{ pend.iconPath }}"></path></svg>
+            </span>
+            <div role="heading" aria-level="1" style="font-size:26px;line-height:1.18;font-weight:700">{{ pend.title }}</div>
+            <div style="font-size:16px;line-height:1.5;color:var(--color-neutral-800)">{{ pend.text }}</div>
+            <sc-if value="{{ pend.showMeta }}">
+              <div style="padding:14px 16px;border-radius:20px;background:var(--color-neutral-100);display:flex;flex-direction:column;gap:4px;font-size:15px">
+                <span style="font-weight:600">{{ pend.name }}</span>
+                <span style="color:var(--color-neutral-700)">{{ pend.checked }}</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ hasCheckErr }}">
+              <div role="alert" style="padding:14px 16px;border-radius:18px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);color:var(--color-accent-900);font-size:15px;line-height:1.45">{{ checkErrText }}</div>
+            </sc-if>
+            <sc-if value="{{ pend.showPrimary }}">
+              <button onClick="{{ pend.primary }}" disabled="{{ checking }}" style="min-height:52px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-700)">{{ pend.primaryLabel }}</button>
+            </sc-if>
+            <sc-if value="{{ pend.showSecondary }}">
+              <button onClick="{{ appBack }}" style="min-height:50px;border-radius:999px;border:1.5px solid var(--color-accent-300);background:var(--color-neutral-100);color:var(--color-accent-800);font:inherit;font-size:16px;font-weight:600;cursor:pointer">{{ pend.secondaryLabel }}</button>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ scrInvite }}">
+          <form onSubmit="{{ activate }}" noValidate="{{ true }}" style="padding:4px 16px 24px;display:flex;flex-direction:column;gap:16px">
+            <div role="heading" aria-level="1" style="font-size:26px;line-height:1.18;font-weight:700">Доступ по приглашению</div>
+            <div style="font-size:15px;line-height:1.45;color:var(--color-neutral-800)">Вставьте ссылку или код из персонального приглашения.</div>
+            <input aria-label="Ссылка или код" autoCapitalize="characters" autoCorrect="off" placeholder="XXXX-XXXX-XXXX" value="{{ inv }}" onChange="{{ onInv }}" onFocus="{{ onFocus }}" onBlur="{{ onBlur }}" style="height:50px;padding:0 18px;border-radius:999px;border:1.5px solid var(--color-neutral-300);background:var(--color-neutral-100);font:inherit;font-size:17px;color:inherit;outline:none" style-focus="border-color:var(--color-accent)">
+            <sc-if value="{{ hasInvErr }}"><div role="alert" style="font-size:14px;color:var(--color-accent-800);padding:0 6px">{{ invErr }}</div></sc-if>
+            <button type="submit" style="min-height:52px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-700)">Активировать</button>
+            <div style="font-size:13px;line-height:1.4;color:var(--color-neutral-700);text-align:center">Нет приглашения — вернитесь и подайте заявку.</div>
+          </form>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ showTabbar }}" hint-placeholder-val="{{ true }}">
+        <div style="flex-shrink:0;border-top:1px solid var(--color-neutral-200);background:var(--color-bg);display:flex;flex-direction:column">
+          <div style="display:flex">
+            <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="2">
+              <button onClick="{{ t.go }}" aria-current="{{ t.current }}" style="flex:1;min-height:54px;border:none;background:none;font:inherit;font-size:13px;font-weight:600;color:{{ t.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer">
+                <span style="width:36px;height:6px;border-radius:99px;background:{{ t.dot }}"></span>{{ t.label }}
+              </button>
+            </sc-for>
+          </div>
+          <sc-if value="{{ isIOS }}" hint-placeholder-val="{{ true }}"><div style="height:34px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;box-sizing:border-box"><span style="width:134px;height:5px;border-radius:99px;background:var(--color-neutral-900)"></span></div></sc-if>
+          <sc-if value="{{ isAndroid }}"><div style="height:22px;display:flex;align-items:center;justify-content:center"><span style="width:108px;height:4px;border-radius:99px;background:var(--color-neutral-700)"></span></div></sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{ kb }}">
+        <div aria-hidden="true" style="flex-shrink:0;height:{{ kbH }};background:var(--color-neutral-300);display:flex;flex-direction:column">
+          <div style="height:44px;display:flex;align-items:center;justify-content:flex-end;padding:0 12px;border-bottom:1px solid var(--color-neutral-400)"><button onClick="{{ kbDone }}" style="min-height:36px;padding:0 14px;border:none;background:none;font:inherit;font-size:16px;font-weight:600;color:var(--color-accent-800);cursor:pointer">Готово</button></div>
+          <div style="flex:1;display:grid;place-items:center;font-size:13px;color:var(--color-neutral-700)">Клавиатура (имитация)</div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="font-size:13px;font-weight:600;color:var(--color-neutral-800);padding-left:8px">Админка · организатор, мобильный браузер</div>
+    <div lang="ru" style="width:390px;height:844px;flex-shrink:0;border-radius:48px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:var(--color-bg);box-shadow:0 0 0 10px var(--color-neutral-900), var(--shadow-lg)">
+      <div style="height:54px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 30px 0 38px;font-size:17px;font-weight:600">
+        <span>{{ clock }}</span>
+        <span style="position:absolute;left:50%;top:11px;transform:translateX(-50%);width:124px;height:36px;border-radius:20px;background:var(--color-neutral-900)"></span>
+        <span></span>
+      </div>
+      <div style="flex-shrink:0;display:flex;align-items:center;gap:8px;padding:6px 12px 10px">
+        <button onClick="{{ aSwitchTab }}" aria-label="Вкладки браузера" style="min-width:44px;height:36px;border-radius:12px;border:2px solid var(--color-neutral-700);background:none;font:inherit;font-size:14px;font-weight:700;cursor:pointer">{{ aTabCount }}</button>
+        <div style="flex:1;min-width:0;height:36px;border-radius:999px;background:var(--color-neutral-200);display:flex;align-items:center;padding:0 14px;font-size:13px;color:var(--color-neutral-800);overflow:hidden;white-space:nowrap;text-overflow:ellipsis">{{ aUrl }}</div>
+        <sc-if value="{{ aCanCloseTab }}"><button onClick="{{ aCloseTab }}" aria-label="Закрыть вкладку" style="width:36px;height:36px;border-radius:50%;border:none;background:var(--color-neutral-200);font:inherit;font-size:18px;cursor:pointer">×</button></sc-if>
+      </div>
+
+      <sc-if value="{{ aShowLogin }}">
+        <form onSubmit="{{ aSignIn }}" noValidate="{{ true }}" style="flex:1;padding:24px 20px;display:flex;flex-direction:column;gap:14px">
+          <div role="heading" aria-level="1" style="font-size:26px;font-weight:700">Вход организатора</div>
+          <sc-if value="{{ aExpired }}"><div role="status" style="padding:12px 14px;border-radius:16px;background:var(--color-accent-2-100);color:var(--color-accent-2-900);font-size:14px;line-height:1.45">Сессия истекла. После входа откроется тот же экран: {{ aReturnTo }}.</div></sc-if>
+          <label for="adm-pw2" style="font-size:14px;font-weight:600;padding:0 6px">Пароль</label>
+          <input id="adm-pw2" type="password" autoComplete="current-password" value="{{ aPw }}" onChange="{{ aOnPw }}" style="height:50px;padding:0 18px;border-radius:999px;border:1.5px solid var(--color-neutral-300);background:var(--color-neutral-100);font:inherit;font-size:16px;color:inherit;outline:none" style-focus="border-color:var(--color-accent)">
+          <sc-if value="{{ aHasLoginErr }}"><div role="alert" style="font-size:14px;color:var(--color-accent-800);padding:0 6px">{{ aLoginErr }}</div></sc-if>
+          <button type="submit" disabled="{{ aBusy }}" style="min-height:52px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer">{{ aLoginLabel }}</button>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ aShowNav }}">
+        <div style="height:48px;flex-shrink:0;display:flex;align-items:center;padding:0 6px">
+          <button onClick="{{ aBack }}" style="min-height:44px;display:flex;align-items:center;gap:4px;padding:0 12px 0 4px;background:none;border:none;font:inherit;font-size:17px;color:var(--color-accent-700);cursor:pointer">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg><span>Заявки</span>
+          </button>
+        </div>
+      </sc-if>
+
+      <div ref="{{ admRef }}" style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none">
+        <sc-if value="{{ aScrList }}">
+          <div style="padding:8px 16px 24px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <div role="heading" aria-level="1" style="font-size:28px;font-weight:700">Заявки</div>
+              <span class="tag tag-accent">{{ pendingLabel }}</span>
+            </div>
+            <div role="tablist" style="display:flex;gap:6px;padding:4px;border-radius:999px;background:var(--color-neutral-200);align-self:flex-start">
+              <sc-for list="{{ aFilters }}" as="f" hint-placeholder-count="2">
+                <button role="tab" aria-selected="{{ f.on }}" onClick="{{ f.pick }}" style="min-height:40px;padding:0 16px;border-radius:999px;border:none;font:inherit;font-size:15px;font-weight:600;cursor:pointer;background:{{ f.bg }};color:var(--color-text)">{{ f.label }}</button>
+              </sc-for>
+            </div>
+            <sc-for list="{{ aRows }}" as="r" hint-placeholder-count="3">
+              <button onClick="{{ r.open }}" style="text-align:left;padding:14px 16px;border-radius:22px;border:none;background:var(--color-neutral-100);font:inherit;color:inherit;display:flex;flex-direction:column;gap:6px;cursor:pointer" style-hover="background:var(--color-accent-100)">
+                <span style="display:flex;justify-content:space-between;gap:10px;align-items:center"><span style="font-size:17px;font-weight:600;overflow-wrap:anywhere">{{ r.name }}</span><span class="tag {{ r.cls }}">{{ r.st }}</span></span>
+                <span style="font-size:14px;color:var(--color-neutral-700)">{{ r.sub }}</span>
+              </button>
+            </sc-for>
+            <sc-if value="{{ aEmpty }}"><div style="padding:18px;border-radius:22px;background:var(--color-neutral-100);font-size:15px;color:var(--color-neutral-700)">Новых заявок нет.</div></sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ aScrDetail }}">
+          <div style="padding:4px 16px 24px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+              <div role="heading" aria-level="1" style="font-size:26px;line-height:1.18;font-weight:700;overflow-wrap:anywhere">{{ d.name }}</div>
+              <span class="tag {{ d.cls }}">{{ d.st }}</span>
+            </div>
+            <div style="padding:16px;border-radius:22px;background:var(--color-neutral-100);display:flex;flex-direction:column;gap:10px;font-size:15px">
+              <div style="display:flex;flex-direction:column;gap:2px"><span style="color:var(--color-neutral-700);font-size:13px">Telegram</span><span style="font-weight:600">{{ d.tg }}</span><span style="font-size:13px;color:var(--color-neutral-700)">Контакт от отправителя, не подтверждённая личность</span></div>
+              <div style="display:flex;flex-direction:column;gap:2px"><span style="color:var(--color-neutral-700);font-size:13px">Отправлена</span><span style="font-weight:600">{{ d.sent }}</span></div>
+              <div style="font-size:13px;line-height:1.4;color:var(--color-neutral-700)">Одобрение откроет доступ телефону, с которого отправлена заявка. Код не нужен.</div>
+            </div>
+            <sc-if value="{{ d.hasMatch }}">
+              <div style="padding:14px 16px;border-radius:20px;background:var(--color-accent-2-100);color:var(--color-accent-2-900);font-size:14px;line-height:1.45">{{ d.match }}</div>
+            </sc-if>
+            <sc-if value="{{ aHasResult }}">
+              <div role="status" style="padding:14px 16px;border-radius:18px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);color:var(--color-accent-900);font-size:15px;line-height:1.45;display:flex;flex-direction:column;gap:10px;align-items:flex-start">
+                <span>{{ aResultText }}</span>
+                <sc-if value="{{ aResultCheck }}"><button onClick="{{ aRecheck }}" disabled="{{ aBusy }}" style="min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--color-accent-300);background:var(--color-neutral-100);color:var(--color-accent-800);font:inherit;font-size:15px;font-weight:600;cursor:pointer">Проверить статус</button></sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ d.canDecide }}">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <button onClick="{{ aApprove }}" disabled="{{ aBusy }}" style="min-height:52px;border-radius:999px;border:none;background:var(--color-accent-2-700);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-2-800)">{{ aApproveLabel }}</button>
+                <button onClick="{{ aAskReject }}" disabled="{{ aBusy }}" style="min-height:50px;border-radius:999px;border:1.5px solid var(--color-accent-300);background:var(--color-neutral-100);color:var(--color-accent-800);font:inherit;font-size:16px;font-weight:600;cursor:pointer">Отклонить</button>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+      <div style="height:34px;flex-shrink:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;box-sizing:border-box"><span style="width:134px;height:5px;border-radius:99px;background:var(--color-neutral-900)"></span></div>
+
+      <sc-if value="{{ aConfirm }}">
+        <div style="position:absolute;inset:0;background:color-mix(in srgb, var(--color-text) 35%, transparent);display:flex;align-items:flex-end;padding:12px 12px 40px">
+          <div role="dialog" aria-modal="true" aria-labelledby="rej-t" style="width:100%;background:var(--color-bg);border-radius:28px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-lg)">
+            <div id="rej-t" style="font-size:20px;font-weight:700">Отклонить заявку?</div>
+            <div style="font-size:15px;line-height:1.45;color:var(--color-neutral-800)">{{ d.name }} увидит «Заявка отклонена» при следующей проверке и сможет подать новую.</div>
+            <button onClick="{{ aReject }}" style="min-height:50px;border-radius:999px;border:none;background:var(--color-accent-700);color:white;font:inherit;font-size:16px;font-weight:600;cursor:pointer">Отклонить</button>
+            <button onClick="{{ aCancelReject }}" style="min-height:50px;border-radius:999px;border:none;background:var(--color-neutral-200);font:inherit;font-size:16px;font-weight:600;cursor:pointer">Не отклонять</button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="width:340px;max-width:100%;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:13px;font-weight:600;color:var(--color-neutral-800);padding-left:8px">Telegram · уведомление организатору (макет)</div>
+      <div style="background:var(--color-neutral-100);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-sm)">
+        <div style="display:flex;align-items:center;gap:10px"><span aria-hidden="true" style="width:36px;height:36px;border-radius:50%;background:var(--color-accent);display:grid;place-items:center"><span style="width:12px;height:12px;border-radius:50%;background:var(--color-bg)"></span></span><span style="font-weight:700">Дейчи · бот</span></div>
+        <sc-if value="{{ tgHas }}" hint-placeholder-val="{{ true }}">
+          <div style="background:var(--color-bg);border-radius:18px 18px 18px 6px;padding:12px 14px;font-size:15px;font-weight:700">Новая заявка на доступ</div>
+          <button onClick="{{ tgOpen }}" style="min-height:44px;border-radius:14px;border:none;background:var(--color-accent-2-200);color:var(--color-accent-2-900);font:inherit;font-size:15px;font-weight:600;cursor:pointer">Открыть в админке</button>
+          <div style="font-size:12px;color:var(--color-neutral-700);overflow-wrap:anywhere">{{ tg.url }}</div>
+        </sc-if>
+      </div>
+    </div>
+
+    <aside aria-label="Сценарии прототипа" style="background:var(--color-neutral-100);border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:14px;font-size:13px">
+      <div style="display:flex;flex-direction:column;gap:2px"><div style="font-size:16px;font-weight:700">Сценарии прототипа</div><div style="color:var(--color-neutral-700)">Служебная панель, не часть интерфейса. Данные вымышленные. <a href="Дейчи - заявки на доступ · заметки.dc.html">Заметки и переходы</a></div></div>
+      <sc-for list="{{ qa }}" as="g" hint-placeholder-count="6">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="font-weight:600;color:var(--color-neutral-800)">{{ g.title }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <sc-for list="{{ g.opts }}" as="o">
+              <button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--color-neutral-300);font:inherit;font-size:13px;cursor:pointer;background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="font-weight:600;color:var(--color-neutral-800)">Действия</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <sc-for list="{{ actions }}" as="x" hint-placeholder-count="6">
+            <button onClick="{{ x.run }}" style="min-height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--color-accent-300);background:var(--color-bg);font:inherit;font-size:13px;color:var(--color-accent-800);cursor:pointer">{{ x.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="font-weight:600;color:var(--color-neutral-800)">Журнал</div>
+        <sc-for list="{{ log }}" as="e"><div style="font-size:12px;line-height:1.4;color:var(--color-neutral-800)">{{ e }}</div></sc-for>
+      </div>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const KEY = 'deichi-access-requests-candidate-v1';
+const LESSONS = [
+  { id: 'l1', time: '07:00', title: 'Утренняя практика', kind: 'онлайн', zoom: true, when: 'Вт, 29 сен · 07:00–08:00 (Израиль)', desc: 'Сидячая практика в тишине с короткими указаниями в начале.' },
+  { id: 'l2', time: '19:30', title: 'Вечерняя практика', kind: 'очно', zoom: false, when: 'Вт, 29 сен · 19:30–21:00 · Зал (пример)', desc: 'Практика в группе и короткое обсуждение.' },
+  { id: 'l3', time: '20:45', title: 'Чтение текста', kind: 'онлайн', zoom: true, when: 'Вт, 29 сен · 20:45–21:30 (Израиль)', desc: 'Медленное чтение и вопросы.' },
+];
+const MATERIALS = [
+  { id: 'm1', title: 'Пример: внимание к дыханию', note: 'Введение и порядок практики.' },
+  { id: 'm2', title: 'Пример: вопросы после ретрита', note: 'Ответы на частые вопросы.' },
+  { id: 'm3', title: 'Пример: короткие указания', note: 'Для самостоятельной практики.' },
+];
+const SEED = [
+  { id: 'r-1041', op: 's1', first: 'Ада', last: 'Мирная', tg: '@ada_example', sent: '27 сен, 21:14', status: 'pending', device: 'd-x2' },
+  { id: 'r-1039', op: 's2', first: 'Лев', last: 'Орлов', tg: '', sent: '26 сен, 18:40', status: 'pending', device: 'd-x3' },
+  { id: 'r-1038', op: 's3', first: 'Ада', last: 'Мирная', tg: '', sent: '2 сен, 08:03', status: 'approved', device: 'd-x1' },
+  { id: 'r-1035', op: 's4', first: 'Вера', last: 'Лесная', tg: '@vera_example', sent: '20 сен, 09:12', status: 'rejected', device: 'd-x4' },
+];
+const SC0 = { dev: 'ios', net: 'on', send: 'ok', server: 'up', decide: 'ok', tgMode: 'ok' };
+const ST = { pending: ['Ожидает', 'tag-accent'], approved: ['Одобрена', 'tag-accent-2'], rejected: ['Отклонена', 'tag-neutral'] };
+const TG_RE = /^@?[A-Za-z0-9_]{5,32}$/;
+const pad = n => String(n).padStart(2, '0');
+const hhmm = () => { const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const stamp = () => '28 сен, ' + hhmm();
+const rid = () => Math.random().toString(36).slice(2, 10);
+const norm = s => (s || '').trim().toLowerCase().replace(/ё/g, 'е');
+const APP0 = () => ({ tab: 'schedule', stacks: { schedule: [], wiki: [] }, draft: { first: '', last: '', tg: '' }, op: null, req: null, access: 'none', device: 'd-' + rid() });
+const ADM0 = () => ({ session: 'ok', tabs: [{ stack: [], filter: 'pending' }], active: 0 });
+const SRV0 = () => ({ requests: SEED.map(r => ({ ...r })), tgLast: 'r-1041', revoked: [] });
+const SEND_ERR = {
+  offline: 'Нет интернета. Черновик сохранён — отправьте, когда появится сеть.',
+  net: 'Не удалось связаться с сервером. Черновик сохранён, попробуйте ещё раз.',
+  server: 'Сервер сейчас недоступен. Черновик сохранён, попробуйте позже.',
+  limit: 'Слишком много заявок с этого телефона. Попробуйте через час.',
+  lost: 'Ответ не пришёл — заявка могла уже отправиться. Нажмите «Отправить ещё раз»: это та же заявка, второй не появится.',
+};
+const CHECK_ERR = {
+  offline: 'Нет интернета. Статус проверим, когда появится сеть.',
+  server: 'Сервер не ответил, статус не проверен. Заявка сохранена.',
+};
+
+class Component extends DCLogic {
+  state = this.init();
+  appRef = React.createRef();
+  admRef = React.createRef();
+  scrolls = {};
+  init() {
+    let s = null;
+    try { s = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+    return { sc: { ...SC0, ...(s && s.sc) }, app: (s && s.app) || APP0(), adm: (s && s.adm) || ADM0(), srv: (s && s.srv) || SRV0(),
+      kb: false, sending: false, sendErr: null, fe: {}, checking: false, checkErr: null, inv: '', invErr: null,
+      aBusy: false, aResult: null, aConfirm: false, aPw: '', aLoginErr: null, log: [] };
+  }
+  componentDidMount() {
+    this._c = setTimeout(() => this.check('открытие приложения'), 400);
+    this._poll = setInterval(() => { const t = this.appTop(); if (t && t.s === 'pending' && this.state.app.req && this.state.app.req.status === 'pending') this.check('экран ожидания'); }, 6000);
+  }
+  componentWillUnmount() { clearTimeout(this._c); clearInterval(this._poll); }
+  afterRender() {
+    const s = this.state, p = this._ps || {};
+    this._ps = s;
+    if (p.sc !== s.sc || p.app !== s.app || p.adm !== s.adm || p.srv !== s.srv) {
+      try { localStorage.setItem(KEY, JSON.stringify({ sc: s.sc, app: s.app, adm: s.adm, srv: s.srv })); } catch (e) {}
+    }
+    const ak = this.appKey(), prevA = this._ak; this._ak = ak;
+    if (prevA && prevA !== ak && this.appRef.current) this.appRef.current.scrollTop = this.scrolls[ak] || 0;
+    const mk = this.admKey(), prevM = this._mk; this._mk = mk;
+    if (prevM && prevM !== mk && this.admRef.current) this.admRef.current.scrollTop = this.scrolls[mk] || 0;
+  }
+  log(t) { this.setState(s => ({ log: [hhmm() + ' ' + t, ...s.log].slice(0, 7) })); }
+  appStack() { const a = this.state.app; return a.stacks[a.tab]; }
+  appTop() { const st = this.appStack(); return st[st.length - 1] || null; }
+  appKey() { const st = this.appStack(); return 'a/' + this.state.app.tab + '/' + st.length + '/' + ((st[st.length - 1] || {}).s || 'root'); }
+  admTab() { const m = this.state.adm; return m.tabs[m.active]; }
+  admKey() { const t = this.admTab(), top = t.stack[t.stack.length - 1]; return 'm/' + this.state.adm.active + '/' + (top ? top.id : 'list:' + t.filter); }
+  saveScroll() {
+    if (this.appRef.current) this.scrolls[this.appKey()] = this.appRef.current.scrollTop;
+    if (this.admRef.current) this.scrolls[this.admKey()] = this.admRef.current.scrollTop;
+  }
+  setStack(fn) { this.saveScroll(); this.setState(s => { const a = s.app; return { app: { ...a, stacks: { ...a.stacks, [a.tab]: fn(a.stacks[a.tab]) } } }; }); }
+  push(e) { this.setStack(st => [...st, e]); this.setState({ sendErr: null, fe: {}, invErr: null, checkErr: null }); }
+  appBack() {
+    if (this.state.kb) { if (document.activeElement) document.activeElement.blur(); return this.setState({ kb: false }); }
+    if (!this.appStack().length) return this.log('Корень вкладки: системный Back сворачивает приложение');
+    this.setStack(st => st.slice(0, -1));
+    this.setState({ sendErr: null, invErr: null, checkErr: null });
+  }
+  goTab(t) {
+    this.saveScroll();
+    if (this.state.app.tab === t) { if (this.appStack().length) this.setStack(() => []); return; }
+    this.setState(s => ({ app: { ...s.app, tab: t }, kb: false }));
+  }
+  toSource() { this.setStack(st => { const i = st.map(x => x.s).lastIndexOf('detail'); return i >= 0 ? st.slice(0, i + 1) : []; }); }
+  openDetail(kind, id) { this.push({ s: 'detail', kind, id }); if (this.state.app.access === 'granted') this.check('открытие материала'); }
+  check(why) {
+    const { app, sc } = this.state;
+    if (!(app.req && app.req.id) && app.access !== 'granted') return;
+    if (sc.net === 'off') { this.setState({ checkErr: 'offline' }); return this.log('Проверка (' + why + '): нет сети'); }
+    if (sc.server === 'down') { this.setState({ checkErr: 'server' }); return this.log('Проверка (' + why + '): сервер недоступен'); }
+    this.setState({ checking: true });
+    clearTimeout(this._ct);
+    this._ct = setTimeout(() => {
+      const { app, srv } = this.state; let a = { ...app }, note = 'без изменений';
+      if (a.access === 'granted') {
+        if (srv.revoked.includes(a.device)) { a.access = 'revoked'; a.req = null; note = 'доступ отозван'; }
+      } else if (a.req && a.req.id) {
+        const r = srv.requests.find(x => x.id === a.req.id);
+        if (r && r.status === 'approved') { a.access = 'granted'; a.req = { ...a.req, status: 'granted' }; note = 'одобрена → доступ открыт'; }
+        else if (r) { if (r.status !== a.req.status) note = r.status; a.req = { ...a.req, status: r.status }; }
+      }
+      if (a.req) a.req = { ...a.req, checkedAt: hhmm() };
+      this.setState({ app: a, checking: false, checkErr: null });
+      this.log('Проверка (' + why + '): ' + note);
+    }, 450);
+  }
+  submit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const { app, sc, sending } = this.state; if (sending) return;
+    const d = app.draft, fe = {};
+    if (!d.first.trim()) fe.first = 'Укажите имя';
+    if (!d.last.trim()) fe.last = 'Укажите фамилию';
+    if (d.tg.trim() && !TG_RE.test(d.tg.trim())) fe.tg = 'Похоже, это не имя пользователя Telegram';
+    if (Object.keys(fe).length) return this.setState({ fe, sendErr: null });
+    const op = app.op || 'op-' + rid();
+    this.setState(s => ({ app: { ...s.app, op }, fe: {} }));
+    if (sc.net === 'off') return this.setState({ sendErr: 'offline' });
+    if (document.activeElement) document.activeElement.blur();
+    this.setState({ sending: true, sendErr: null, kb: false });
+    setTimeout(() => {
+      const { sc, srv, app } = this.state, mode = sc.send;
+      if (mode === 'net' || mode === 'limit') { this.log('Отправка: ' + (mode === 'net' ? 'ошибка сети' : 'лимит')); return this.setState({ sending: false, sendErr: mode }); }
+      if (sc.server === 'down') { this.log('Отправка: сервер недоступен'); return this.setState({ sending: false, sendErr: 'server' }); }
+      let reqs = srv.requests, r = reqs.find(x => x.op === op), created = false;
+      if (!r) {
+        const n = Math.max(...reqs.map(x => +x.id.slice(2))) + 1, tg = d.tg.trim();
+        r = { id: 'r-' + n, op, first: d.first.trim(), last: d.last.trim(), tg: tg ? (tg[0] === '@' ? tg : '@' + tg) : '', sent: stamp(), status: 'pending', device: app.device };
+        reqs = [r, ...reqs]; created = true;
+      }
+      const srv2 = { ...srv, requests: reqs };
+      if (created) { if (sc.tgMode === 'ok') srv2.tgLast = r.id; this.log(sc.tgMode === 'ok' ? 'Telegram: уведомление о ' + r.id : 'Telegram: не доставлено, ' + r.id + ' есть в админке'); }
+      if (mode === 'lost') { this.log((created ? 'Сервер создал ' + r.id : 'Та же ' + r.id) + ', ответ потерян (однократно)'); return this.setState({ srv: srv2, sending: false, sendErr: 'lost', sc: { ...sc, send: 'ok' } }); }
+      this.log(created ? 'Заявка ' + r.id + ' создана' : 'Повтор с тем же номером операции → та же ' + r.id + ', дубля нет');
+      const st = app.stacks[app.tab];
+      this.setState({ srv: srv2, sending: false, sendErr: null, app: { ...app, op: null, req: { id: r.id, status: 'pending', checkedAt: hhmm(), name: r.first + ' ' + r.last }, stacks: { ...app.stacks, [app.tab]: [...st.slice(0, -1), { s: 'pending' }] } } });
+    }, 800);
+  }
+  newRequest(replace) {
+    this.setState(s => ({ app: { ...s.app, req: null, op: null, access: s.app.access === 'revoked' ? 'none' : s.app.access } }));
+    if (replace) this.setStack(st => [...st.slice(0, -1), { s: 'request' }]); else this.push({ s: 'request' });
+  }
+  activate(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const v = this.state.inv.trim();
+    if (!v) return this.setState({ invErr: 'Вставьте ссылку или код.' });
+    if (this.state.sc.net === 'off') return this.setState({ invErr: 'Нет интернета. Попробуйте, когда появится сеть.' });
+    if (!/^(https:\/\/example\.invalid\/invite#)?[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/i.test(v)) return this.setState({ invErr: 'Код не подошёл. Проверьте его или подайте заявку.' });
+    this.setState(s => ({ inv: '', invErr: null, app: { ...s.app, access: 'granted', req: null } }));
+    this.toSource(); this.log('Приглашение активировано (запасной путь)');
+  }
+  setAdm(fn) { this.saveScroll(); this.setState(s => ({ adm: { ...s.adm, ...fn(s.adm) } })); }
+  setATab(fn) { this.setAdm(m => ({ tabs: m.tabs.map((t, i) => i === m.active ? { ...t, ...fn(t) } : t) })); }
+  aBack() {
+    if (this.state.aConfirm) return this.setState({ aConfirm: false });
+    if (!this.admTab().stack.length) return this.log('Админка: в этой вкладке назад некуда');
+    this.setATab(t => ({ stack: t.stack.slice(0, -1) })); this.setState({ aResult: null });
+  }
+  decide(kind) {
+    const { aBusy, adm } = this.state;
+    if (aBusy || adm.session !== 'ok') return;
+    const id = this.admTab().stack.slice(-1)[0].id;
+    this.setState({ aBusy: true, aConfirm: false, aResult: null });
+    setTimeout(() => {
+      const { srv, sc } = this.state, r = srv.requests.find(x => x.id === id);
+      if (r.status !== 'pending') { this.log('Повторное решение ' + id + ' — без изменений'); return this.setState({ aBusy: false, aResult: { k: 'already', st: r.status } }); }
+      const srv2 = { ...srv, requests: srv.requests.map(x => x.id === id ? { ...x, status: kind } : x) };
+      if (sc.decide === 'lost') { this.log('Сервер применил ' + kind + ' для ' + id + ', ответ потерян (однократно)'); return this.setState({ srv: srv2, aBusy: false, aResult: { k: 'lost' }, sc: { ...sc, decide: 'ok' } }); }
+      this.log((kind === 'approved' ? 'Одобрена ' : 'Отклонена ') + id);
+      this.setState({ srv: srv2, aBusy: false, aResult: { k: 'ok', st: kind } });
+    }, 700);
+  }
+  aSignIn(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!this.state.aPw) return this.setState({ aLoginErr: 'Введите пароль.' });
+    this.setState({ aBusy: true, aLoginErr: null });
+    setTimeout(() => { this.setState(s => ({ aBusy: false, aPw: '', adm: { ...s.adm, session: 'ok' } })); this.log('Вход организатора → прежний экран'); }, 600);
+  }
+  resultText(r) {
+    if (!r) return '';
+    if (r.k === 'lost') return 'Ответ не получен. Решение могло примениться — проверьте статус, прежде чем нажимать снова.';
+    if (r.k === 'already') return 'Заявка уже решена: ' + ST[r.st][0].toLowerCase() + '. Ничего не изменено.';
+    if (r.k === 'checked') return 'Текущий статус: ' + ST[r.st][0].toLowerCase() + '.';
+    return r.st === 'approved' ? 'Одобрено. Телефон отправителя получит доступ при следующей проверке статуса.' : 'Заявка отклонена.';
+  }
+  renderVals() {
+    const s = this.state, { sc, app, adm, srv } = s, ios = sc.dev === 'ios';
+    requestAnimationFrame(() => this.afterRender());
+    const top = this.appTop(), scr = top ? top.s : app.tab;
+    const lesson = top && top.kind === 'lesson' ? LESSONS.find(l => l.id === top.id) : null;
+    const mat = top && top.kind === 'material' ? MATERIALS.find(m => m.id === top.id) : null;
+    const stack = this.appStack(), prev = stack[stack.length - 2];
+    const prevTitle = !prev ? (app.tab === 'wiki' ? 'Вики' : 'Расписание') : prev.s === 'detail' ? (prev.kind === 'lesson' ? 'Занятие' : 'Материал') : prev.s === 'request' ? 'Заявка' : 'Назад';
+    const srcEntry = [...stack].reverse().find(x => x.s === 'detail');
+    const srcName = srcEntry ? '«' + (srcEntry.kind === 'lesson' ? LESSONS.find(l => l.id === srcEntry.id).title : MATERIALS.find(m => m.id === srcEntry.id).title) + '»' : app.tab === 'wiki' ? '«Вики»' : 'расписанию';
+    const req = app.req, onWikiRoot = scr === 'wiki', needs = onWikiRoot || (lesson ? lesson.zoom : !!mat);
+    const lk = { granted: needs && app.access === 'granted', locked: needs && app.access !== 'granted', showInvite: false };
+    if (lk.locked) {
+      if (app.access === 'revoked') Object.assign(lk, { title: 'Доступ на этом телефоне закрыт', text: 'Организатор отозвал доступ. Можно подать новую заявку.', primaryLabel: 'Подать заявку', primary: () => this.newRequest(false) });
+      else if (req && req.status === 'pending') Object.assign(lk, { title: 'Заявка на рассмотрении', text: 'Проверено в ' + req.checkedAt + '. Доступ откроется этому телефону после одобрения.', primaryLabel: 'Статус заявки', primary: () => { this.push({ s: 'pending' }); this.check('экран ожидания'); } });
+      else if (req && req.status === 'rejected') Object.assign(lk, { title: 'Заявка отклонена', text: 'Если это ошибка, напишите организатору или подайте новую заявку.', primaryLabel: 'Подробнее', primary: () => this.push({ s: 'pending' }) });
+      else Object.assign(lk, { title: lesson ? 'Zoom — для участников с доступом' : onWikiRoot ? 'Вики — для участников с доступом' : 'Материал для участников с доступом', text: 'Отправьте заявку — организатор откроет доступ этому телефону.', primaryLabel: 'Запросить доступ', primary: () => this.push({ s: 'request' }), showInvite: true });
+    }
+    const P = { pending: 'M12 7v5l3 2', granted: 'm8 12.5 2.8 2.8L16.5 9.5', rejected: 'M9 9l6 6M15 9l-6 6' };
+    const pst = req ? req.status : app.access === 'granted' ? 'granted' : 'pending';
+    const pend = pst === 'granted'
+      ? { title: 'Доступ открыт', text: 'Закрытые материалы и Zoom доступны на этом телефоне.', showMeta: false, showPrimary: true, primaryLabel: 'Продолжить: ' + srcName, primary: () => this.toSource(), showSecondary: false }
+      : pst === 'rejected'
+      ? { title: 'Заявка отклонена', text: 'Если это ошибка, напишите организатору. Можно подать новую заявку.', showMeta: true, showPrimary: true, primaryLabel: 'Подать новую заявку', primary: () => this.newRequest(true), showSecondary: true, secondaryLabel: 'Назад' }
+      : { title: 'Заявка на рассмотрении', text: 'Уведомления не будет. Статус проверяется, когда вы открываете приложение и пока открыт этот экран. Расписание доступно.', showMeta: true, showPrimary: true, primaryLabel: s.checking ? 'Проверяем…' : 'Проверить сейчас', primary: () => this.check('кнопка'), showSecondary: true, secondaryLabel: 'Вернуться к ' + srcName };
+    pend.iconPath = P[pst] || P.pending;
+    pend.name = req ? req.name : ''; pend.checked = req ? 'Проверено в ' + req.checkedAt : '';
+
+    const at = this.admTab(), atop = at.stack[at.stack.length - 1];
+    const r = atop ? srv.requests.find(x => x.id === atop.id) : null;
+    const pendingN = srv.requests.filter(x => x.status === 'pending').length;
+    const rows = srv.requests.filter(x => at.filter === 'all' || x.status === 'pending').sort((a, b) => +b.id.slice(2) - +a.id.slice(2));
+    let d = { name: '', tg: '', sent: '', st: '', cls: '', hasMatch: false, match: '', canDecide: false };
+    if (r) {
+      const m = srv.requests.filter(x => x.id !== r.id && norm(x.first) === norm(r.first) && norm(x.last) === norm(r.last));
+      d = { name: r.first + ' ' + r.last, tg: r.tg || 'не указан', sent: r.sent, st: ST[r.status][0], cls: ST[r.status][1], canDecide: r.status === 'pending',
+        hasMatch: m.length > 0, match: m.length ? 'Возможное совпадение: ' + m.map(x => x.id + ' от ' + x.sent.split(',')[0] + ' — ' + ST[x.status][0].toLowerCase()).join('; ') + '. Это может быть переустановка или другой человек. Автоматического объединения нет.' : '' };
+    }
+    const loggedIn = adm.session === 'ok';
+    const tgR = srv.requests.find(x => x.id === srv.tgLast);
+    const opt = (key, v, label) => ({ label, on: sc[key] === v, bg: sc[key] === v ? 'var(--color-text)' : 'var(--color-bg)', fg: sc[key] === v ? 'var(--color-bg)' : 'var(--color-text)', pick: () => { this.setState(st => ({ sc: { ...st.sc, [key]: v } })); if (key === 'server' || key === 'net') this.setState({ checkErr: null }); } });
+    return {
+      isIOS: ios, isAndroid: !ios, clock: hhmm(), netIcon: sc.net === 'off' ? 'нет сети' : '',
+      appRef: this.appRef, admRef: this.admRef,
+      showAppNav: !!top, appBack: () => this.appBack(), appBackLabel: prevTitle,
+      scrSchedule: scr === 'schedule', scrWiki: scr === 'wiki', scrDetail: scr === 'detail', scrRequest: scr === 'request', scrPending: scr === 'pending', scrInvite: scr === 'invite',
+      lessons: LESSONS.map(l => ({ ...l, open: () => this.openDetail('lesson', l.id) })),
+      materials: app.access === 'granted' ? MATERIALS.map(m => ({ ...m, open: () => this.openDetail('material', m.id) })) : [],
+      wikiLocked: app.access !== 'granted',
+      det: lesson ? { kicker: 'Занятие · ' + lesson.kind, title: lesson.title, desc: lesson.desc, meta: lesson.when, hasMeta: true, isLesson: true, isMaterial: false }
+        : mat ? { kicker: 'Материал вики', title: mat.title, desc: mat.note, meta: '', hasMeta: false, isLesson: false, isMaterial: true } : {},
+      lk, zoomTap: () => this.log('Zoom: в прототипе не открывается'),
+      openInvite: () => this.push({ s: 'invite' }),
+      draft: app.draft,
+      onFirst: e => { const v = e.target.value; this.setState(st => ({ app: { ...st.app, draft: { ...st.app.draft, first: v } }, fe: { ...st.fe, first: null } })); },
+      onLast: e => { const v = e.target.value; this.setState(st => ({ app: { ...st.app, draft: { ...st.app.draft, last: v } }, fe: { ...st.fe, last: null } })); },
+      onTg: e => { const v = e.target.value; this.setState(st => ({ app: { ...st.app, draft: { ...st.app.draft, tg: v } }, fe: { ...st.fe, tg: null } })); },
+      onFocus: e => { const el = e.target; clearTimeout(this._bt); this.setState({ kb: true }, () => requestAnimationFrame(() => { const c = this.appRef.current; if (!c) return; const y = el.getBoundingClientRect().top - c.getBoundingClientRect().top + c.scrollTop; c.scrollTop = Math.max(0, y - 90); })); },
+      onBlur: () => { this._bt = setTimeout(() => { const a = document.activeElement; if (!a || a.tagName !== 'INPUT' || !this.appRef.current || !this.appRef.current.contains(a)) this.setState({ kb: false }); }, 60); },
+      kb: s.kb, kbH: ios ? '300px' : '280px', kbDone: () => { if (document.activeElement) document.activeElement.blur(); this.setState({ kb: false }); },
+      fe: { first: s.fe.first, last: s.fe.last, tg: s.fe.tg, hasFirst: !!s.fe.first, hasLast: !!s.fe.last, hasTg: !!s.fe.tg },
+      hasSendErr: !!s.sendErr, sendErrText: SEND_ERR[s.sendErr] || '',
+      sending: s.sending, sendLabel: s.sending ? 'Отправляем…' : s.sendErr === 'lost' ? 'Отправить ещё раз' : 'Отправить заявку',
+      submit: e => this.submit(e),
+      pend, checking: s.checking, hasCheckErr: !!s.checkErr && scr === 'pending', checkErrText: CHECK_ERR[s.checkErr] || '',
+      inv: s.inv, onInv: e => this.setState({ inv: e.target.value, invErr: null }), hasInvErr: !!s.invErr, invErr: s.invErr || '', activate: e => this.activate(e),
+      showTabbar: !s.kb,
+      tabs: [['schedule', 'Расписание'], ['wiki', 'Вики']].map(([k, label]) => ({ label, current: app.tab === k ? 'page' : undefined, fg: app.tab === k ? 'var(--color-accent-700)' : 'var(--color-neutral-700)', dot: app.tab === k ? 'var(--color-accent)' : 'transparent', go: () => this.goTab(k) })),
+
+      aTabCount: String(adm.tabs.length), aCanCloseTab: adm.tabs.length > 1,
+      aSwitchTab: () => this.setAdm(m => ({ active: (m.active + 1) % m.tabs.length })),
+      aCloseTab: () => this.setAdm(m => { const tabs = m.tabs.filter((_, i) => i !== m.active); return { tabs, active: Math.max(0, m.active - 1) }; }),
+      aUrl: 'example.invalid/admin' + (atop ? '#request=' + atop.id : at.filter === 'all' ? '#filter=all' : ''),
+      aShowLogin: !loggedIn, aExpired: adm.session === 'expired', aReturnTo: atop ? 'заявка ' + atop.id : 'список заявок',
+      aPw: s.aPw, aOnPw: e => this.setState({ aPw: e.target.value, aLoginErr: null }), aSignIn: e => this.aSignIn(e),
+      aHasLoginErr: !!s.aLoginErr, aLoginErr: s.aLoginErr || '', aLoginLabel: s.aBusy && !loggedIn ? 'Входим…' : 'Войти',
+      aShowNav: loggedIn && !!atop, aBack: () => this.aBack(),
+      aScrList: loggedIn && !atop, aScrDetail: loggedIn && !!r,
+      pendingLabel: pendingN + ' ожида' + (pendingN === 1 ? 'ет' : 'ют'),
+      aFilters: [['pending', 'Ожидают'], ['all', 'Все']].map(([k, label]) => ({ label, on: at.filter === k, bg: at.filter === k ? 'var(--color-neutral-100)' : 'transparent', pick: () => this.setATab(() => ({ filter: k })) })),
+      aRows: rows.map(x => ({ name: x.first + ' ' + x.last, sub: (x.tg || 'без Telegram') + ' · ' + x.sent, st: ST[x.status][0], cls: ST[x.status][1], open: () => { this.setATab(t => ({ stack: [...t.stack, { s: 'detail', id: x.id }] })); this.setState({ aResult: null }); } })),
+      aEmpty: rows.length === 0,
+      d, aBusy: s.aBusy, aApproveLabel: s.aBusy ? 'Сохраняем…' : 'Одобрить',
+      aApprove: () => this.decide('approved'), aAskReject: () => this.setState({ aConfirm: true }), aReject: () => this.decide('rejected'), aCancelReject: () => this.setState({ aConfirm: false }),
+      aConfirm: s.aConfirm && loggedIn,
+      aHasResult: !!s.aResult, aResultText: this.resultText(s.aResult), aResultCheck: !!s.aResult && s.aResult.k === 'lost',
+      aRecheck: () => { this.setState({ aBusy: true }); setTimeout(() => { const x = this.state.srv.requests.find(q => q.id === atop.id); this.setState({ aBusy: false, aResult: { k: 'checked', st: x.status } }); this.log('Админка: статус ' + x.id + ' перечитан'); }, 500); },
+
+      tgHas: !!tgR, tg: tgR ? { url: 'https://example.invalid/admin#request=' + tgR.id } : {},
+      tgOpen: () => { this.saveScroll(); this.setState(st => ({ aResult: null, aConfirm: false, adm: { ...st.adm, tabs: [...st.adm.tabs, { stack: [{ s: 'detail', id: srv.tgLast }], filter: 'pending' }], active: st.adm.tabs.length } })); this.log('Telegram → новая вкладка с ' + srv.tgLast); },
+
+      qa: [
+        { title: 'Телефон', opts: [opt('dev', 'ios', 'iPhone'), opt('dev', 'android', 'Android')] },
+        { title: 'Сеть телефона', opts: [opt('net', 'on', 'Есть'), opt('net', 'off', 'Нет')] },
+        { title: 'Ответ на отправку заявки', opts: [opt('send', 'ok', 'Успех'), opt('send', 'lost', 'Потерян (1 раз)'), opt('send', 'net', 'Ошибка сети'), opt('send', 'limit', 'Лимит')] },
+        { title: 'Сервер', opts: [opt('server', 'up', 'Работает'), opt('server', 'down', 'Недоступен')] },
+        { title: 'Ответ на решение в админке', opts: [opt('decide', 'ok', 'Успех'), opt('decide', 'lost', 'Потерян (1 раз)')] },
+        { title: 'Telegram', opts: [opt('tgMode', 'ok', 'Доставляет'), opt('tgMode', 'fail', 'Не доставляет')] },
+      ],
+      actions: [
+        { label: 'Back — приложение', run: () => this.appBack() },
+        { label: 'Back — админка', run: () => this.aBack() },
+        { label: 'Перезапуск приложения', run: () => { this.saveScroll(); this.setState({ kb: false, sending: false, sendErr: null, checkErr: null, fe: {} }); this.log('Перезапуск: вкладка, экран, черновик и заявка восстановлены'); this.check('открытие приложения'); } },
+        { label: 'Переустановка', run: () => { this.setState({ app: APP0(), kb: false, sendErr: null, checkErr: null, fe: {}, inv: '' }); this.log('Переустановка: доступа и заявки на телефоне нет'); } },
+        { label: 'Админ-сессия истекла', run: () => this.setState(st => ({ adm: { ...st.adm, session: 'expired' }, aConfirm: false, aResult: null, aPw: '' })) },
+        { label: 'Отозвать доступ телефона', run: () => { this.setState(st => ({ srv: { ...st.srv, revoked: [...st.srv.revoked, st.app.device] } })); this.log('Сервер: доступ телефона отозван'); } },
+        { label: 'Сбросить демо', run: () => { try { localStorage.removeItem(KEY); } catch (e) {} this.scrolls = {}; this.setState({ ...this.init(), log: [] }); } },
+      ],
+      log: s.log.length ? s.log : ['Событий пока нет'],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -20,6 +20,9 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+from .wiki_graph import mount_wiki_graph
+from .wiki_content import ContentStore
+
 
 @dataclass
 class WikiSettings:
@@ -60,6 +63,8 @@ def create_wiki_app(settings=None, access_authorizer=None):
     attempts = {}
     catalog = None
     version = None
+    content = ContentStore(cfg.database.with_name('wiki-content.sqlite3'))
+    app.state.wiki_content = content
     generation = hashlib.sha256((cfg.username + '\0' + cfg.password).encode()).hexdigest()
 
     def db():
@@ -204,9 +209,12 @@ def create_wiki_app(settings=None, access_authorizer=None):
     def material(material_id: str):
         for row in load():
             if row['id'] == material_id:
-                return row
+                annotation = content.get(material_id, row['links'])
+                return {**row, 'annotation': annotation} if annotation else row
         raise HTTPException(404, 'Материал больше не доступен')
 
+    app.state.wiki_catalog = load
+    mount_wiki_graph(app, load, authorize)
     return app
 
 
