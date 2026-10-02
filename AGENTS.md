@@ -1,63 +1,52 @@
-# Daychi / Дейчи
+# Daychi
 
-Read README.md, docs/PRODUCT.md, docs/DESIGN.md and docs/TESTFLIGHT_CHANGELOG.md
-before product changes. The Expo app also has local AGENTS.md instructions.
+Перед продуктовыми изменениями прочитать README.md, docs/PRODUCT.md,
+docs/DESIGN.md и docs/TESTFLIGHT_CHANGELOG.md. Для Expo действуют также
+apps/practice-app/AGENTS.md.
 
-Canonical project/repository name: Daychi / daychi, Russian «Дейчи».
-Contributor setup: CONTRIBUTING.md and docs/README.md. Preserve legacy bundle ID,
-URL scheme, storage keys and deployed DAYCHEE_* interfaces; rename boundaries
-and verification are recorded in docs/daychi-rename.md.
+- Сохранять принятый дизайн. `/prototype` — демонстрационные данные.
+- Не публиковать корпус, рабочие базы, приглашения, Zoom-реквизиты и credentials.
+- Расписание использует Asia/Jerusalem отдельно от timezone устройства.
+- Сохранять bundle ID, URL-схему, ключи хранения и действующие API-интерфейсы.
 
-Preserve the approved design. Treat `/prototype` as mock content, not shipped
-functionality. Do not expose the private corpus API or commit credentials/data.
-Keep the schedule timezone Asia/Jerusalem, distinct from the device timezone.
+## Дизайн и навигация
 
-For each TestFlight build update the changelog with added/fixed/changed behavior,
-tests actually run, limitations, Apple status and source commit/tag. Do not claim
-real-device delivery from simulator evidence. Ask before releasing a new build
-unless the current task already authorizes it. Once a TestFlight release is
-authorized, automatically distribute it to all members of the existing internal
-group «Личное тестирование» (ed8a05aa-a6db-41e9-93e6-299c8f36c7c2), without
-asking for another confirmation. This is the owner’s standing instruction from
-2026-09-19, including build 6. Verify group assignment and Testing status.
-Keep roadmap items separate from completed work. Never rewrite past release facts.
+Каждый затронутый экран и состояние сверять с актуальным референсом из
+docs/DESIGN.md. Сохранять парные reference/runtime снимки, исправлять расхождения.
+Новый кандидат не заменяет принятый референс автоматически.
 
-Wiki content batches: maintain docs/wiki-work-plan.md after each batch with
-completed/remaining scope, actual time/token usage when available, estimates
-and next scope. Use docs/wiki-contributor-pipeline.md for delegated content work;
-keep source data and credentials private, imports with the coordinator.
-Primary editable content ledger: data/wiki-workspace/outputs/2026-10-02/wiki-materials.xlsx.
-See docs/wiki-team-pipeline.md for stable source IDs, snapshot periods and updates.
-Preserve participant inputs when updating the ledger; never regenerate over them.
+Для «Моих занятий» проверять пустой список, регулярную серию, ближайшую дату,
+пропуск/восстановление, разовые даты и серию вне загруженного окна.
+Проверять back/close и Android Back через реальные входы: вложенные экраны,
+прямые переходы, смену вкладок и прокрутку. Выбор, фильтры, позиция и черновик
+сохраняются; кнопки доступны внутри safe areas.
 
-Every subsequent version must be checked against the original design archive and
-screen references in docs/DESIGN.md before release. Preserve explicitly approved
-screen-specific revisions (including build-5 schedule). Record the reference,
-screenshots compared, justified data/native differences, and actual QA result.
-Do not introduce visual departures without owner agreement.
+Неизвестный UX сначала описывается отдельным дизайн-кандидатом: вход/выход,
+loading/offline/error/recovery и переходы. Использовать синтетические данные.
+Известные визуальные или навигационные расхождения блокируют приёмку и выпуск.
 
-Build 7 is an owner-authorized closed beta with a private bundled wiki snapshot
-and no manual login. Generated catalog stays ignored by Git. Do not publish web
-exports or widen distribution of this snapshot; restore server authorization
-before a broader release. See docs/wiki-closed-beta.md.
+## Выпуски
 
-## Design acceptance and navigation — owner instruction 2026-09-24
+Выпуск требует явного разрешения в задаче. Для разрешённой TestFlight-сборки
+назначить всех участников существующей внутренней группы тестирования без
+повторного запроса и проверить назначение и статус Testing.
 
-Implementation is not accepted just because it builds. Before handing off a
-UI change, compare EACH affected screen and state with the latest owner-approved
-Claude Design export identified in docs/DESIGN.md. Save paired reference/runtime
-screenshots, list discrepancies and fix them; do not infer complete fidelity from
-one schedule screenshot. Include «Мои занятия»: empty, regular series, next date,
-skipped/restored date, one-off dates, and a series absent from the loaded window.
-A new designer candidate is not automatically an approved reference.
+Обновлять changelog: поведение, фактически выполненные тесты, ограничения,
+Apple status, source commit/tag. Не переписывать прошлые факты.
+Simulator не подтверждает установку или доставку уведомлений на телефоне.
+Перед выпуском сверять все затронутые состояния с дизайн-референсами;
+сохранять принятую итерацию расписания build 5.
+Исторические bundled-снимки закрытой беты не публиковать; новые версии
+получают закрытый контент через авторизованный сервер.
 
-Exercise every affected back arrow/close control and Android Back through its
-actual entry points. Check nested screens, direct shortcuts, tab changes and
-scrolling: return to the real previous screen with selection, filters, scroll
-position and draft preserved. Back controls must stay reachable inside safe areas.
-Record actual results and untested paths in the QA report. A known visual or
-navigation mismatch blocks acceptance/release; do not call the design fully ported.
+## Вики
 
-Missing UX is assigned to Claude Design in a separate candidate, with entry/exit,
-loading/offline/error/recovery states and transition table, before implementation.
-Keep real wiki content, invitation credentials and Zoom links out of design prompts.
+Следовать docs/wiki-production-pipeline.md и docs/wiki-contributor-pipeline.md.
+После каждой партии обновлять docs/wiki-work-plan.md: выполнено/осталось,
+фактическое время и доступный usage, оценки и следующий объём.
+Данные и импорт остаются у координатора.
+
+Основной редактируемый реестр — приватный
+`data/wiki-workspace/outputs/2026-10-02/wiki-materials.xlsx`.
+Правила — docs/wiki-team-pipeline.md. Объединять обновления по стабильным ID,
+сохранять периоды снимков и введённые назначения; не перезаписывать правки участников.

@@ -37,13 +37,13 @@ knowledge/raw/
 apps/practice-app/ios/
 apps/practice-app/android/
 
-# Private catalog embedded only in the explicitly authorized closed beta build
+# Generated private catalog
 apps/practice-app/src/features/wiki/generated/
 
-# Private Zoom meeting links/passcodes supplied for the closed beta
+# Generated meeting credentials
 apps/practice-app/src/features/schedule/generated/
 
-# Local review captures / evidence containing private corpus or tester data
+# Local captures with private content
 .impeccable/review/
 docs/qa-wiki-notion-2026-10-01/screenshots/*
 !docs/qa-wiki-notion-2026-10-01/screenshots/reference-*.jpg

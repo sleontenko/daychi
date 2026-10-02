@@ -1,4 +1,4 @@
-# App name is set explicitly after checking availability in the owner's Fly account.
+# Set an available app name before deployment.
 primary_region = "fra"
 
 [build]

@@ -1,9 +1,10 @@
 """Run on the server. Exercise enrollment without printing credentials or sending push."""
+import os
 from pathlib import Path
 import requests
 from practice_api.reminder_store import ReminderStore
 
-store = ReminderStore(Path('/Users/mac-mini-server/.config/quiet-practice/devices.sqlite3'))
+store = ReminderStore(Path(os.environ['SCHEDULE_PRIVATE_DB']))
 base = 'http://127.0.0.1:8765/api/v1/device'
 code = store.create_pairing_code()
 response = requests.post(base + '/pair', json={'code': code}, timeout=10)
