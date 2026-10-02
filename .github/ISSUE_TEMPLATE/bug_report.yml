@@ -1,0 +1,27 @@
+name: Ошибка
+description: Воспроизводимая ошибка Daychi
+title: "[Bug] "
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Ожидаемое и фактическое поведение
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Шаги воспроизведения
+      description: Без приглашений, токенов, Zoom-реквизитов и реальных данных пользователей.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Платформа, версия приложения / commit
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Проверки и безопасные скриншоты

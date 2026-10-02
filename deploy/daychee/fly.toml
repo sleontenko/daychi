@@ -1,0 +1,35 @@
+# App name is set explicitly after checking availability in the owner's Fly account.
+primary_region = "fra"
+
+[build]
+  dockerfile = "deploy/daychee/Dockerfile"
+  ignorefile = "deploy/daychee/dockerignore"
+
+[env]
+  WIKI_INDEX = "/data/daychee/index.json"
+  WIKI_DATABASE = "/data/daychee/wiki.sqlite3"
+  DAYCHEE_ACCESS_DATABASE = "/data/daychee/access.sqlite3"
+  DAYCHEE_ZOOM = "/data/daychee/zoom.json"
+
+[[mounts]]
+  source = "daychee_data"
+  destination = "/data"
+  snapshot_retention = 7
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "15s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

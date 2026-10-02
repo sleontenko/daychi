@@ -20,6 +20,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+from .wiki_graph import mount_wiki_graph
+from .public_wiki import mount_public_wiki
+from .wiki_content import ContentStore
+
 
 @dataclass
 class WikiSettings:
@@ -53,13 +57,15 @@ class Login(BaseModel):
 
 def create_wiki_app(settings=None, access_authorizer=None):
     cfg = settings or WikiSettings.from_env()
-    app = FastAPI(title='Quiet Practice Wiki', docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(title='Daychi Wiki', docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(CORSMiddleware, allow_origins=list(cfg.origins),
                        allow_methods=['GET', 'POST'], allow_headers=['Authorization', 'Content-Type'])
     lock = threading.Lock()
     attempts = {}
     catalog = None
     version = None
+    content = ContentStore(cfg.database.with_name('wiki-content.sqlite3'))
+    app.state.wiki_content = content
     generation = hashlib.sha256((cfg.username + '\0' + cfg.password).encode()).hexdigest()
 
     def db():
@@ -204,9 +210,13 @@ def create_wiki_app(settings=None, access_authorizer=None):
     def material(material_id: str):
         for row in load():
             if row['id'] == material_id:
-                return row
+                annotation = content.get(material_id, row['links'])
+                return {**row, 'annotation': annotation} if annotation else row
         raise HTTPException(404, 'Материал больше не доступен')
 
+    app.state.wiki_catalog = load
+    mount_public_wiki(app, load, content, enabled=os.getenv('DAYCHEE_PUBLIC_WIKI_ENABLED') == '1')
+    mount_wiki_graph(app, load, authorize)
     return app
 
 

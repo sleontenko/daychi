@@ -68,9 +68,10 @@ export default function ScheduleScreen() {
   const [tab, setTab] = useState<Tab>(params.tab === 'wiki' ? 'wiki' : 'schedule');
   const [settingsStack, setSettingsStack] = useState<SettingsPage[]>([]);
   const settingsPage = settingsStack.at(-1) ?? null;
-  const setSettingsPage = (page: SettingsPage | null) => { if (page === 'access') { clearAccessReturn(); setAccessLabel('Готово'); } setSettingsStack(stack => page === null ? [] : [...stack, page]); };
+  const setSettingsPage = (page: SettingsPage | null) => { if (page === 'access') { clearAccessReturn(); setAccessLabel('Готово'); setAccessManual(false); } setSettingsStack(stack => page === null ? [] : [...stack, page]); };
   const settingsBack = () => { if (settingsPage === 'access') clearAccessReturn(); setSettingsStack(stack => stack.slice(0, -1)); };
   const [accessLabel, setAccessLabel] = useState('Готово');
+  const [accessManual, setAccessManual] = useState(false);
   useEffect(() => subscribeInvitation(() => { if (getInvitation()) setSettingsStack([]); }), []);
   const [cancelSeries, setCancelSeries] = useState<string | null>(null);
   const [week, setWeek] = useState(0);
@@ -217,7 +218,8 @@ export default function ScheduleScreen() {
       onPress={() => void Linking.openSettings()}><Text style={s.link}>Настройки уведомлений телефона</Text></Pressable>}
   </View>;
 
-  const openAccess = (label: string) => {
+  const openAccess = (label: string, invitation = false) => {
+    setAccessManual(invitation);
     setAccessLabel(label);
     setAccessReturn({ label, resume: () => setSettingsStack([]) });
     setSettingsStack(stack => [...stack, 'access']);
@@ -241,12 +243,12 @@ export default function ScheduleScreen() {
     </View></SafeAreaView>;
 
   return <SafeAreaView edges={['top']} style={s.safe}>
-    <SettingsScreen bottomTabs={bottomTabs} page={settingsPage} onPage={setSettingsPage} onBack={settingsBack} backLabel={settingsStack.length > 1 ? 'Назад' : detail ? 'Назад' : tab === 'mine' ? 'Мои занятия' : tab === 'wiki' ? 'Вики' : 'Расписание'} accessReturnLabel={accessLabel} onAccessDone={() => { if (!resumeAccessReturn()) settingsBack(); }} reminders={reminders} view={view} onView={changeView} />
+    <SettingsScreen bottomTabs={bottomTabs} page={settingsPage} onPage={setSettingsPage} onBack={settingsBack} backLabel={settingsStack.length > 1 ? 'Назад' : detail ? 'Назад' : tab === 'mine' ? 'Мои занятия' : tab === 'wiki' ? 'Вики' : 'Расписание'} accessManual={accessManual} accessReturnLabel={accessLabel} onAccessDone={() => { if (!resumeAccessReturn()) settingsBack(); }} reminders={reminders} view={view} onView={changeView} />
     {!detail && !(tab === 'wiki' && wikiDetail) && <View style={s.rootBar}>
       <Pressable accessibilityRole="button" accessibilityLabel="Настройки" onPress={() => setSettingsPage('settings')} style={s.roundButton}><Icon name="settings" color={C.text} size={24} /></Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel="Обратная связь" onPress={() => setSettingsPage('feedback')} style={s.roundButton}><Icon name="feedback" color={C.text} size={24} /></Pressable>
     </View>}
-    {wikiOpened && <View style={{ flex: 1, display: tab === 'wiki' ? 'flex' : 'none' }}><WikiScreen active={tab === 'wiki' && !settingsPage} onDetailChange={setWikiDetail} onOpenAccess={() => openAccess(wikiDetail ? 'Вернуться к материалу' : 'Вернуться в вики')} /></View>}
+    {wikiOpened && <View style={{ flex: 1, display: tab === 'wiki' ? 'flex' : 'none' }}><WikiScreen active={tab === 'wiki' && !settingsPage} onDetailChange={setWikiDetail} onOpenAccess={invitation => openAccess(wikiDetail ? 'Вернуться к материалу' : 'Вернуться в вики', invitation)} /></View>}
     {detail && <BackButton label={tab === 'mine' ? 'Мои занятия' : 'Расписание'} onPress={() => setDetail(null)} />}
     <ScrollView style={{ display: tab === 'wiki' ? 'none' : 'flex' }} ref={scroll} contentContainerStyle={s.page} showsVerticalScrollIndicator={false}
       scrollEventThrottle={16} onScroll={event => { currentOffset.current = event.nativeEvent.contentOffset.y; if (!detail && restoreOffset.current === null) listOffsets.current[tab] = currentOffset.current; }}
@@ -262,7 +264,7 @@ export default function ScheduleScreen() {
             <View style={s.section}>
               {!!info!.location && <Text style={s.body}>{info!.location}</Text>}
               <Text style={s.caption}>Время Израиля · {Math.round((Date.parse(lesson.ends_at) - Date.parse(lesson.starts_at)) / 60000)} мин</Text></View>
-            {info!.online && lesson.status !== 'cancelled' && Date.parse(lesson.ends_at) > now && access !== 'active' && <Pressable accessibilityRole="button" style={s.outlineButton} onPress={() => openAccess(`Вернуться к занятию «${info!.title}»`)}><Text style={s.link}>{access === 'offline' ? 'Проверить доступ к Zoom · нужен интернет' : access === 'loading' ? 'Проверяем доступ к Zoom…' : 'Подключение доступно по приглашению'}</Text></Pressable>}
+            {info!.online && lesson.status !== 'cancelled' && Date.parse(lesson.ends_at) > now && access !== 'active' && <Pressable accessibilityRole="button" style={s.outlineButton} onPress={() => openAccess(`Вернуться к занятию «${info!.title}»`)}><Text style={s.link}>{access === 'offline' ? 'Проверить доступ к Zoom · нужен интернет' : access === 'loading' ? 'Проверяем доступ к Zoom…' : 'Запросить доступ к Zoom'}</Text></Pressable>}
             {info!.online && (lesson.status === 'cancelled' || Date.parse(lesson.ends_at) <= now) && <Text style={s.caption}>{lesson.status === 'cancelled' ? 'Занятие отменено' : 'Встреча закончилась'}</Text>}
             {info!.online && access === 'active' && lesson.status !== 'cancelled' && Date.parse(lesson.ends_at) > now && !zoomState.error && !zoom && <Text style={s.caption}>{zoomState.loading ? 'Загружаем подключение…' : 'Ссылка на встречу пока не добавлена. Проверьте позже или уточните в школе.'}</Text>}
             {!!zoomState.error && <View><Text accessibilityRole="alert" style={s.caption}>{zoomState.error}</Text><Pressable accessibilityRole="button" onPress={zoomState.retry} style={s.textButton}><Text style={s.link}>Повторить</Text></Pressable></View>}

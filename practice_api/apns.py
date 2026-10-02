@@ -44,7 +44,7 @@ class APNs:
         if not re.fullmatch(r"[0-9a-fA-F]{32,512}", token):
             return PushResult("rejected", invalid_token=True)
         # Generic lock-screen copy: never expose private Telegram class contents.
-        payload = {"aps": {"alert": {"title": "Тихая практика",
+        payload = {"aps": {"alert": {"title": "Дейчи",
                     "body": "Скоро выбранное занятие. Проверьте актуальное расписание."},
                     "sound": "default"}, "occurrence_id": occurrence_id}
         headers = {"authorization": self.authorization(), "apns-topic": TOPIC,

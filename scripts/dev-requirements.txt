@@ -1,0 +1,5 @@
+# Lightweight development/test environment; ASR/model dependencies are separate.
+-r schedule-requirements.txt
+-r wiki-requirements.txt
+boto3>=1.40,<2
+python-dotenv>=1.0

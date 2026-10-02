@@ -1,0 +1,22 @@
+name: Задача
+description: Задача разработки или документации
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Проблема и требуемый результат
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Границы задачи и источник решения / дизайна
+      description: Ссылка на утверждённый doc; кандидат сам по себе не означает одобрение.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Критерии приёмки и проверки
+    validations:
+      required: true

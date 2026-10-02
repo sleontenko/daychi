@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/organic-c92d12e8-7b98-42d5-a71a-72dca3333732/styles.css">
+  <script src="_ds/organic-c92d12e8-7b98-42d5-a71a-72dca3333732/_ds_bundle.js"></script>
+  <title>Дейчи · приватность и удаление (кандидат 02.10.2026, вымышленные данные)</title>
+  <style>
+    body { background: var(--color-neutral-300); margin: 0; }
+    a { color: var(--color-accent-700); }
+    a:hover { color: var(--color-accent-800); }
+    button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+    @keyframes dspin { to { transform: rotate(360deg); } }
+  </style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:40px;padding:{{ rootPad }};box-sizing:border-box;background:var(--color-neutral-300);color:var(--color-text)">
+
+  <div lang="ru" onKeyDown="{{ onPhoneKey }}" style="width:{{ phW }};height:{{ phH }};flex-shrink:0;border-radius:{{ phR }};overflow:hidden;position:relative;display:flex;flex-direction:column;background:var(--color-bg);box-shadow:{{ phSh }};font-family:{{ fontStack }}">
+    <sc-if value="{{ isIOS }}" hint-placeholder-val="{{ true }}">
+      <div aria-hidden="true" style="height:54px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 30px 0 38px;font-size:17px;font-weight:600">
+        <span>9:41</span>
+        <span style="position:absolute;left:50%;top:11px;transform:translateX(-50%);width:124px;height:36px;border-radius:20px;background:var(--color-neutral-900)"></span>
+        <span style="font-size:13px">{{ netIcon }}</span>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isAndroid }}" hint-placeholder-val="{{ false }}">
+      <div aria-hidden="true" style="height:36px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:14px;font-weight:500">
+        <span>9:41</span>
+        <span style="position:absolute;left:50%;top:10px;transform:translateX(-50%);width:14px;height:14px;border-radius:99px;background:var(--color-neutral-900)"></span>
+        <span style="font-size:12px">{{ netIcon }}</span>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showRootBar }}" hint-placeholder-val="{{ true }}">
+      <div style="height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px">
+        <button onClick="{{ openSettings }}" aria-label="Настройки" style="width:44px;height:44px;border-radius:999px;border:none;background:transparent;color:var(--color-text);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-200)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+        <button onClick="{{ openFb }}" aria-label="Обратная связь" style="width:44px;height:44px;border-radius:999px;border:none;background:transparent;color:var(--color-text);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-200)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showNav }}" hint-placeholder-val="{{ false }}">
+      <div style="height:48px;flex-shrink:0;display:flex;align-items:center;padding:0 6px">
+        <button onClick="{{ back }}" disabled="{{ backDisabled }}" aria-label="{{ backAria }}" style="min-height:44px;max-width:70%;display:flex;align-items:center;gap:4px;padding:0 12px 0 4px;background:none;border:none;border-radius:999px;font:inherit;font-size:17px;color:var(--color-accent-700);cursor:pointer" style-hover="background:var(--color-neutral-200)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0"><path d="m15 18-6-6 6-6"></path></svg>
+          <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ backLabel }}</span>
+        </button>
+      </div>
+    </sc-if>
+
+    <div ref="{{ scRef }}" style="flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none">
+
+      <sc-if value="{{ scrSchedule }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:8px 16px 24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div role="heading" aria-level="1" style="font-size:30px;line-height:1.12;font-weight:700;letter-spacing:-0.01em">Расписание</div>
+            <div style="font-size:14px;color:var(--color-neutral-700)">Открыто всем · демо-даты</div>
+          </div>
+          <div role="group" aria-label="Формат" style="display:flex;gap:6px;padding:4px;border-radius:999px;background:var(--color-neutral-200);align-self:flex-start">
+            <sc-for list="{{ filters }}" as="f" hint-placeholder-count="3">
+              <button aria-pressed="{{ f.on }}" onClick="{{ f.pick }}" style="min-height:40px;padding:0 14px;border-radius:999px;border:none;font:inherit;font-size:15px;font-weight:600;cursor:pointer;background:{{ f.bg }};color:var(--color-text);box-shadow:{{ f.sh }}">{{ f.label }}</button>
+            </sc-for>
+          </div>
+          <sc-for list="{{ days }}" as="d" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div role="heading" aria-level="2" style="font-size:14px;font-weight:700;color:var(--color-neutral-700);padding:6px 4px 0">{{ d.label }}</div>
+              <sc-for list="{{ d.items }}" as="l" hint-placeholder-count="3">
+                <button onClick="{{ l.open }}" style="text-align:left;min-height:72px;padding:14px 16px;border-radius:22px;border:none;background:var(--color-neutral-100);font:inherit;color:inherit;display:flex;gap:14px;align-items:center;cursor:pointer" style-hover="background:var(--color-accent-100)">
+                  <span style="width:48px;font-size:16px;font-weight:700">{{ l.time }}</span>
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:17px;font-weight:600">{{ l.title }}</span><span style="font-size:14px;color:var(--color-neutral-700)">{{ l.sub }}</span></span>
+                  <sc-if value="{{ l.mine }}"><span class="tag tag-accent-2" style="font-size:12px">Моё</span></sc-if>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-500)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+                </button>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ scrMine }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:8px 16px 24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div role="heading" aria-level="1" style="font-size:30px;line-height:1.12;font-weight:700;letter-spacing:-0.01em">Мои занятия</div>
+            <div style="font-size:14px;color:var(--color-neutral-700)">Только на этом телефоне</div>
+          </div>
+          <sc-if value="{{ mineEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:18px;border-radius:22px;background:var(--color-neutral-100);font-size:15px;line-height:1.45;color:var(--color-neutral-800)">Пока пусто. Отметьте занятие на его странице.</div>
+          </sc-if>
+          <sc-for list="{{ mineList }}" as="l" hint-placeholder-count="3">
+            <button onClick="{{ l.open }}" style="text-align:left;min-height:72px;padding:14px 16px;border-radius:22px;border:none;background:var(--color-neutral-100);font:inherit;color:inherit;display:flex;gap:14px;align-items:center;cursor:pointer" style-hover="background:var(--color-accent-100)">
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:17px;font-weight:600">{{ l.title }}</span><span style="font-size:14px;color:var(--color-neutral-700)">{{ l.sub }}</span></span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-500)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ scrLesson }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:4px 16px 24px;display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:14px;font-weight:600;color:var(--color-accent-700)">{{ ls.kind }}</div>
+            <div role="heading" aria-level="1" style="font-size:26px;line-height:1.18;font-weight:700">{{ ls.title }}</div>
+          </div>
+          <div style="padding:14px 16px;border-radius:20px;background:var(--color-neutral-100);display:flex;flex-direction:column;gap:4px;font-size:15px">
+            <span style="font-weight:600">{{ ls.when }}</span>
+            <span style="color:var(--color-neutral-700)">{{ ls.where }}</span>
+          </div>
+          <div style="font-size:16px;line-height:1.55;color:var(--color-neutral-900)">{{ ls.desc }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <button aria-pressed="{{ ls.mine }}" onClick="{{ ls.toggleMine }}" style="min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid {{ ls.mineBorder }};background:{{ ls.mineBg }};color:var(--color-text);font:inherit;font-size:15px;font-weight:600;cursor:pointer">{{ ls.mineLabel }}</button>
+            <button aria-pressed="{{ ls.rem }}" onClick="{{ ls.toggleRem }}" style="min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid {{ ls.remBorder }};background:{{ ls.remBg }};color:var(--color-text);font:inherit;font-size:15px;font-weight:600;cursor:pointer">{{ ls.remLabel }}</button>
+          </div>
+          <sc-if value="{{ ls.online }}" hint-placeholder-val="{{ false }}">
+            <div role="heading" aria-level="2" style="font-size:18px;font-weight:700;margin-top:4px">Онлайн-ссылка</div>
+            <sc-if value="{{ gate.open }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:18px;border-radius:22px;background:var(--color-neutral-100);display:flex;flex-direction:column;gap:10px">
+                <span style="font-size:14px;color:var(--color-neutral-700)">Доступ подтверждён на этом телефоне</span>
+                <span style="font-size:15px;font-weight:600;word-break:break-all">{{ ls.link }}</span>
+                <button onClick="{{ openLink }}" style="min-height:52px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-700)">Открыть онлайн-ссылку</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ gate.locked }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:20px;border-radius:24px;background:var(--color-neutral-100);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;gap:12px;align-items:center">
+                  <span aria-hidden="true" style="width:40px;height:40px;flex-shrink:0;border-radius:50%;background:var(--color-accent-2-200);color:var(--color-accent-2-900);display:grid;place-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="3"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+                  <span style="font-size:17px;font-weight:700;line-height:1.3">Онлайн-ссылка доступна участникам группы</span>
+                </div>
+                <sc-if value="{{ gate.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font-size:15px;line-height:1.45;color:var(--color-neutral-800)">{{ gate.note }}</div></sc-if>
+                <button onClick="{{ gate.go }}" style="min-height:50px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-700)">{{ gate.btn }}</button>
+              </div>
+            </sc-if>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ scrWiki }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:8px 16px 24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div role="heading" aria-level="1" style="font-size:30px;line-height:1.12;font-weight:700;letter-spacing:-0.01em">Вики</div>
+            <div style="font-size:14px;color:var(--color-neutral-700)">Открыта всем · демо-записи</div>
+          </div>
+          <input type="search" aria-label="Поиск по вики" placeholder="Поиск по названию или разделу" value="{{ wikiQ }}" onChange="{{ onWikiQ }}" style="height:48px;padding:0 18px;border-radius:999px;border:1.5px solid var(--color-neutral-300);background:var(--color-neutral-100);font:inherit;font-size:17px;color:inherit;outline:none" style-focus="border-color:var(--color-accent)">
+          <div role="status" style="font-size:13px;color:var(--color-neutral-700);padding:0 6px">{{ wikiCount }}</div>
+          <sc-for list="{{ mats }}" as="m" hint-placeholder-count="5">
+            <button onClick="{{ m.open }}" style="text-align:left;padding:14px 16px;border-radius:20px;border:none;background:var(--color-neutral-100);font:inherit;color:inherit;display:flex;align-items:center;gap:12px;cursor:pointer" style-hover="background:var(--color-accent-100)">
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:17px;font-weight:600;line-height:1.3">{{ m.title }}</span><span style="font-size:14px;color:var(--color-neutral-700)">{{ m.sub }}</span></span>
+              <sc-if value="{{ m.marked }}"><span aria-label="В закладках" style="color:var(--color-accent-700);display:grid"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2.75" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"></path></svg></span></sc-if>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ scrMaterial }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:4px 16px 24px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:14px;font-weight:600;color:var(--color-accent-700)">{{ mt.sec }}</div>
+            <div role="heading" aria-level="1" style="font-size:26px;line-height:1.18;font-weight:700">{{ mt.title }}</div>
+          </div>
+          <button aria-pressed="{{ mt.marked }}" onClick="{{ mt.toggle }}" style="align-self:flex-start;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid {{ mt.border }};background:{{ mt.bg }};color:var(--color-text);font:inherit;font-size:15px;font-weight:600;cursor:pointer">{{ mt.label }}</button>
+          <sc-for list="{{ mt.paras }}" as="p" hint-placeholder-count="3">
+            <p style="margin:0;font-size:17px;line-height:1.6;color:var(--color-neutral-900)">{{ p.t }}</p>
+          </sc-for>
+          <sc-if value="{{ mt.online }}" hint-placeholder-val="{{ false }}">
+            <div role="heading" aria-level="2" style="font-size:18px;font-weight:700;margin-top:6px">Онлайн-разбор к записи</div>
+            <div style="font-size:15px;line-height:1.5;color:var(--color-neutral-800)">Демо: встреча по этой записи, {{ mt.when }}.</div>
+            <sc-if value="{{ gate.open }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:18px;border-radius:22px;background:var(--color-neutral-100);display:flex;flex-direction:column;gap:10px">
+                <span style="font-size:14px;color:var(--color-neutral-700)">Доступ подтверждён на этом телефоне</span>
+                <span style="font-size:15px;font-weight:600;word-break:break-all">{{ mt.link }}</span>
+                <button onClick="{{ openLink }}" style="min-height:52px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-700)">Открыть онлайн-ссылку</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ gate.locked }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:20px;border-radius:24px;background:var(--color-neutral-100);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;gap:12px;align-items:center">
+                  <span aria-hidden="true" style="width:40px;height:40px;flex-shrink:0;border-radius:50%;background:var(--color-accent-2-200);color:var(--color-accent-2-900);display:grid;place-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="3"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+                  <span style="font-size:17px;font-weight:700;line-height:1.3">Онлайн-ссылка доступна участникам группы</span>
+                </div>
+                <sc-if value="{{ gate.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font-size:15px;line-height:1.45;color:var(--color-neutral-800)">{{ gate.note }}</div></sc-if>
+                <button onClick="{{ gate.go }}" style="min-height:50px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-700)">{{ gate.btn }}</button>
+              </div>
+            </sc-if>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ scrSettings }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:4px 16px 24px;display:flex;flex-direction:column;gap:18px">
+          <div role="heading" aria-level="1" style="font-size:30px;line-height:1.15;font-weight:700">Настройки</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="background:var(--color-neutral-100);border-radius:20px;overflow:hidden">
+              <button onClick="{{ existingRow }}" style="width:100%;min-height:56px;display:flex;align-items:center;gap:12px;padding:10px 16px;border:none;background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer" style-hover="background:var(--color-accent-100)">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+                <span style="flex:1;font-size:17px">Напоминания</span>
+                <span style="font-size:15px;color:var(--color-neutral-700)">За 1 час</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-600)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+              </button>
+              <button onClick="{{ openFb }}" style="width:100%;min-height:56px;display:flex;align-items:center;gap:12px;padding:10px 16px;border:none;border-top:1px solid color-mix(in srgb, var(--color-text) 9%, transparent);background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer" style-hover="background:var(--color-accent-100)">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:17px">Обратная связь</span><span style="font-size:14px;color:var(--color-neutral-700)">Ошибка, идея или вопрос</span></span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-600)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+              </button>
+              <button onClick="{{ openAbout }}" style="width:100%;min-height:56px;display:flex;align-items:center;gap:12px;padding:10px 16px;border:none;border-top:1px solid color-mix(in srgb, var(--color-text) 9%, transparent);background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer" style-hover="background:var(--color-accent-100)">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+                <span style="flex:1;font-size:17px">О приложении</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-600)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+              </button>
+            </div>
+            <div role="heading" aria-level="2" style="font-size:14px;font-weight:700;color:var(--color-neutral-700);padding:8px 4px 0">Доступ и мои данные</div>
+            <div style="background:var(--color-neutral-100);border-radius:20px;overflow:hidden">
+              <button onClick="{{ openAccess }}" style="width:100%;min-height:56px;display:flex;align-items:center;gap:12px;padding:10px 16px;border:none;background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer" style-hover="background:var(--color-accent-100)">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"></path></svg>
+                <span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:17px">Доступ и мои данные</span><span style="font-size:14px;color:var(--color-neutral-700)">{{ accessSub }}</span></span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-600)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+              </button>
+            </div>
+            <div role="heading" aria-level="2" style="font-size:14px;font-weight:700;color:var(--color-neutral-700);padding:8px 4px 0">Политика приватности</div>
+            <div style="background:var(--color-neutral-100);border-radius:20px;overflow:hidden">
+              <button onClick="{{ openPrivacy }}" style="width:100%;min-height:56px;display:flex;align-items:center;gap:12px;padding:10px 16px;border:none;background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer" style-hover="background:var(--color-accent-100)">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:17px">Политика приватности</span><span style="font-size:14px;color:var(--color-neutral-700)">Открывается без входа</span></span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-600)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+              </button>
+            </div>
+            <div style="font-size:13px;color:var(--color-neutral-700);padding:4px 4px 0">Дейчи · версия 1.0 (9) · демо</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ scrAbout }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:4px 16px 24px;display:flex;flex-direction:column;gap:16px">
+          <div role="heading" aria-level="1" style="font-size:26px;line-height:1.18;font-weight:700">О приложении</div>
+          <div style="background:var(--color-neutral-100);border-radius:20px;overflow:hidden">
+            <div style="min-height:52px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;font-size:16px"><span>Версия</span><span style="color:var(--color-neutral-700)">1.0 (9) · демо</span></div>
+            <button onClick="{{ openPrivacy }}" style="width:100%;min-height:56px;display:flex;align-items:center;gap:12px;padding:10px 16px;border:none;border-top:1px solid color-mix(in srgb, var(--color-text) 9%, transparent);background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer" style-hover="background:var(--color-accent-100)">
+              <span style="flex:1;font-size:17px">Политика приватности</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-600)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+            </button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ scrPrivacy }}" hint-placeholder-val="{{ false }}">
+        <article style="padding:4px 16px 32px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div role="heading" aria-level="1" style="font-size:26px;line-height:1.18;font-weight:700">Политика приватности</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px"><span class="tag tag-accent">Черновик текста</span><span class="tag tag-neutral">Вход не нужен</span></div>
+            <div style="font-size:14px;line-height:1.45;color:var(--color-neutral-700)">Вымышленные реквизиты. Не юридический текст — перед публикацией нужна проверка. Та же страница: {{ policyUrl }}</div>
+          </div>
+          <sc-for list="{{ policy }}" as="s" hint-placeholder-count="5">
+            <section style="display:flex;flex-direction:column;gap:6px">
+              <div role="heading" aria-level="2" style="font-size:18px;font-weight:700;line-height:1.3">{{ s.h }}</div>
+              <ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:16px;line-height:1.5">
+                <sc-for list="{{ s.items }}" as="i" hint-placeholder-count="2"><li>{{ i.t }}</li></sc-for>
+              </ul>
+            </section>
+          </sc-for>
+        </article>
+      </sc-if>
+
+      <sc-if value="{{ scrAccess }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:4px 16px 24px;display:flex;flex-direction:column;gap:16px">
+          <span aria-hidden="true" style="width:64px;height:64px;border-radius:50%;background:var(--color-accent-2-200);display:grid;place-items:center;color:var(--color-accent-2-900)">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="{{ ac.icon }}"></path></svg>
+          </span>
+          <div role="heading" aria-level="1" style="font-size:26px;line-height:1.18;font-weight:700">{{ ac.title }}</div>
+          <div style="font-size:16px;line-height:1.5;color:var(--color-neutral-800)">{{ ac.text }}</div>
+          <sc-if value="{{ ac.pendingOp }}" hint-placeholder-val="{{ false }}">
+            <div role="status" style="padding:14px 16px;border-radius:18px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);color:var(--color-accent-900);font-size:15px;line-height:1.45;display:flex;flex-direction:column;gap:10px;align-items:flex-start">
+              <span><strong>{{ ac.opTitle }}</strong> {{ ac.opText }}</span>
+              <button onClick="{{ openDelete }}" style="min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--color-accent-400);background:var(--color-neutral-100);color:var(--color-accent-900);font:inherit;font-size:15px;font-weight:600;cursor:pointer">{{ ac.opBtn }}</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ ac.hasData }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div role="heading" aria-level="2" style="font-size:14px;font-weight:700;color:var(--color-neutral-700);padding:0 4px">Хранится о вас</div>
+              <dl style="margin:0;border-radius:20px;background:var(--color-neutral-100);display:flex;flex-direction:column">
+                <sc-for list="{{ ac.rows }}" as="r" hint-placeholder-count="4">
+                  <div style="padding:10px 16px;display:flex;flex-direction:column;gap:1px;border-bottom:1px solid var(--color-neutral-200)"><dt style="font-size:13px;color:var(--color-neutral-700)">{{ r.k }}</dt><dd style="margin:0;font-size:16px">{{ r.v }}</dd></div>
+                </sc-for>
+              </dl>
+            </div>
+          </sc-if>
+          <sc-if value="{{ ac.hasPrimary }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ ac.primary }}" style="min-height:52px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-700)">{{ ac.primaryLabel }}</button>
+          </sc-if>
+          <sc-if value="{{ ac.canDelete }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ openDelete }}" style="min-height:50px;border-radius:999px;border:1.5px solid var(--color-accent-300);background:var(--color-neutral-100);color:var(--color-accent-800);font:inherit;font-size:16px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-100)" style-active="background:var(--color-accent-200)">{{ ac.deleteLabel }}</button>
+            <div style="font-size:13px;line-height:1.45;color:var(--color-neutral-700)">Удаление — не выход. Мои занятия, напоминания и закладки на телефоне останутся.</div>
+          </sc-if>
+          <button onClick="{{ openPrivacy }}" style="align-self:flex-start;min-height:44px;padding:0 4px;border:none;background:none;font:inherit;font-size:15px;font-weight:600;color:var(--color-accent-700);cursor:pointer">Политика приватности</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ scrRequest }}" hint-placeholder-val="{{ false }}">
+        <form onSubmit="{{ submitReq }}" noValidate="{{ true }}" style="padding:4px 16px 24px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div role="heading" aria-level="1" style="font-size:26px;line-height:1.18;font-weight:700">Заявка на доступ</div>
+            <div style="font-size:15px;line-height:1.45;color:var(--color-neutral-800)">К онлайн-ссылкам для участников группы. Вики и расписание открыты и без заявки.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label for="pv-first" style="font-size:14px;font-weight:600;padding:0 6px">Имя</label>
+            <input id="pv-first" autoComplete="given-name" maxLength="60" value="{{ draft.first }}" onChange="{{ onFirst }}" aria-invalid="{{ fe.first }}" style="height:50px;padding:0 18px;border-radius:999px;border:1.5px solid var(--color-neutral-300);background:var(--color-neutral-100);font:inherit;font-size:17px;color:inherit;outline:none" style-focus="border-color:var(--color-accent)">
+            <sc-if value="{{ fe.first }}"><div role="alert" style="font-size:14px;color:var(--color-accent-800);padding:0 6px">Укажите имя</div></sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label for="pv-last" style="font-size:14px;font-weight:600;padding:0 6px">Фамилия</label>
+            <input id="pv-last" autoComplete="family-name" maxLength="60" value="{{ draft.last }}" onChange="{{ onLast }}" aria-invalid="{{ fe.last }}" style="height:50px;padding:0 18px;border-radius:999px;border:1.5px solid var(--color-neutral-300);background:var(--color-neutral-100);font:inherit;font-size:17px;color:inherit;outline:none" style-focus="border-color:var(--color-accent)">
+            <sc-if value="{{ fe.last }}"><div role="alert" style="font-size:14px;color:var(--color-accent-800);padding:0 6px">Укажите фамилию</div></sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label for="pv-tg" style="font-size:14px;font-weight:600;padding:0 6px">Telegram <span style="font-weight:400;color:var(--color-neutral-700)">— необязательно, только для связи</span></label>
+            <input id="pv-tg" autoCapitalize="none" autoCorrect="off" maxLength="33" placeholder="@имя" value="{{ draft.tg }}" onChange="{{ onTg }}" style="height:50px;padding:0 18px;border-radius:999px;border:1.5px solid var(--color-neutral-300);background:var(--color-neutral-100);font:inherit;font-size:17px;color:inherit;outline:none" style-focus="border-color:var(--color-accent)">
+          </div>
+          <button type="submit" disabled="{{ reqSending }}" style="min-height:52px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-700)">{{ reqLabel }}</button>
+          <button type="button" onClick="{{ openPrivacy }}" style="min-height:44px;border:none;background:none;font:inherit;font-size:15px;font-weight:600;color:var(--color-accent-700);cursor:pointer">Как используются эти данные</button>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ scrDelete }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:4px 16px 24px;display:flex;flex-direction:column;gap:16px">
+          <div role="heading" aria-level="1" style="font-size:26px;line-height:1.18;font-weight:700">{{ dl.title }}</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div role="heading" aria-level="2" style="font-size:14px;font-weight:700;color:var(--color-neutral-700);padding:0 4px">Удаляется</div>
+            <ul style="margin:0;padding:14px 16px 14px 34px;border-radius:20px;background:var(--color-neutral-100);display:flex;flex-direction:column;gap:6px;font-size:16px;line-height:1.45">
+              <sc-for list="{{ dl.gone }}" as="g" hint-placeholder-count="4"><li>{{ g.t }}</li></sc-for>
+            </ul>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div role="heading" aria-level="2" style="font-size:14px;font-weight:700;color:var(--color-neutral-700);padding:0 4px">Остаётся на этом телефоне</div>
+            <ul style="margin:0;padding:14px 16px 14px 34px;border-radius:20px;background:var(--color-accent-2-100);color:var(--color-accent-2-900);display:flex;flex-direction:column;gap:6px;font-size:16px;line-height:1.45">
+              <sc-for list="{{ dl.kept }}" as="g" hint-placeholder-count="3"><li>{{ g.t }}</li></sc-for>
+            </ul>
+          </div>
+          <div style="font-size:15px;line-height:1.5;color:var(--color-neutral-900)"><strong>Это не выход из аккаунта.</strong> Удаление нельзя отменить. Для онлайн-ссылок понадобится новая заявка. Вики и расписание остаются открытыми.</div>
+          <sc-if value="{{ dl.hasMsg }}" hint-placeholder-val="{{ false }}">
+            <div role="alert" style="padding:14px 16px;border-radius:18px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);color:var(--color-accent-900);font-size:15px;line-height:1.45;display:flex;flex-direction:column;gap:4px"><strong>{{ dl.msgTitle }}</strong><span>{{ dl.msgText }}</span></div>
+          </sc-if>
+          <sc-if value="{{ dl.sending }}" hint-placeholder-val="{{ false }}">
+            <div role="status" style="font-size:14px;color:var(--color-neutral-800);padding:0 4px">Запрос {{ opId }} отправлен. Ждём ответа сервера.</div>
+          </sc-if>
+          <button onClick="{{ doDelete }}" disabled="{{ dl.sending }}" style="min-height:52px;border-radius:999px;border:none;background:var(--color-accent-800);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px" style-hover="background:var(--color-accent-900)">{{ spinner }}<span>{{ dl.btn }}</span></button>
+          <button onClick="{{ back }}" disabled="{{ dl.sending }}" style="min-height:50px;border-radius:999px;border:1.5px solid var(--color-neutral-300);background:var(--color-neutral-100);color:var(--color-text);font:inherit;font-size:16px;font-weight:600;cursor:pointer" style-hover="background:var(--color-neutral-200)">{{ dl.cancel }}</button>
+          <sc-if value="{{ dl.hasOp }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13px;line-height:1.45;color:var(--color-neutral-700)">Операция {{ opId }} и доступ на телефоне сохраняются до подтверждения. Можно вернуться и повторить позже.</div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ scrDeleted }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:12px 16px 24px;display:flex;flex-direction:column;gap:16px">
+          <span aria-hidden="true" style="width:64px;height:64px;border-radius:50%;background:var(--color-accent-2-200);display:grid;place-items:center;color:var(--color-accent-2-900)"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg></span>
+          <div role="heading" aria-level="1" style="font-size:26px;line-height:1.18;font-weight:700">{{ dd.title }}</div>
+          <div style="font-size:16px;line-height:1.5;color:var(--color-neutral-800)">{{ dd.text }}</div>
+          <div style="padding:14px 16px;border-radius:20px;background:var(--color-accent-2-100);color:var(--color-accent-2-900);font-size:15px;line-height:1.5">{{ dd.kept }}</div>
+          <button onClick="{{ finishDeleted }}" style="min-height:52px;border-radius:999px;border:none;background:var(--color-accent-600);color:white;font:inherit;font-size:17px;font-weight:600;cursor:pointer" style-hover="background:var(--color-accent-700)">Готово</button>
+        </div>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="position:absolute;left:16px;right:16px;bottom:{{ toastBottom }};z-index:5;padding:12px 16px;border-radius:18px;background:var(--color-neutral-900);color:var(--color-bg);font-size:15px;line-height:1.4;box-shadow:var(--shadow-md)">{{ toast }}</div>
+    </sc-if>
+
+    <sc-if value="{{ showTabbar }}" hint-placeholder-val="{{ true }}">
+      <nav aria-label="Разделы" style="flex-shrink:0;display:flex;background:var(--color-bg);border-top:1px solid color-mix(in srgb, var(--color-text) 10%, transparent)">
+        <button onClick="{{ tabSchedule }}" aria-current="{{ tabScheduleCur }}" style="flex:1;min-height:{{ tabH }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;font:inherit;font-size:{{ tabFs }};font-weight:600;cursor:pointer;color:{{ tabScheduleFg }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+          <span>Расписание</span>
+        </button>
+        <button onClick="{{ tabMine }}" aria-current="{{ tabMineCur }}" style="flex:1;min-height:{{ tabH }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;font:inherit;font-size:{{ tabFs }};font-weight:600;cursor:pointer;color:{{ tabMineFg }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"></path></svg>
+          <span>Мои занятия</span>
+        </button>
+        <button onClick="{{ tabWiki }}" aria-current="{{ tabWikiCur }}" style="flex:1;min-height:{{ tabH }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;font:inherit;font-size:{{ tabFs }};font-weight:600;cursor:pointer;color:{{ tabWikiFg }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+          <span>Вики</span>
+        </button>
+      </nav>
+    </sc-if>
+    <sc-if value="{{ isIOS }}" hint-placeholder-val="{{ true }}"><div aria-hidden="true" style="height:34px;flex-shrink:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;box-sizing:border-box;background:var(--color-bg)"><span style="width:134px;height:5px;border-radius:99px;background:var(--color-neutral-900)"></span></div></sc-if>
+    <sc-if value="{{ isAndroid }}" hint-placeholder-val="{{ false }}">
+      <div style="height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:space-around;padding:0 48px;background:var(--color-bg)">
+        <button onClick="{{ androidBack }}" aria-label="Назад (системная кнопка Android)" style="width:48px;height:48px;border:none;background:none;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text)" style-hover="background:var(--color-neutral-200)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><path d="M18 4 6 12l12 8z"></path></svg></button>
+        <button onClick="{{ androidHome }}" aria-label="Домой (имитация)" style="width:48px;height:48px;border:none;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle></svg></button>
+        <button onClick="{{ androidHome }}" aria-label="Недавние (имитация)" style="width:48px;height:48px;border:none;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"></rect></svg></button>
+      </div>
+    </sc-if>
+  </div>
+
+  <sc-if value="{{ isWide }}" hint-placeholder-val="{{ false }}">
+    <article lang="ru" style="flex:1 1 520px;max-width:720px;box-sizing:border-box;padding:36px 40px 48px;border-radius:28px;background:var(--color-neutral-100);font-family:var(--font-body);display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:13px;color:var(--color-neutral-700)">Публичная страница без входа · {{ policyUrl }}</div>
+        <h1 style="margin:0;font-family:var(--font-body);font-size:32px;line-height:1.15;font-weight:700">Дейчи · Политика приватности</h1>
+        <div style="display:flex;flex-wrap:wrap;gap:6px"><span class="tag tag-accent">Черновик текста</span><span class="tag tag-neutral">Вымышленные реквизиты</span></div>
+        <p style="margin:0;font-size:15px;line-height:1.5;color:var(--color-neutral-800);max-width:62ch">Тот же текст, что в приложении (Настройки → Политика приватности, Настройки → О приложении). Адрес для App Store Connect и TestFlight. Не юридический текст — перед публикацией нужна проверка.</p>
+      </div>
+      <sc-for list="{{ policy }}" as="s" hint-placeholder-count="5">
+        <section style="display:flex;flex-direction:column;gap:6px;max-width:66ch">
+          <h2 style="margin:0;font-family:var(--font-body);font-size:19px;font-weight:700">{{ s.h }}</h2>
+          <ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:16px;line-height:1.6">
+            <sc-for list="{{ s.items }}" as="i" hint-placeholder-count="2"><li>{{ i.t }}</li></sc-for>
+          </ul>
+        </section>
+      </sc-for>
+    </article>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const Q = new URLSearchParams(location.search);
+const SEED = Q.get('state') || 'pending';
+const NET = Q.get('net') || 'ok';
+const PLAT = Q.get('platform') === 'android' ? 'android' : 'ios';
+const START = Q.get('start') || '';
+const KEY = 'deichi-privacy-2026-10-02-v2-' + (Q.get('inst') || 'main');
+const SERVERS = {
+  none: { status: 'none' },
+  pending: { status: 'pending', name: 'Демо Участник', tg: '@demo_user', req: 'r-2041', date: '1 октября 2026' },
+  approved: { status: 'approved', name: 'Демо Участник', tg: '@demo_user', req: 'r-1987', date: '28 сентября 2026' },
+  rejected: { status: 'rejected', name: 'Демо Участник', tg: 'не указан', req: 'r-2003', date: '30 сентября 2026' },
+  revoked: { status: 'revoked', name: 'Демо Участник', tg: '@demo_user', req: 'r-1950', date: '29 сентября 2026' },
+  legacy: { status: 'legacy', name: 'Демо Гость', inv: 'INV-••••-7Q2K', date: '12 мая 2025' }
+};
+const DESC = 'Демо-описание: вымышленный текст показывает, как читается описание занятия. Не относится к реальной программе.';
+const LESSONS = [
+  ['l1', 'Пятница, 2 октября', '08:00', 'Демо-занятие · утро', false], ['l2', 'Пятница, 2 октября', '12:30', 'Демо-занятие · онлайн', true],
+  ['l3', 'Пятница, 2 октября', '19:00', 'Демо-встреча · вечер', false], ['l4', 'Суббота, 3 октября', '09:00', 'Демо-занятие · онлайн 2', true],
+  ['l5', 'Суббота, 3 октября', '11:00', 'Демо-занятие · день', false], ['l6', 'Суббота, 3 октября', '18:00', 'Демо-разбор · онлайн', true],
+  ['l7', 'Воскресенье, 4 октября', '10:00', 'Демо-занятие · выходной', false], ['l8', 'Воскресенье, 4 октября', '17:00', 'Демо-встреча · онлайн', true]
+].map(([id, day, time, title, online]) => ({ id, day, time, title, online }));
+const LBY = Object.fromEntries(LESSONS.map(l => [l.id, l]));
+const MATS = ['A', 'A', 'B', 'B', 'C', 'C', 'A', 'B'].map((sec, i) => {
+  const n = String(i + 1).padStart(2, '0');
+  return { id: 'm' + n, title: 'Демо-запись ' + n, sec: 'Раздел ' + sec, online: i === 2 || i === 5, when: i === 2 ? 'суббота, 3 октября, 18:00 (демо)' : 'воскресенье, 4 октября, 17:00 (демо)',
+    paras: ['Демо-текст записи ' + n + '. Заполнитель показывает ширину строки и ритм чтения на телефоне; он не взят из реальных материалов.', 'Второй абзац-заполнитель. Текст открыт всем без заявки и без входа.', 'Третий абзац-заполнитель завершает пример.'] };
+});
+const MBY = Object.fromEntries(MATS.map(m => [m.id, m]));
+const POLICY = [
+  { h: 'Без входа и без заявки', items: ['Расписание и вики открыты всем. Для них не нужна учётная запись, заявка или вход.', 'Заявка нужна только для онлайн-ссылок, доступных участникам группы. Участие и его оплата оформляются у организатора, вне приложения; в приложении платежей нет.'] },
+  { h: 'Что хранится на сервере', items: ['Только если вы подали заявку: имя, фамилия, Telegram (если указан), номер и статус заявки, дата решения.', 'Привязка доступа к этому телефону (служебный идентификатор установки).', 'Для доступа по старому персональному приглашению: имя из приглашения и дата активации.'] },
+  { h: 'Что хранится только на телефоне', items: ['Мои занятия, напоминания, закладки в вики — не отправляются на сервер.', 'Черновик заявки и ключ доступа (в защищённом хранилище телефона) — удаляются вместе с данными доступа.'] },
+  { h: 'Кто видит данные', items: ['Организатор — в админке, чтобы рассмотреть заявку. Данные не продаются и не передаются для рекламы. [Перечень обработчиков — уточнить]'] },
+  { h: 'Удаление', items: ['В приложении: Настройки → Доступ и мои данные → Удалить. Удаляются профиль, заявка, доступ, черновик заявки и ключ доступа на телефоне; мои занятия, напоминания и закладки остаются.', 'Без приложения: privacy@example.invalid. [Срок удаления из резервных копий — уточнить]'] },
+  { h: 'Контакты', items: ['Демо-оператор «Дейчи», privacy@example.invalid. Редакция от 2 октября 2026 (черновик).'] }
+];
+const ICON = { pending: 'M12 7v5l3 2', approved: 'm8 12 3 3 5-6', legacy: 'm8 12 3 3 5-6', rejected: 'M9 9l6 6M15 9l-6 6', revoked: 'M9 9l6 6M15 9l-6 6', none: 'M12 8v4M12 16h.01' };
+const TAB_NAMES = { schedule: 'Расписание', mine: 'Мои занятия', wiki: 'Вики' };
+const PRIV = ['request', 'access', 'delete', 'deleted'];
+
+function initStacks() {
+  const s = { schedule: [{ s: 'schedule' }], mine: [{ s: 'mine' }], wiki: [{ s: 'wiki' }] }; let tab = 'schedule';
+  const set = START.startsWith('settings') || ['privacy', 'access', 'delete', 'about'].includes(START);
+  if (START.startsWith('lesson:')) s.schedule.push({ s: 'lesson', id: START.slice(7) });
+  else if (START.startsWith('material:')) { tab = 'wiki'; s.wiki.push({ s: 'material', id: START.slice(9) }); }
+  if (set) s.schedule.push({ s: 'settings' });
+  if (START === 'privacy') s.schedule.push({ s: 'privacy' });
+  if (START === 'about') s.schedule.push({ s: 'about' });
+  if (START === 'access') s.schedule.push({ s: 'access' });
+  if (START === 'delete') s.schedule.push({ s: 'access' }, { s: 'delete' });
+  return { tab, stacks: s };
+}
+
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    let saved = null;
+    if (!Q.get('reset')) { try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {} }
+    const sv = { ...(SERVERS[SEED] || SERVERS.pending) };
+    const base = { ...initStacks(), server: sv, secret: sv.status === 'approved' || sv.status === 'legacy',
+      local: { picked: ['l1', 'l2', 'l5'], rem: ['l1', 'l2'], marks: ['m01', 'm03', 'm04', 'm06'] },
+      filter: 'all', wikiQ: '', draft: { first: '', last: '', tg: '' }, fe: {}, reqSending: false, del: { phase: 'idle', opId: null, attempt: 0, reason: '' }, toast: '' };
+    if (saved && saved.seed === SEED) { Object.assign(base, saved); if (base.del.phase === 'sending') base.del = { ...base.del, phase: 'unknown', reason: 'reload' }; }
+    base.wide = window.innerWidth >= 900; base.toast = ''; base.reqSending = false; base.fe = {};
+    this.state = base;
+  }
+  componentDidMount() {
+    this.onResize = () => { const w = window.innerWidth >= 900; if (w !== this.state.wide) this.setState({ wide: w }); };
+    window.addEventListener('resize', this.onResize);
+    this.pendingScroll = this.top().sc || 0; this.restore();
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); clearTimeout(this.tt); clearTimeout(this.dt); }
+  componentDidUpdate() {
+    this.restore();
+    const { wide, toast, reqSending, fe, ...keep } = this.state;
+    try { localStorage.setItem(KEY, JSON.stringify({ ...keep, seed: SEED })); } catch (e) {}
+  }
+  restore() { if (this.pendingScroll != null && this.sc) { this.sc.scrollTop = this.pendingScroll; this.pendingScroll = null; } }
+  top(st = this.state) { const k = st.stacks[st.tab]; return k[k.length - 1]; }
+  cloneStacks() { const s = this.state.stacks; return { schedule: [...s.schedule], mine: [...s.mine], wiki: [...s.wiki] }; }
+  saveScroll(stacks) { const k = stacks[this.state.tab]; k[k.length - 1] = { ...k[k.length - 1], sc: this.sc ? this.sc.scrollTop : 0 }; }
+  push(entry) { const stacks = this.cloneStacks(); this.saveScroll(stacks); stacks[this.state.tab].push({ ...entry, sc: 0 }); this.pendingScroll = 0; this.setState({ stacks, fe: {} }); }
+  replaceTop(entry) { const stacks = this.cloneStacks(); const k = stacks[this.state.tab]; k[k.length - 1] = { ...entry, sc: 0 }; this.pendingScroll = 0; this.setState({ stacks }); }
+  say(t) { clearTimeout(this.tt); this.setState({ toast: t }); this.tt = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  goBack(system) {
+    if (this.top().s === 'delete' && this.state.del.phase === 'sending') { this.say('Запрос отправлен — дождитесь ответа сервера.'); return; }
+    const stacks = this.cloneStacks(); const k = stacks[this.state.tab];
+    if (this.top().s === 'deleted') { while (k.length > 1 && k[k.length - 1].s !== 'settings') k.pop(); this.pendingScroll = k[k.length - 1].sc || 0; return this.setState({ stacks }); }
+    if (k.length > 1) { k.pop(); this.pendingScroll = k[k.length - 1].sc || 0; this.setState({ stacks }); }
+    else if (system) { if (this.state.tab !== 'schedule') this.switchTab('schedule'); else this.say('Корень приложения: Android свернёт его.'); }
+  }
+  switchTab(t) {
+    const stacks = this.cloneStacks(); this.saveScroll(stacks);
+    if (t === this.state.tab) { stacks[t] = [stacks[t][0]]; this.pendingScroll = 0; }
+    else this.pendingScroll = stacks[t][stacks[t].length - 1].sc || 0;
+    this.setState({ stacks, tab: t });
+  }
+  toggle(list, id) { const l = this.state.local; const a = l[list].includes(id) ? l[list].filter(x => x !== id) : [...l[list], id]; this.setState({ local: { ...l, [list]: a } }); }
+  doDelete() {
+    const d = this.state.del; if (d.phase === 'sending') return;
+    const opId = d.opId || 'del-' + Math.random().toString(16).slice(2, 6);
+    if (NET === 'offline' && d.phase !== 'notsent') return this.setState({ del: { ...d, phase: 'notsent', opId } });
+    const attempt = d.attempt + 1; const wasUnknown = d.phase === 'unknown';
+    this.setState({ del: { phase: 'sending', opId, attempt, reason: '' } });
+    this.dt = setTimeout(() => {
+      if (attempt === 1 && (NET === 'neterr' || NET === 'server' || NET === 'uncertain')) return this.setState({ del: { phase: 'unknown', opId, attempt, reason: NET } });
+      this.finish(NET === 'already' ? 'already' : (wasUnknown ? 'retry' : 'ok'), opId);
+    }, 1100);
+  }
+  finish(kind, opId) {
+    const stacks = this.cloneStacks(); Object.keys(stacks).forEach(k => { stacks[k] = stacks[k].filter(e => !PRIV.includes(e.s)); });
+    const k = stacks[this.state.tab]; if (k[k.length - 1].s !== 'settings') k.push({ s: 'settings', sc: 0 });
+    k.push({ s: 'deleted', kind, opId, sc: 0 });
+    this.pendingScroll = 0;
+    this.setState({ stacks, server: { status: 'none', deleted: '2 октября 2026' }, secret: false, del: { phase: 'idle', opId: null, attempt: 0, reason: '' }, draft: { first: '', last: '', tg: '' } });
+  }
+  gate() {
+    const st = this.state.server.status; const req = () => this.push({ s: 'request' }); const acc = () => this.push({ s: 'access' });
+    if (this.state.secret && (st === 'approved' || st === 'legacy')) return { open: true, locked: false };
+    const m = { none: ['', 'Запросить доступ', req], pending: ['Заявка на рассмотрении.', 'Статус заявки', acc], rejected: ['Заявка отклонена.', 'Подать новую заявку', req], revoked: ['Доступ на этом телефоне закрыт.', 'Запросить доступ', req] }[st] || ['', 'Запросить доступ', req];
+    return { open: false, locked: true, hasNote: !!m[0], note: m[0], btn: m[1], go: m[2] };
+  }
+  renderVals() {
+    const s = this.state; const t = this.top(); const sv = s.server; const st = sv.status; const L = s.local; const AND = PLAT === 'android';
+    const wide = s.wide; const scr = t.s; const stack = s.stacks[s.tab]; const d = s.del;
+    const flow = scr === 'delete' || scr === 'deleted';
+    const out = {
+      rootPad: wide ? '32px 24px' : '0', isWide: wide,
+      phW: wide ? '390px' : '100%', phH: wide ? '844px' : '100vh', phR: wide ? '48px' : '0', phSh: wide ? '0 0 0 10px var(--color-neutral-900), var(--shadow-lg)' : 'none',
+      fontStack: AND ? "Roboto, 'Google Sans', system-ui, sans-serif" : "-apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif",
+      isIOS: !AND, isAndroid: AND, netIcon: NET === 'offline' ? 'нет сети' : '5G',
+      scRef: el => { this.sc = el; },
+      showRootBar: stack.length === 1, showNav: stack.length > 1 && scr !== 'deleted',
+      backLabel: stack.length > 2 ? 'Назад' : TAB_NAMES[s.tab], backAria: 'Назад',
+      backDisabled: scr === 'delete' && d.phase === 'sending',
+      back: () => this.goBack(false), androidBack: () => this.goBack(true), androidHome: () => this.say('Демо: системная кнопка Android.'),
+      onPhoneKey: e => { if (e.key === 'Escape') { e.preventDefault(); this.goBack(true); } },
+      hasToast: !!s.toast, toast: s.toast, toastBottom: flow ? '48px' : '104px',
+      showTabbar: !flow, tabH: AND ? '64px' : '50px', tabFs: AND ? '12px' : '11px',
+      openSettings: () => this.push({ s: 'settings' }), openAbout: () => this.push({ s: 'about' }),
+      openFb: () => this.say('Обратная связь — существующий экран, в этом кандидате не меняется.'),
+      existingRow: () => this.say('Напоминания — существующий экран, в этом кандидате не меняется.'),
+      policy: POLICY.map(p => ({ h: p.h, items: p.items.map(x => ({ t: x })) })), policyUrl: 'https://example.invalid/privacy',
+      openPrivacy: () => this.push({ s: 'privacy' }), openAccess: () => this.push({ s: 'access' }), openDelete: () => this.push({ s: 'delete' }),
+      openLink: () => this.say('В прототипе ссылка example.invalid не открывается.'),
+      opId: d.opId || '', gate: this.gate()
+    };
+    ['schedule', 'mine', 'wiki'].forEach(k => { const on = s.tab === k; const c = k[0].toUpperCase() + k.slice(1);
+      out['tab' + c] = () => this.switchTab(k); out['tab' + c + 'Cur'] = on ? 'page' : undefined; out['tab' + c + 'Fg'] = on ? (AND ? 'var(--color-accent-900)' : 'var(--color-accent-700)') : 'var(--color-neutral-700)'; });
+    ['schedule', 'mine', 'lesson', 'wiki', 'material', 'settings', 'about', 'privacy', 'access', 'request', 'delete', 'deleted'].forEach(k => out['scr' + k[0].toUpperCase() + k.slice(1)] = scr === k);
+    const keptList = ['Мои занятия — ' + L.picked.length, 'Напоминания — ' + L.rem.length, 'Закладки в вики — ' + L.marks.length];
+    if (scr === 'schedule') {
+      const list = LESSONS.filter(l => s.filter === 'all' || (s.filter === 'online') === l.online); const days = [];
+      list.forEach(l => { let g = days[days.length - 1]; if (!g || g.label !== l.day) days.push(g = { label: l.day, items: [] }); g.items.push({ time: l.time, title: l.title, sub: l.online ? 'Онлайн' : 'Очно · Демо-студия', mine: L.picked.includes(l.id), open: () => this.push({ s: 'lesson', id: l.id }) }); });
+      out.days = days;
+      out.filters = [['all', 'Все'], ['offline', 'Очно'], ['online', 'Онлайн']].map(([k, l]) => ({ label: l, on: s.filter === k, bg: s.filter === k ? 'var(--color-neutral-100)' : 'transparent', sh: s.filter === k ? 'var(--shadow-sm)' : 'none', pick: () => this.setState({ filter: k }) }));
+    }
+    if (scr === 'mine') {
+      const list = LESSONS.filter(l => L.picked.includes(l.id));
+      out.mineList = list.map(l => ({ title: l.title, sub: l.day + ', ' + l.time + (L.rem.includes(l.id) ? ' · напоминание' : ''), open: () => this.push({ s: 'lesson', id: l.id }) }));
+      out.mineEmpty = list.length === 0;
+    }
+    if (scr === 'lesson') {
+      const l = LBY[t.id]; const mine = L.picked.includes(l.id), rem = L.rem.includes(l.id);
+      const on = b => ({ border: b ? 'var(--color-accent-2-500)' : 'var(--color-neutral-300)', bg: b ? 'var(--color-accent-2-100)' : 'var(--color-neutral-100)' });
+      out.ls = { kind: l.online ? 'Онлайн' : 'Очно', title: l.title, when: l.day + ', ' + l.time + ' (демо)', where: l.online ? 'Онлайн — подключение по ссылке' : 'Демо-студия, ул. Примерная, 1', desc: DESC, online: l.online,
+        link: 'https://example.invalid/online/' + l.id, mine, rem, mineLabel: mine ? '✓ В моих занятиях' : 'Добавить в мои', remLabel: rem ? '✓ Напоминание за час' : 'Напомнить за час',
+        mineBorder: on(mine).border, mineBg: on(mine).bg, remBorder: on(rem).border, remBg: on(rem).bg,
+        toggleMine: () => this.toggle('picked', l.id), toggleRem: () => this.toggle('rem', l.id) };
+    } else out.ls = {};
+    if (scr === 'wiki') {
+      const q = s.wikiQ.trim().toLowerCase(); const list = MATS.filter(m => !q || (m.title + ' ' + m.sec).toLowerCase().includes(q));
+      out.wikiQ = s.wikiQ; out.onWikiQ = e => this.setState({ wikiQ: e.target.value });
+      out.wikiCount = q ? 'Найдено ' + list.length + ' из ' + MATS.length : MATS.length + ' демо-записей';
+      out.mats = list.map(m => ({ title: m.title, sub: m.sec + (m.online ? ' · есть онлайн-разбор' : ''), marked: L.marks.includes(m.id), open: () => this.push({ s: 'material', id: m.id }) }));
+    }
+    if (scr === 'material') {
+      const m = MBY[t.id]; const mk = L.marks.includes(m.id);
+      out.mt = { ...m, paras: m.paras.map(x => ({ t: x })), link: 'https://example.invalid/online/' + m.id, marked: mk, label: mk ? '✓ В закладках' : 'В закладки',
+        border: mk ? 'var(--color-accent-2-500)' : 'var(--color-neutral-300)', bg: mk ? 'var(--color-accent-2-100)' : 'var(--color-neutral-100)', toggle: () => this.toggle('marks', m.id) };
+    } else out.mt = {};
+    out.accessSub = (d.opId && d.phase !== 'idle') ? 'Удаление не подтверждено' : { none: sv.deleted ? 'Данные удалены · заявки нет' : 'Заявки нет', pending: 'Заявка на рассмотрении', approved: 'Доступ подтверждён', rejected: 'Заявка отклонена', revoked: 'Доступ закрыт', legacy: 'Доступ по приглашению' }[st];
+    if (scr === 'access') {
+      const T = {
+        none: [sv.deleted ? 'Данные удалены' : 'На сервере нет ваших данных', 'Вики и расписание открыты без заявки. Заявка нужна для онлайн-ссылок, доступных участникам группы.'],
+        pending: ['Заявка на рассмотрении', 'Организатор ещё не принял решение. Вики и расписание открыты без заявки.'],
+        approved: ['Доступ подтверждён', 'Онлайн-ссылки открываются на этом телефоне.'],
+        rejected: ['Заявка отклонена', 'Можно подать новую заявку или удалить данные этой.'],
+        revoked: ['Доступ закрыт', 'Организатор закрыл доступ к онлайн-ссылкам на этом телефоне. Профиль и история заявки ещё хранятся на сервере.'],
+        legacy: ['Доступ по приглашению', 'Доступ открыт по персональному приглашению старого образца. Онлайн-ссылки открываются на этом телефоне.']
+      }[st];
+      const keyRow = ['Ключ доступа на этом телефоне', s.secret ? 'Сохранён' : 'Нет'];
+      const rows = st === 'none' ? [] : st === 'legacy'
+        ? [['Имя из приглашения', sv.name], ['Приглашение', sv.inv], ['Активировано', sv.date], keyRow]
+        : [['Имя и фамилия', sv.name], ['Telegram', sv.tg], ['Заявка', sv.req + ' · ' + { pending: 'на рассмотрении', approved: 'одобрена', rejected: 'отклонена', revoked: 'одобрена, затем доступ закрыт' }[st]], [st === 'pending' ? 'Отправлена' : 'Решение', sv.date], keyRow];
+      const primary = st === 'none' ? ['Запросить доступ', () => this.push({ s: 'request' })] : (st === 'rejected' || st === 'revoked') ? [st === 'rejected' ? 'Подать новую заявку' : 'Запросить доступ', () => this.push({ s: 'request' })] : null;
+      const op = st !== 'none' && (d.phase === 'unknown' || d.phase === 'notsent');
+      out.ac = { title: T[0], text: T[1], icon: ICON[st], rows: rows.map(([k, v]) => ({ k, v })), hasData: st !== 'none', canDelete: st !== 'none' && !op,
+        pendingOp: op, opTitle: d.phase === 'notsent' ? 'Запрос на удаление ещё не отправлен.' : 'Не удалось подтвердить результат удаления.',
+        opText: d.phase === 'notsent' ? 'Операция ' + d.opId + ' сохранена.' : 'Операция ' + d.opId + ' сохранена; повтор не создаст второго удаления.',
+        opBtn: d.phase === 'notsent' ? 'Отправить запрос' : 'Повторить тот же запрос',
+        hasPrimary: !!primary && !op, primaryLabel: primary ? primary[0] : '', primary: primary ? primary[1] : null,
+        deleteLabel: st === 'pending' ? 'Отозвать заявку и удалить данные' : 'Удалить мои данные' + (st === 'legacy' ? ' и приглашение' : ' и заявку') };
+    } else out.ac = {};
+    if (scr === 'request') {
+      out.draft = s.draft; out.fe = s.fe; out.reqSending = s.reqSending; out.reqLabel = s.reqSending ? 'Отправляем…' : 'Отправить заявку';
+      const set = k => e => this.setState({ draft: { ...this.state.draft, [k]: e.target.value }, fe: { ...this.state.fe, [k]: false } });
+      out.onFirst = set('first'); out.onLast = set('last'); out.onTg = set('tg');
+      out.submitReq = e => { e.preventDefault(); const dr = this.state.draft; const fe = { first: !dr.first.trim(), last: !dr.last.trim() }; if (fe.first || fe.last) return this.setState({ fe });
+        this.setState({ reqSending: true }); setTimeout(() => { this.replaceTop({ s: 'access' }); this.setState({ reqSending: false, server: { status: 'pending', name: dr.first.trim() + ' ' + dr.last.trim(), tg: dr.tg.trim() || 'не указан', req: 'r-2050', date: '2 октября 2026' } }); }, 700); };
+    } else { out.draft = {}; out.fe = {}; }
+    if (scr === 'delete') {
+      const ph = d.phase;
+      const gone = st === 'legacy' ? ['С сервера: имя из приглашения', 'Приглашение ' + sv.inv + ' — отвязывается и больше не действует', 'Доступ к онлайн-ссылкам на этом телефоне']
+        : ['С сервера: имя, фамилия, Telegram', 'Заявка ' + sv.req + (st === 'pending' ? ' — организатор её больше не увидит' : ' и решение по ней'), st === 'approved' ? 'Доступ к онлайн-ссылкам на этом телефоне' : st === 'revoked' ? 'Запись о закрытом доступе' : 'Привязка к этому телефону'];
+      gone.push('На телефоне: черновик заявки и сохранённый ключ доступа');
+      const reasonText = { neterr: 'Соединение оборвалось после отправки.', server: 'Сервер ответил ошибкой (демо 503).', uncertain: 'Ответ не пришёл вовремя.', reload: 'Приложение закрылось во время отправки.' }[d.reason] || '';
+      const msg = ph === 'notsent' ? ['Запрос ещё не отправлен', 'Нет сети на этом телефоне — запрос не уходил. Операция ' + d.opId + ' сохранена; отправьте, когда появится связь.']
+        : ph === 'unknown' ? ['Не удалось подтвердить результат', reasonText + ' Сервер мог успеть удалить данные, а мог и нет. Повторите тот же запрос ' + d.opId + ' — второго удаления не будет.'] : null;
+      out.dl = { title: st === 'pending' ? 'Отозвать заявку и удалить данные?' : 'Удалить данные доступа?', gone: gone.map(x => ({ t: x })), kept: keptList.map(x => ({ t: x + ': только на этом телефоне, не в учётной записи' })),
+        hasMsg: !!msg, msgTitle: msg ? msg[0] : '', msgText: msg ? msg[1] : '', sending: ph === 'sending', hasOp: ph === 'unknown' || ph === 'notsent',
+        cancel: ph === 'unknown' || ph === 'notsent' ? 'Вернуться, повторить позже' : 'Отмена',
+        btn: ph === 'sending' ? 'Удаляем…' : ph === 'unknown' ? 'Повторить тот же запрос' : ph === 'notsent' ? 'Отправить запрос' : st === 'pending' ? 'Отозвать и удалить' : 'Удалить навсегда' };
+      out.doDelete = () => this.doDelete();
+      out.spinner = ph === 'sending' ? React.createElement('span', { 'aria-hidden': true, style: { width: 18, height: 18, borderRadius: '50%', border: '2.75px solid rgba(255,255,255,.4)', borderTopColor: 'white', animation: 'dspin .8s linear infinite' } }) : null;
+    } else out.dl = {};
+    if (scr === 'deleted') {
+      const k = t.kind;
+      out.dd = { title: k === 'already' ? 'Данные уже были удалены' : 'Данные удалены',
+        text: k === 'already' ? 'Сервер сообщил, что профиля и заявки уже нет. Черновик заявки и ключ доступа на телефоне очищены.' : k === 'retry' ? 'Повтор того же запроса ' + t.opId + ' подтвердил удаление; второго удаления не было. Черновик заявки и ключ доступа на телефоне очищены.' : 'Профиль, заявка и доступ удалены с сервера; черновик заявки и ключ доступа на телефоне очищены. Это не выход — учётной записи больше нет.',
+        kept: 'На телефоне остались: мои занятия — ' + L.picked.length + ', напоминания — ' + L.rem.length + ', закладки — ' + L.marks.length + '. Вики и расписание открыты без заявки.' };
+      out.finishDeleted = () => this.goBack(false);
+    } else out.dd = {};
+    return out;
+  }
+}
+</script>
+</body>
+</html>

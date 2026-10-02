@@ -1,9 +1,9 @@
-# Quiet Practice icon
+# Daychi icon
 
 Generated with the built-in image generation tool on 2026-09-17; independent app
 symbol, not an official school logo. Inspected the school's home and schedule
 pages: they display a text heading, no separate graphic brand mark was found.
-Final image: `quiet-practice-icon.png`, opaque RGB, 1024×1024, resized with sips.
+Final image: `daychi-icon.png`, opaque RGB, 1024×1024, resized with sips.
 
 Prompt:
 

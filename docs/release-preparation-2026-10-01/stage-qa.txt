@@ -1,0 +1,1 @@
+PASS: staged E2E, old session preserved, protected APIs, APK hash/range/name, website copy, requests backup integrity and permissions

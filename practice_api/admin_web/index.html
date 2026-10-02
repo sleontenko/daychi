@@ -1,0 +1,39 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Дейчи · доступ</title><link rel="stylesheet" href="/admin-assets/admin.css"><script src="/admin-assets/admin.js" defer></script></head>
+<body><main>
+<header><a href="/">Дейчи</a><span>Доступ</span><button id="logout" class="text" hidden>Выйти</button></header>
+<noscript>Для управления приглашениями включите JavaScript. Публичная инструкция доступна <a href="/">на главной странице</a>.</noscript>
+<p id="notice" role="status" aria-live="polite">Проверяем вход…</p>
+<section id="login" hidden><h1>Вход организатора</h1><p class="muted">Управление приглашениями и доступом.</p><form id="login-form"><label for="password">Пароль</label><input id="password" type="password" autocomplete="current-password" required maxlength="256"><button type="submit">Войти</button></form></section>
+<section id="workspace" hidden>
+<nav class="filters" aria-label="Раздел админки"><button id="requests-tab" aria-pressed="true">Заявки</button><button id="invites-tab" aria-pressed="false">Приглашения</button></nav>
+<section id="requests-workspace">
+<div id="requests-list-screen"><h1>Заявки</h1><p id="requests-count" class="muted"></p>
+<label for="request-search" class="sr">Поиск по имени или Telegram</label><input id="request-search" type="search" placeholder="Имя или Telegram" autocomplete="off">
+<div class="filters" aria-label="Статус заявок"><button id="request-pending" aria-pressed="true">Ожидают</button><button id="request-all" aria-pressed="false">Все</button><button id="request-refresh" class="text">Обновить</button></div>
+<div id="requests-list"></div></div>
+<section id="request-detail" hidden><button id="request-back" class="text">‹ Заявки</button><div class="request-title"><h1 id="request-name"></h1><p id="request-status" class="status"></p></div>
+<div class="request-card"><p class="muted small">Telegram</p><p id="request-telegram"></p><p class="muted small">Контакт от отправителя, не подтверждённая личность</p><p class="muted small">Отправлена</p><p id="request-date"></p><p>Одобрение откроет доступ телефону, с которого отправлена заявка. Код не нужен.</p></div>
+<p id="request-match" class="request-match" hidden></p>
+<p id="request-message" role="status"></p>
+<div id="request-actions"><button id="request-approve" class="approve">Одобрить</button><button id="request-reject" class="reject">Отклонить</button></div>
+<button id="request-check" class="text">Проверить статус</button>
+</section><p id="requests-error" role="status"></p></section>
+<div id="invitation-workspace" hidden>
+<div class="title"><h1>Приглашения</h1><button id="create">Создать приглашение</button></div>
+<div class="metrics"><div><strong id="issued">—</strong><span>Выдано</span></div><div><strong id="activated">—</strong><span>Активировано</span></div><div><strong id="active">—</strong><span>Доступ открыт</span></div></div>
+<p class="muted small">Выдано и активировано за 30 дней. Открытые доступы — телефоны, не люди.</p><p id="legacy" class="muted small" hidden>У старых записей нет дат: они не входят в показатели за 30 дней.</p>
+<label for="search" class="sr">Поиск по метке</label><input id="search" type="search" placeholder="Поиск по метке" autocomplete="off">
+<div class="filters" role="group" aria-label="Статус приглашений"><button data-filter="pending" aria-pressed="true">Ожидают</button><button data-filter="active" aria-pressed="false">Доступ открыт</button><button data-filter="done" aria-pressed="false">Завершённые</button></div>
+<div class="list-head"><span id="count" class="muted small"></span><button id="refresh" class="text">Обновить</button></div>
+<div id="list"></div><section class="service"><h2>Сервис</h2><p id="service-state">Проверяем API…</p><p class="muted small">Автоматические резервные копии: не настроены.</p></section>
+</div>
+</section>
+</main>
+<dialog id="create-dialog" aria-labelledby="create-title"><div class="dialog-head"><h2 id="create-title">Новое приглашение</h2><button id="close-create" class="text" aria-label="Закрыть новое приглашение">Закрыть</button></div>
+<form id="create-form"><label for="label">Метка <span class="muted">· необязательно</span></label><input id="label" maxlength="80" placeholder="Например, группа вторника" autocomplete="off"><p class="muted small">Один телефон · активация в течение 7 дней · доступ до отзыва или выхода.</p><button type="submit">Создать</button></form>
+<section id="result" hidden><p id="result-state"></p><label for="invite-text">Текст приглашения</label><textarea id="invite-text" readonly rows="7"></textarea><button id="copy">Скопировать текст</button><p class="muted small">Код показан только сейчас. После закрытия его нельзя восстановить.</p><button id="done" class="text">Готово</button></section>
+<p id="create-message" role="status"></p><button id="check-list" class="text" hidden>Проверить список</button>
+</dialog>
+<dialog id="revoke-dialog" aria-labelledby="revoke-title"><h2 id="revoke-title">Отозвать доступ?</h2><p id="revoke-description"></p><p id="revoke-message" role="status"></p><div class="actions"><button id="confirm-revoke">Отозвать</button><button id="cancel-revoke" class="secondary">Не отзывать</button></div></dialog>
+<dialog id="reject-request-dialog" aria-labelledby="reject-request-title"><h2 id="reject-request-title">Отклонить заявку?</h2><p id="reject-request-description"></p><div class="actions"><button id="confirm-reject-request">Отклонить</button><button id="cancel-reject-request" class="secondary">Не отклонять</button></div></dialog>
+</body></html>

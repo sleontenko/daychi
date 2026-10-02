@@ -1,0 +1,17 @@
+{
+  "name": "daychi-wiki-graph",
+  "private": true,
+  "description": "Граф вики для сайта школы; собирается в practice_api/wiki_graph_web/graph.js",
+  "scripts": {
+    "build": "esbuild src/graph.js --bundle --minify --format=iife --target=es2020 --legal-comments=eof --outfile=../../practice_api/wiki_graph_web/graph.js",
+    "test": "node --test content.test.mjs"
+  },
+  "dependencies": {
+    "d3-force": "3.0.0",
+    "graphology": "0.26.0",
+    "sigma": "3.0.3"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

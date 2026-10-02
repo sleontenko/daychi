@@ -45,7 +45,7 @@ def create_app(source=None, store=None):
                 pass
         if transport:
             transport.close()
-    app = FastAPI(title="Quiet Practice Schedule", version="0.1.0", lifespan=lifespan)
+    app = FastAPI(title="Daychi Schedule", version="0.1.0", lifespan=lifespan)
     app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET"])
     # Private routes are opt-in; they use a distinct DB and device bearer auth.
     if store is not None:

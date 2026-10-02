@@ -12,6 +12,8 @@ web-build/
 *.log
 *.xcarchive/
 *.ipa
+practice_api/downloads/*.apk
+practice_api/downloads/*.idsig
 DerivedData/
 
 # Local configuration, credentials and private data
@@ -40,3 +42,21 @@ apps/practice-app/src/features/wiki/generated/
 
 # Private Zoom meeting links/passcodes supplied for the closed beta
 apps/practice-app/src/features/schedule/generated/
+
+# Local review captures / evidence containing private corpus or tester data
+.impeccable/review/
+docs/qa-wiki-notion-2026-10-01/screenshots/*
+!docs/qa-wiki-notion-2026-10-01/screenshots/reference-*.jpg
+docs/release-preparation-2026-10-01/testflight-13-group.png
+
+# Signing, recordings and local tooling caches
+*.keystore
+*.jks
+*.apk
+*.aab
+*.idsig
+*.mp3
+*.m4a
+*.mp4
+*.wav
+.uv-cache/

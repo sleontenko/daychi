@@ -1,4 +1,4 @@
-# Quiet Practice
+# Daychi / Дейчи
 
 Read README.md, docs/PRODUCT.md, docs/DESIGN.md and docs/TESTFLIGHT_CHANGELOG.md
 before product changes. The Expo app also has local AGENTS.md instructions.
@@ -16,6 +16,14 @@ group «Личное тестирование» (ed8a05aa-a6db-41e9-93e6-299c8f3
 asking for another confirmation. This is the owner’s standing instruction from
 2026-09-19, including build 6. Verify group assignment and Testing status.
 Keep roadmap items separate from completed work. Never rewrite past release facts.
+
+Wiki content batches: maintain docs/wiki-work-plan.md after each batch with
+completed/remaining scope, actual time/token usage when available, estimates
+and next scope. Use docs/wiki-contributor-pipeline.md for delegated content work;
+keep source data and credentials private, imports with the coordinator.
+Primary editable content ledger: data/wiki-workspace/outputs/2026-10-02/wiki-materials.xlsx.
+See docs/wiki-team-pipeline.md for stable source IDs, snapshot periods and updates.
+Preserve participant inputs when updating the ledger; never regenerate over them.
 
 Every subsequent version must be checked against the original design archive and
 screen references in docs/DESIGN.md before release. Preserve explicitly approved

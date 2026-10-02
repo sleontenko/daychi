@@ -1,54 +1,35 @@
-# Тихая практика — universal client
+# Daychi · Дейчи — Expo client
 
-Expo SDK 57 application for iOS, Android and web. It is a thin client over the
-server-side `practice_api`; corpus data and AI credentials are never bundled
-into the app.
+Expo SDK 57 / TypeScript for iOS, Android and web. npm package: daychi-app.
+Start with the [project README](../../README.md) and
+[CONTRIBUTING](../../CONTRIBUTING.md); local [AGENTS](AGENTS.md) applies.
 
-## Schedule-first iOS build
-
-The root screen uses the approved organic prototype tokens and a real schedule.
-Native iOS races the isolated schedule service with a direct, validated import of
-the school's public timetable; web uses the service. No external browser or code
-entry is required. Attendance and notification preferences persist on-device.
-iOS schedules one local notification per selected date (0/15/30/60 minutes before),
-with cancellation/rescheduling when choices or refreshed source data change.
-No server, APNs enrollment, or internet is needed at delivery time. The schedule
-covers 14 days and refreshes on foreground / every five foreground minutes.
-Telegram changes and background timetable reconciliation are not implemented;
-the UI states this limitation. Current UX, verification and release status:
-[`docs/schedule-build3.md`](../../docs/schedule-build3.md).
-Earlier server/APNs work: [`docs/testflight-schedule-mvp.md`](../../docs/testflight-schedule-mvp.md).
-
-## Organic iOS prototype
-
-The `/prototype` screen preserves the interactive prototype from
-`Форма карты практики.zip`: Today, Schedule, Practice Map, Wiki, lesson detail,
-notes, player, reminders, and article detail. Prototype content is local mock
-data by design; the existing API-backed library screen remains available at
-`/explore` for the next integration pass.
-
-The visual comparison and verification record live in `design-qa.md`.
-
-```bash
-npm install
+```sh
+npm ci
+cp .env.example .env.local
 npm run web
+# Native development builds, with Xcode / Android SDK:
 npm run ios
 npm run android
 ```
 
-The local API defaults are:
+Only public URLs belong in EXPO_PUBLIC_* variables.
+EXPO_PUBLIC_SCHEDULE_API_URL serves the public schedule;
+EXPO_PUBLIC_DAYCHEE_API_URL is the HTTPS personal-access service.
+EXPO_PUBLIC_API_URL is the separate historical corpus API.
+Protected wiki/Zoom content and AI credentials are not bundled.
 
-- web and iOS Simulator: `http://127.0.0.1:8000`;
-- Android Emulator: `http://10.0.2.2:8000`.
-
-For a physical device or remote environment, copy `.env.example` to
-`.env.local` and set `EXPO_PUBLIC_API_URL` to a reachable backend address.
-
-Verification:
-
-```bash
-npx tsc --noEmit
-npx expo-doctor
-npm audit --omit=dev
-npx expo export --platform web
+```sh
+npm run typecheck
+npm run lint
+npm test
 ```
+
+Attendance, preferences and bookmarks persist on-device. Schedule timezone is
+Asia/Jerusalem. Native notifications/exact alarms require a development build;
+browser checks do not verify delivery. Keep bundle ID, URL scheme and legacy
+storage keys compatible; see [rename boundaries](../../docs/daychi-rename.md).
+
+The /prototype route contains historical mock data and is not shipped scope.
+Approved design and per-screen QA rules: [DESIGN](../../docs/DESIGN.md).
+Current release facts: [TestFlight changelog](../../docs/TESTFLIGHT_CHANGELOG.md).

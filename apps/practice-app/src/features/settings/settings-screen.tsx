@@ -1,23 +1,31 @@
+import { feedbackOperationId, sendFeedback, type FeedbackDraft } from './feedback-client';
 import BackButton from '../../components/back-button';
 import AccessScreen from '../access/access-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Organic as C } from '../prototype/theme';
 
 export type SettingsPage = 'settings' | 'reminders' | 'feedback' | 'about' | 'access';
 const DRAFT = 'daychee.feedback.draft.v1';
 const kinds = ['Ошибка', 'Идея', 'Вопрос'] as const;
-export default function SettingsScreen({ page, onPage, onBack, backLabel, bottomTabs, reminders, view, onView, accessReturnLabel, onAccessDone }: {
+export default function SettingsScreen({ page, onPage, onBack, backLabel, bottomTabs, reminders, view, onView, accessManual, accessReturnLabel, onAccessDone }: {
   page: SettingsPage | null; onPage: (page: SettingsPage | null) => void; onBack: () => void; backLabel: string; bottomTabs: ReactNode; reminders: ReactNode;
-  accessReturnLabel?: string; onAccessDone: () => void;
+  accessManual?: boolean; accessReturnLabel?: string; onAccessDone: () => void;
   view: 'day' | 'week' | 'calendar'; onView: (view: 'day' | 'week' | 'calendar') => void;
 }) {
+  const accessBack = useRef<(() => void) | undefined>(undefined);
+  const [nestedAccess, setNestedAccess] = useState(false);
+  const registerAccessBack = useCallback((action?: () => void) => { accessBack.current = action; setNestedAccess(Boolean(action)); }, []);
+  const back = () => page === 'access' && accessBack.current ? accessBack.current() : onBack();
   const [kind, setKind] = useState<string>('Ошибка'), [message, setMessage] = useState(''), [contact, setContact] = useState('');
-  const [error, setError] = useState(''), [status, setStatus] = useState('');
-  const [ready, setReady] = useState(false), [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [ready, setReady] = useState(false);
+  const [busy, setBusy] = useState(false), [sent, setSent] = useState(false);
+  const sending = useRef(false);
+  const operation = useRef<FeedbackDraft | null>(null);
   const queue = useRef(Promise.resolve());
   const offsets = useRef<Partial<Record<SettingsPage, number>>>({});
   const pageScroll = useRef<ScrollView>(null);
@@ -34,35 +42,41 @@ export default function SettingsScreen({ page, onPage, onBack, backLabel, bottom
       setKind(kinds.includes(draft.kind) ? draft.kind : 'Ошибка');
       setMessage(typeof draft.message === 'string' ? draft.message : '');
       setContact(typeof draft.contact === 'string' ? draft.contact : '');
+      if (typeof draft.operationId === 'string') operation.current = draft;
     }).catch(() => { if (active) setError('Не удалось восстановить черновик.'); })
       .finally(() => { if (active) setReady(true); });
     return () => { active = false; };
   }, []);
-  function save(next: { kind: string; message: string; contact: string }) {
+  function save(next: FeedbackDraft) {
+    if (!next.operationId) operation.current = null;
+    setSent(false);
     queue.current = queue.current.catch(() => {}).then(() => AsyncStorage.setItem(DRAFT, JSON.stringify(next)));
     void queue.current.catch(() => setError('Не удалось сохранить черновик. Текст остаётся на экране.'));
   }
-  async function openTelegram() {
-    setError(''); setStatus('');
-    if (!message.trim()) { setError('Напишите сообщение.'); return; }
-    if (busy || !ready) return;
-    setBusy(true);
+  async function submitFeedback() {
+    if (!ready || sending.current) return;
+    setError('');
+    if (message.trim().length < 2) { setError('Напишите хотя бы пару слов — без текста сообщение не отправить.'); return; }
+    sending.current = true; setBusy(true);
+    const draft = operation.current ?? { kind, message, contact, operationId: feedbackOperationId(), version };
+    operation.current = draft;
     try {
-      save({ kind, message, contact });
+      save(draft);
       await queue.current;
-      const text = `Дейчи · ${kind}\n\n${message.trim()}${contact.trim() ? `\n\nКонтакт: ${contact.trim()}` : ''}`;
-      await Linking.openURL(`https://t.me/finleodev_bot?text=${encodeURIComponent(text)}`);
-      setStatus('Завершите отправку в Telegram. Если бот открывается впервые, нажмите «Начать». Черновик сохранён здесь; при необходимости скопируйте текст сообщения.');
-    } catch { setError('Не удалось открыть Telegram или сохранить черновик. Текст сохранён на экране — попробуйте ещё раз.'); }
-    finally { setBusy(false); }
+      await sendFeedback(draft);
+      // Keep the operation in storage until clearing succeeds, so a restart cannot duplicate delivery.
+      await AsyncStorage.setItem(DRAFT, JSON.stringify({ kind, message: '', contact: '' }));
+      operation.current = null; setMessage(''); setContact(''); setSent(true);
+    } catch (failure) { setError(failure instanceof Error ? failure.message : 'Не удалось отправить. Черновик сохранён.'); }
+    finally { sending.current = false; setBusy(false); }
   }
   const button = (label: string, action: () => void, primary = false, disabled = false) => <Pressable accessibilityRole="button"
     accessibilityState={{ disabled }} disabled={disabled} onPress={action} style={[s.button, primary && s.primary, disabled && { opacity: 0.5 }]}>
     <Text style={[s.link, primary && { color: C.white }]}>{label}</Text></Pressable>;
   const version = Constants.expoConfig?.version ?? '1.0.0';
-  return <Modal visible={page !== null} animationType="slide" onRequestClose={onBack}>
+  return <Modal visible={page !== null} animationType="slide" onRequestClose={back}>
     <SafeAreaProvider><SafeAreaView edges={['top']} style={s.safe}><KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <BackButton label={backLabel} onPress={onBack} />
+      <BackButton label={nestedAccess && page === 'access' && !accessManual ? 'Заявка на доступ' : backLabel} onPress={back} />
       <ScrollView key={page} ref={pageScroll} keyboardShouldPersistTaps="handled" contentContainerStyle={s.page}
         onScroll={event => { if (page) offsets.current[page] = event.nativeEvent.contentOffset.y; }} scrollEventThrottle={16}>
         {page !== 'access' && <Text accessibilityRole="header" style={s.title}>{page === 'settings' ? 'Настройки' : page === 'reminders' ? 'Напоминания' : page === 'feedback' ? 'Обратная связь' : page === 'about' ? 'О приложении' : 'Доступ'}</Text>}
@@ -82,22 +96,22 @@ export default function SettingsScreen({ page, onPage, onBack, backLabel, bottom
           <Text style={s.caption}>Учебные материалы принадлежат их авторам. Версия {version}.</Text>
           {button('Обратная связь', () => onPage('feedback'))}
         </>}
-        {page === 'access' && <AccessScreen embedded returnLabel={accessReturnLabel ?? 'Готово'} onDone={onAccessDone} />}
+        {page === 'access' && <AccessScreen embedded initialManual={accessManual} onBackAction={registerAccessBack} returnLabel={accessReturnLabel ?? 'Готово'} onDone={onAccessDone} onCancel={onBack} />}
         {page === 'feedback' && <>
           <Text style={s.body}>Ошибка, идея или вопрос</Text>
           <View style={s.options}>{kinds.map(value => <Pressable key={value} disabled={!ready || busy} accessibilityRole="button" accessibilityState={{ selected: kind === value }}
             onPress={() => { setKind(value); save({ kind: value, message, contact }); }} style={[s.button, kind === value && s.selected]}><Text style={s.link}>{value}</Text></Pressable>)}</View>
           <Text style={s.heading}>Сообщение</Text>
           <TextInput accessibilityLabel="Сообщение" editable={ready && !busy} multiline maxLength={3000} value={message} placeholder="Что произошло или что хочется улучшить?" placeholderTextColor="#82796A" textAlignVertical="top"
-            onChangeText={value => { setMessage(value); setStatus(''); save({ kind, message: value, contact }); }} style={[s.input, { minHeight: 160 }]} />
+            onChangeText={value => { setMessage(value); save({ kind, message: value, contact }); }} style={[s.input, { minHeight: 160 }]} />
           <Text style={s.heading}>Контакт для ответа · необязательно</Text>
           <TextInput accessibilityLabel="Контакт для ответа" editable={ready && !busy} maxLength={200} value={contact} autoCapitalize="none" placeholder="Telegram или email" placeholderTextColor="#82796A"
             onChangeText={value => { setContact(value); save({ kind, message, contact: value }); }} style={s.input} />
-          <Text style={s.caption}>Сообщение откроется в Telegram для @finleodev_bot. Отправку нужно подтвердить там. Черновик хранится на этом устройстве.</Text>
+          <Text style={s.caption}>Сообщение получит организатор. Автоматически добавляется только версия приложения. Черновик хранится на этом устройстве.</Text>
+          {sent && <Text accessibilityLiveRegion="polite" style={s.body}>Спасибо! Сообщение отправлено.</Text>}
+          <Pressable accessibilityRole="button" accessibilityState={{ disabled: !ready || busy, busy }} disabled={!ready || busy} onPress={() => void submitFeedback()} style={[s.button, s.primary]}><Text style={[s.link, { color: C.white }]}>{busy ? 'Отправляем…' : 'Отправить'}</Text></Pressable>
           {!!error && <Text accessibilityRole="alert" style={s.link}>{error}</Text>}
-          {!!status && <Text accessibilityLiveRegion="polite" style={s.body}>{status}</Text>}
-          <Pressable accessibilityRole="button" disabled={!ready || busy} onPress={() => void openTelegram()} style={[s.button, s.primary]}><Text style={[s.link, { color: C.white }]}>{busy ? 'Открываем Telegram…' : 'Продолжить в Telegram'}</Text></Pressable>
-          <Pressable accessibilityRole="button" disabled={!ready || busy} onPress={() => { setMessage(''); setContact(''); setStatus(''); setError(''); save({ kind, message: '', contact: '' }); }} style={s.button}><Text style={s.link}>Очистить черновик</Text></Pressable>
+          <Pressable accessibilityRole="button" disabled={!ready || busy} onPress={() => { setMessage(''); setContact(''); setError(''); save({ kind, message: '', contact: '' }); }} style={s.button}><Text style={s.link}>Очистить черновик</Text></Pressable>
         </>}
       </ScrollView>
     </KeyboardAvoidingView>{bottomTabs}</SafeAreaView></SafeAreaProvider>

@@ -15,7 +15,7 @@ function Button({ title, onPress, selected, disabled }: { title: string; onPress
     style={({ pressed }) => [s.button, selected && s.selected, (pressed || disabled) && { opacity: 0.55 }]}>
     <Text style={[s.link, selected && { color: '#fff' }]}>{title}</Text></Pressable>;
 }
-export default function WikiScreen({ active = true, onDetailChange, onOpenAccess }: { active?: boolean; onDetailChange?: (open: boolean) => void; onOpenAccess: () => void }) {
+export default function WikiScreen({ active = true, onDetailChange, onOpenAccess }: { active?: boolean; onDetailChange?: (open: boolean) => void; onOpenAccess: (invitation?: boolean) => void }) {
   const access = useAccess();
   const [section, setSection] = useState<'materials' | 'dictionary'>('materials');
   const [termQuery, setTermQuery] = useState('');

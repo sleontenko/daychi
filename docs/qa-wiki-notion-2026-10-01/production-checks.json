@@ -1,0 +1,60 @@
+{
+  "deployment": "9f7eeca7-ea24-4015-9475-73b2b5176f6c",
+  "checks": [
+    {
+      "path": "/wiki",
+      "status": 200,
+      "sha256": "bbe0278ee20edf1285a754b62eb471d63858f50904fd87d87581b3e7373e0e1a",
+      "matches_stage": true
+    },
+    {
+      "path": "/wiki-graph-assets/graph.css",
+      "status": 200,
+      "sha256": "9dfa6aef4d44359a206597d12936320db06c6f21461981d85240d3722d3849f4",
+      "matches_stage": true
+    },
+    {
+      "path": "/wiki-graph-assets/graph.js",
+      "status": 200,
+      "sha256": "bbdc75f99f4b695bf4eee111a0ecfa80274d2735dc15c8fa022bc252010c9086",
+      "matches_stage": true
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "sha256": "cc68f842898918459610503ed13bd7eb269e843551a71f7d553d607ed8ab4728",
+      "matches_stage": true
+    },
+    {
+      "path": "/health",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/schedule",
+      "status": 200
+    },
+    {
+      "path": "/api/wiki/materials",
+      "status": 401
+    },
+    {
+      "path": "/api/wiki/graph",
+      "status": 401
+    },
+    {
+      "path": "/api/access/session",
+      "status": 401
+    },
+    {
+      "path": "/api/admin/invitations",
+      "status": 401
+    },
+    {
+      "path": "/downloads/daychee-android.apk",
+      "status": 206,
+      "range": "bytes=0-63",
+      "matches_stage_prefix": true,
+      "content_disposition": "attachment; filename=\"daychee-1.0.0-3.apk\""
+    }
+  ]
+}

@@ -1,16 +1,16 @@
 {
   "expo": {
     "name": "Дейчи",
-    "slug": "quiet-practice",
+    "slug": "daychi",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/quiet-practice-icon.png",
+    "icon": "./assets/images/daychi-icon.png",
     "scheme": "quietpractice",
     "userInterfaceStyle": "light",
     "ios": {
-      "icon": "./assets/images/quiet-practice-icon.png",
+      "icon": "./assets/images/daychi-icon.png",
       "bundleIdentifier": "ai.mypraxis.quietpractice",
-      "buildNumber": "12",
+      "buildNumber": "13",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCalendarsUsageDescription": "Добавлять выбранные занятия в ваш календарь."
@@ -19,7 +19,7 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#F3EFE5",
-        "foregroundImage": "./assets/images/quiet-practice-icon.png"
+        "foregroundImage": "./assets/images/daychi-icon.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "ai.mypraxis.quietpractice",
@@ -34,7 +34,8 @@
         "android.permission.SYSTEM_ALERT_WINDOW",
         "android.permission.USE_BIOMETRIC",
         "android.permission.USE_FINGERPRINT"
-      ]
+      ],
+      "versionCode": 3
     },
     "web": {
       "output": "static",
@@ -55,11 +56,18 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#F3EFE5",
-          "image": "./assets/images/quiet-practice-icon.png",
+          "image": "./assets/images/daychi-icon.png",
           "imageWidth": 76
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "Добавлять выбранные занятия в ваш календарь.",
+          "remindersPermission": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
