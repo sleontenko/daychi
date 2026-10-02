@@ -1,5 +1,7 @@
 # Daychi · Дейчи
 
+[![Checks](https://github.com/sleontenko/daychi/actions/workflows/checks.yml/badge.svg)](https://github.com/sleontenko/daychi/actions/workflows/checks.yml)
+
 Приложение и веб-библиотека школы тайцзи: расписание, выбранные занятия,
 напоминания и персональный доступ к вики и Zoom. Ранее проект назывался
 Quiet Practice; актуальное латинское имя — **Daychi**, русское — **Дейчи**.
@@ -106,7 +108,7 @@ npm test
 npm run build
 ```
 
-[Конфигурация GitHub Actions](docs/ci/checks.yml) проверяет исходники и синтетические
+[GitHub Actions](.github/workflows/checks.yml) проверяет исходники и синтетические
 тесты без секретов и deploy. Перед каждым push проверяйте staged diff и
 `python3 scripts/check_repository.py --staged`.
 Поэкранная дизайн-сверка, возвраты, Android Back и реальное устройство —

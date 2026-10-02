@@ -76,3 +76,20 @@ email (совпадений нет). Это ограниченная прове�
 История и теги при этой попытке не обновились. CI-конфигурация сохранена
 в docs/ci/checks.yml; добавление активного workflow выполняется через
 существующую owner-сессию GitHub, без расширения CLI token.
+
+Загрузка завершилась atomic fast-forward: source snapshot `89234b3`,
+15 ранее неотправленных коммитов и отсутствовавшие source tags опубликованы.
+CI добавлен через существующую GitHub-сессию: `eafe892`; локальный main
+синхронизирован fast-forward. Активный файл — .github/workflows/checks.yml.
+Копия из docs/ci удалена во избежание двух источников истины.
+
+После этого в общем worktree появились новые изменения клиента удаления данных
+из параллельной работы. Они не входят в проверенный snapshot и остаются
+незакоммиченными; этот этап не принимает и не выпускает их.
+
+Первый GitHub CI успешно завершён: [run 37019598107](https://github.com/sleontenko/daychi/actions/runs/37019598107),
+commit `eafe892`, все три jobs backend/app/wiki — success. Проверены чистые
+Linux checkout, установка lightweight backend/npm dependencies, тесты,
+TypeScript/lint и совпадение пересобранного graph.js с сохранённым bundle.
+GitHub оставил не блокирующие annotations о Node runtime используемых Actions
+и будущей миграции ubuntu-latest; они не являются отказом тестов.

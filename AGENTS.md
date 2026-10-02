@@ -3,6 +3,11 @@
 Read README.md, docs/PRODUCT.md, docs/DESIGN.md and docs/TESTFLIGHT_CHANGELOG.md
 before product changes. The Expo app also has local AGENTS.md instructions.
 
+Canonical project/repository name: Daychi / daychi, Russian «Дейчи».
+Contributor setup: CONTRIBUTING.md and docs/README.md. Preserve legacy bundle ID,
+URL scheme, storage keys and deployed DAYCHEE_* interfaces; rename boundaries
+and verification are recorded in docs/daychi-rename.md.
+
 Preserve the approved design. Treat `/prototype` as mock content, not shipped
 functionality. Do not expose the private corpus API or commit credentials/data.
 Keep the schedule timezone Asia/Jerusalem, distinct from the device timezone.
