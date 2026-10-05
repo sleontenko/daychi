@@ -187,7 +187,11 @@ def test_owner_origin_csrf_protection_public_allowlist_and_graph_navigation(tmp_
     assert client.post(endpoint,json=data,headers=headers).status_code==200
     assert client.post(endpoint,json=data,headers=headers).json()['already_imported']
     assert client.get('/api/wiki/concepts').status_code==401
-    graph=client.get('/api/public/wiki/graph').json()
+    legacy=client.get('/api/public/wiki/graph').json()
+    assert 'semantic_enabled' not in legacy
+    assert all(n['type'] not in ('term','topic') for n in legacy['nodes'])
+    assert all(e['k']!='semantic' for e in legacy['edges'])
+    graph=client.get('/api/public/wiki/graph?semantics=1').json()
     concept=next(n for n in graph['nodes'] if n['type']=='topic')
     page=client.get('/api/public/wiki/concepts/'+concept['concept_id'])
     assert page.status_code==200 and page.headers['cache-control']=='no-store'
@@ -204,7 +208,7 @@ def test_owner_origin_csrf_protection_public_allowlist_and_graph_navigation(tmp_
 def test_new_layer_and_public_access_remain_off_without_explicit_flags(tmp_path,monkeypatch):
     app,client,_,_=api_fixture(tmp_path,monkeypatch,enabled=False)
     assert client.get('/api/public/wiki/concepts').status_code==404
-    graph=client.get('/api/public/wiki/graph').json()
+    graph=client.get('/api/public/wiki/graph?semantics=1').json()
     assert 'semantic_enabled' not in graph and all(e['k']!='semantic' for e in graph['edges'])
     with pytest.raises(ValueError):app.state.wiki_semantics.import_batch(SemanticBatch(**semantic_payload()),app.state.wiki_catalog())
     monkeypatch.setenv('DAYCHEE_WIKI_SEMANTICS_ENABLED','1');monkeypatch.setenv('DAYCHEE_PUBLIC_WIKI_ENABLED','0')

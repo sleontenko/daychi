@@ -80,5 +80,5 @@ def mount_wiki_graph(app, load, authorize):
         return FileResponse(folder / name, headers=PAGE_HEADERS)
 
     @app.get('/api/wiki/graph', dependencies=[Depends(authorize)])
-    def graph():
-        return build_graph(load(), semantic=app.state.wiki_semantics)
+    def graph(semantics: bool = False):
+        return build_graph(load(), semantic=app.state.wiki_semantics if semantics else None)

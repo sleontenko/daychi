@@ -61,7 +61,7 @@ async function api(path) {
 async function boot() {
   if (!token) return showLogin();
   showView("loading");
-  try { start(await api("/api/wiki/graph")); }
+  try { start(await api("/api/wiki/graph?semantics=1")); }
   catch (e) { e.auth ? showLogin("Доступ закончился или был отозван. Введите новый код.") : showView("error"); }
 }
 

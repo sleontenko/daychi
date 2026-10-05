@@ -101,5 +101,5 @@ def mount_public_wiki(app, load, content, *, enabled, semantic=None):
         raise HTTPException(404, 'Материал больше не доступен')
 
     @app.get('/api/public/wiki/graph')
-    def graph():
-        return build_graph(rows(), semantic=semantic)
+    def graph(semantics: bool = False):
+        return build_graph(rows(), semantic=semantic if semantics else None)
