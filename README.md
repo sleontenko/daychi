@@ -56,6 +56,7 @@ CI запускает тесты без production-данных и секрет�
 - [Продукт](docs/PRODUCT.md) и [план развития](docs/ROADMAP.md)
 - [Архитектура](docs/ARCHITECTURE.md) и [дизайн](docs/DESIGN.md)
 - [История выпусков](docs/TESTFLIGHT_CHANGELOG.md)
+- [Статус вики и новые материалы](docs/wiki-status.md)
 - [Работа с контентом](docs/wiki-production-pipeline.md)
 - [Все документы](docs/README.md) и [безопасность](SECURITY.md)
 
