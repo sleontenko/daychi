@@ -9,6 +9,7 @@
 | Доступ и администрирование | [Доступ](daychee-public-access.md), [админка](daychee-admin-mvp.md) |
 | Сайт и веб-вики | [Сайт](daychee-website.md), [граф](wiki-graph-2026-09-30.md) |
 | Мобильное распространение | [iOS](ios-public-release-readiness-2026-10-02.md), [Android](android-readiness.md), [Google Play](google-play-preparation.md) |
+| Пополнения вики | [Статус и журнал новых материалов](wiki-status.md) |
 | Контент | [Процесс](wiki-production-pipeline.md), [участники](wiki-contributor-pipeline.md), [общий реестр](wiki-team-pipeline.md), [прогресс](wiki-work-plan.md) |
 
 Датированные QA-документы описывают конкретную проверку, а не готовность текущего
