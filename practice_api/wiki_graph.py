@@ -2,7 +2,7 @@
 
 Edges come from the catalog structure (category -> subtopic -> material) and from
 series numbering in titles («Веер для новичков 39» -> «… 40»). No semantic guessing;
-draft annotations and glossary candidates are not part of this payload.
+Only reviewed, source-current glossary/topic relations may extend this payload.
 """
 from collections import defaultdict
 from pathlib import Path
@@ -21,7 +21,7 @@ PAGE_HEADERS = {
 }
 
 
-def build_graph(rows):
+def build_graph(rows, content=None, semantic=None):
     sections, subtopics, nodes, edges = {}, {}, [], []
     for row in rows:
         category = row['category']
@@ -55,8 +55,14 @@ def build_graph(rows):
                 edges.append({'s': a, 't': b, 'k': 'series'})
 
     ordered = list(sections.values())
-    return {'sections': [{'id': s['sec'], 'name': s['label'], 'count': s['count']} for s in ordered],
+    result = {'sections': [{'id': s['sec'], 'name': s['label'], 'count': s['count']} for s in ordered],
             'nodes': ordered + list(subtopics.values()) + nodes, 'edges': edges}
+    if semantic and semantic.enabled:
+        layer = semantic.graph(rows)
+        result['nodes'].extend(layer['nodes'])
+        result['edges'].extend(layer['edges'])
+        result['semantic_enabled'] = True
+    return result
 
 
 def mount_wiki_graph(app, load, authorize):
@@ -75,4 +81,4 @@ def mount_wiki_graph(app, load, authorize):
 
     @app.get('/api/wiki/graph', dependencies=[Depends(authorize)])
     def graph():
-        return build_graph(load())
+        return build_graph(load(), semantic=app.state.wiki_semantics)

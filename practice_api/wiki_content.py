@@ -110,6 +110,9 @@ class ContentStore:
 
 
 def mount_content_import(app, session, mutation):
+    from .wiki_semantics import mount_semantic_import
+    mount_semantic_import(app, session, mutation)
+
     @app.get('/api/admin/wiki/content', dependencies=[Depends(session)])
     def content_status():
         return app.state.wiki_content.summary()

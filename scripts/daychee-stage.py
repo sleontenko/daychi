@@ -9,7 +9,7 @@ FILES = (
     'deploy/daychee/Dockerfile', 'deploy/daychee/requirements.txt',
     'deploy/daychee/run.py', 'practice_api/__init__.py',
     'practice_api/daychee_app.py', 'practice_api/wiki_app.py',
-    'practice_api/wiki_content.py',
+    'practice_api/wiki_content.py', 'practice_api/wiki_semantics.py',
     'practice_api/public_wiki.py',
     'practice_api/access_deletion.py',
     'practice_api/public_pages.py', 'practice_api/public_pages/privacy.html',
