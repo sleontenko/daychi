@@ -63,3 +63,9 @@ CI запускает тесты без production-данных и секрет�
 `/prototype` содержит демонстрационные экраны. Статусы выпусков и ограничения
 проверок указаны в changelog. Права на сторонние компоненты и дизайн сохраняются;
 репозиторий не предоставляет новую open-source лицензию.
+
+## Workshop collaboration
+
+Agents start with [AGENTS.md](AGENTS.md) and invoke the installed
+[/collaborate skill](.agents/skills/collaborate/SKILL.md) to discover addressed
+Workshop assignments and coordinate changes at project boundaries.
