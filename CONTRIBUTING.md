@@ -39,3 +39,7 @@ git status и staged diff; не включайте чужую незавершё
 Используйте синтетические fixtures. Корпус, рабочие базы, сессии, коды приглашений,
 Zoom-реквизиты и ключи остаются вне Git; см. [SECURITY](SECURITY.md).
 Исходники релиза фиксируются отдельным commit/tag. Выпуск и deploy согласуются отдельно.
+
+## Editorial pipeline
+
+Source indexing, transcription and editorial batches belong to [daychi-knowledge](https://github.com/sleontenko/daychi-knowledge). See [migration guidance](docs/knowledge-repository.md). Keep wiki UI and server changes in this repository.
