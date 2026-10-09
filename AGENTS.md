@@ -53,3 +53,34 @@ Simulator не подтверждает установку или доставк
 Стабильные ID, revisions, payload и доступ сохраняются. Runtime/API и UI QA
 ведутся здесь; редакционные тесты и QA партий — в daychi-knowledge.
 Рабочие данные остаются вне Git по прежним физическим путям; новый checkout подключает их ссылками.
+
+## Workshop collaboration
+
+Existing boundaries: Daychi app (`apps/practice-app`) and web wiki (`apps/wiki-graph`)
+↔ Daychi backend (`practice_api`); the native schedule also reads the school's public HTML
+(`apps/practice-app/src/features/schedule/load.ts`, `source.ts`). Schedule loading
+applies Telegram corrections (`zoom.ts`); wiki and access clients use Daychi APIs
+(`apps/practice-app/src/features/wiki/api.ts`,
+`apps/practice-app/src/features/access/request-client.ts`, `apps/wiki-graph/src/library.js`).
+Target boundaries, integration unverified: Daychi clients ↔ Cabinet backend;
+Daychi backend ↔ Cabinet backend. The content API remains in Daychi.
+See [current source evidence](https://github.com/dveyarangi/xuanxue-workshop/blob/HEAD/docs/current-system.md#daychi)
+and [target contracts](https://github.com/dveyarangi/xuanxue-workshop/blob/HEAD/docs/boundaries.md#target-connections).
+
+Use the [/collaborate skill](.agents/skills/collaborate/SKILL.md) at the start of every session,
+before work affecting any boundary described above, and whenever coordinating
+across projects or communicating with Workshop.
+
+### Automatic continuation after Workshop onboarding
+
+Operator authorization (2026-10-06): once Workshop explicitly acknowledges Daychi
+installation acceptance in issue #2 and closes it as completed, proceed with issue
+#6 under the project's existing rules without asking again whether to start.
+Check the original issue and its discussion; closure alone is not acceptance.
+Read current #6 dependencies and the shared contract before implementation.
+Issue #5 provider conformance and controlled fixtures are required to finish the
+actual native integration proof, not to begin client development after #2 acceptance.
+Preserve unrelated work and use an isolated checkout when needed. This authorization
+does not authorize publishing, deployment, TestFlight releases or fixture mutations.
+While waiting, notify only on meaningful changes or a required operator action.
+This instruction is durable authorization, not a configured background schedule.
