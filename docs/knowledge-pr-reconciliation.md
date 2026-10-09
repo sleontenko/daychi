@@ -8,6 +8,16 @@ Historical variants are archived separately; they do not replace current protoco
 - [PR #4](https://github.com/sleontenko/daychi/pull/4): batch 09, already imported;
   its journal and QA are in knowledge. The historical total of 176 does not replace
   the later 476 summary snapshot. This merge does not import content again.
+- [PR #6](https://github.com/sleontenko/daychi/pull/6): batches 10–19, already
+  imported (300 summaries / 900 excerpts). All ten journals, individual QA and
+  the combined QA are retained in knowledge. The cumulative snapshot is
+  476 summaries / 1428 excerpts; 431 independently reviewed, 45 still requiring
+  independent review. This merge preserves that history without another import.
+- [PR #5](https://github.com/sleontenko/daychi/pull/5): server and wiki UI pilot
+  for citation-backed concepts remains in Daychi. Its editorial tools/tests and
+  protocol variants are retained in knowledge. The default feature flag remains
+  off; the design candidate and ten private pilot pages are not accepted or
+  published by this merge.
 
 The product repository keeps forwarding documentation. New editorial work,
 assignments, review and batch QA belong to knowledge. Runtime and wiki UI changes
