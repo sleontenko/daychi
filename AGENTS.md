@@ -1,10 +1,3 @@
-<!-- Repository routing approved 2026-10-09. -->
-Knowledge pipeline work now belongs to [daychi-knowledge](https://github.com/sleontenko/daychi-knowledge).
-Read [migration instructions](docs/knowledge-repository.md) before continuing old
-editorial assignments. Daychi retains its app, wiki UI and content API.
-Do not merge old editorial docs/tools over the new forwarding paths; carry
-unfinished pipeline changes to daychi-knowledge and retain product changes here.
-
 # Daychi
 
 Перед продуктовыми изменениями прочитать README.md, docs/PRODUCT.md,
@@ -47,14 +40,16 @@ Simulator не подтверждает установку или доставк
 Исторические bundled-снимки закрытой беты не публиковать; новые версии
 получают закрытый контент через авторизованный сервер.
 
-## Вики
+## Вики и база знаний
 
-Следовать docs/wiki-production-pipeline.md и docs/wiki-contributor-pipeline.md.
-После каждой партии обновлять docs/wiki-work-plan.md: выполнено/осталось,
-фактическое время и доступный usage, оценки и следующий объём.
-Данные и импорт остаются у координатора.
+Подготовка знаний, ASR, редактура, реестр и план ведутся в приватном
+[sleontenko/daychi-knowledge](https://github.com/sleontenko/daychi-knowledge).
+Локальный путь: `/Users/mac-mini-server/projects/daychi-knowledge`.
+Перед продолжением старых задач читать его AGENTS.md и README.md;
+подробности — docs/knowledge-repository.md. Не добавлять новые инструменты
+редакционного пайплайна обратно в Daychi.
 
-Основной редактируемый реестр — приватный
-`data/wiki-workspace/outputs/2026-10-02/wiki-materials.xlsx`.
-Правила — docs/wiki-team-pipeline.md. Объединять обновления по стабильным ID,
-сохранять периоды снимков и введённые назначения; не перезаписывать правки участников.
+Здесь остаются приложение, сайт, wiki UI, сервер и действующие content/import API.
+Стабильные ID, revisions, payload и доступ сохраняются. Runtime/API и UI QA
+ведутся здесь; редакционные тесты и QA партий — в daychi-knowledge.
+Рабочие данные остаются вне Git по прежним физическим путям; новый checkout подключает их ссылками.
