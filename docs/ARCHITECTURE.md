@@ -49,3 +49,7 @@ Legacy schedule launch: `scripts/run_schedule_service.sh` требует
 `SCHEDULE_PRIVATE_DB`; опциональный `DAYCHI_SERVICE_ENV` подключает приватный
 config с `export APNS_*`. LaunchAgent plist — шаблон абсолютных путей,
 подставляемых перед установкой. Настройки машины в Git не входят.
+
+## Подготовка знаний
+
+Пайплайн подготовки вынесен в приватный [daychi-knowledge](https://github.com/sleontenko/daychi-knowledge); [границы](knowledge-repository.md). Приложение, веб-вики, content API, runtime storage и авторизация остаются здесь. Пакеты приходят через прежние owner endpoints; код ASR и редакционных сборщиков серверу не требуется.
