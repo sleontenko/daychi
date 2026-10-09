@@ -94,3 +94,12 @@ and final acceptance remain Workshop-owned.
 This change affects agent instructions and evidence only. No app/API behavior,
 production data, controlled fixture, DNS, deploy or TestFlight state is changed.
 Workshop owns evidence review, acceptance acknowledgement and assignment closure.
+
+## Reconciliation note · 2026-10-09
+
+The observations above describe the 2026-10-07 audit. Workshop subsequently
+acknowledged installation acceptance and closed issue #2 as completed. The
+recorded operator authorization therefore permits beginning #6 under its current
+dependencies; the old audit's "unstarted" observation is not a current gate.
+Knowledge preparation now belongs to `sleontenko/daychi-knowledge`; current
+startup instructions preserve that boundary alongside the Workshop block.
