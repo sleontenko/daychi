@@ -21,8 +21,9 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from .wiki_graph import mount_wiki_graph
-from .public_wiki import mount_public_wiki
+from .public_wiki import mount_public_wiki, public_material
 from .wiki_content import ContentStore
+from .wiki_semantics import SemanticStore, mount_semantic_reads
 
 
 @dataclass
@@ -66,6 +67,8 @@ def create_wiki_app(settings=None, access_authorizer=None):
     version = None
     content = ContentStore(cfg.database.with_name('wiki-content.sqlite3'))
     app.state.wiki_content = content
+    semantic = SemanticStore(content, enabled=os.getenv("DAYCHEE_WIKI_SEMANTICS_ENABLED") == "1")
+    app.state.wiki_semantics = semantic
     generation = hashlib.sha256((cfg.username + '\0' + cfg.password).encode()).hexdigest()
 
     def db():
@@ -215,7 +218,13 @@ def create_wiki_app(settings=None, access_authorizer=None):
         raise HTTPException(404, 'Материал больше не доступен')
 
     app.state.wiki_catalog = load
-    mount_public_wiki(app, load, content, enabled=os.getenv('DAYCHEE_PUBLIC_WIKI_ENABLED') == '1')
+    mount_semantic_reads(app, load, semantic, prefix='/api/wiki', authorize=authorize)
+    def public_semantic_catalog():
+        if os.getenv('DAYCHEE_PUBLIC_WIKI_ENABLED') != '1':
+            raise HTTPException(404)
+        return [public_material(row) for row in load()]
+    mount_semantic_reads(app, public_semantic_catalog, semantic, prefix='/api/public/wiki')
+    mount_public_wiki(app, load, content, enabled=os.getenv('DAYCHEE_PUBLIC_WIKI_ENABLED') == '1', semantic=semantic)
     mount_wiki_graph(app, load, authorize)
     return app
 

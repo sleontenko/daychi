@@ -1,9 +1,11 @@
 // The catalog and graph use the same authorized node identities. No second corpus.
 import { renderAnnotation } from './content.js';
+import { mountSemanticViews } from './semantics.js';
 export function mountLibrary({ DATA, api, esc, showLogin, onGraph }) {
   const root = document.querySelector('#library');
   const workspace = document.querySelector('#graph-workspace');
   const nodes = new Map(DATA.nodes.map(n => [n.id, n]));
+  const concepts = DATA.nodes.filter(n => n.type === 'term' || n.type === 'topic');
   const materials = DATA.nodes.filter(n => n.type === 'material').sort((a,b) => b.ts - a.ts);
   const sections = new Map(DATA.sections.map(s => [s.id, s]));
   const normalize = s => (s || '').toLowerCase().replace(/ё/g, 'е');
@@ -15,14 +17,21 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph }) {
   }
   let current = location.hash, graphHash = '#view=graph', catalogHash = '#view=catalog', ticket = 0;
   let view, timer;
-  const recent = materials.filter(n => Number(n.ts) > 0);
+  const recentTime = n => Number(n.updated_ts) > 0 ? Number(n.updated_ts) : Number(n.ts);
+  const recent = [...materials, ...concepts].filter(n => recentTime(n) > 0)
+    .sort((a,b) => recentTime(b) - recentTime(a) || a.id.localeCompare(b.id));
   const icon = `<svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>`;
-  const rail = active => `<aside class="library-sidebar" aria-label="Навигация библиотеки"><nav>${[['home','Главная'],['catalog','Все материалы'],['recent','Недавние публикации'],['graph','Граф связей']].map(([v,label])=>`<a data-route href="${v==='graph'?graphHash:'#view='+v}" ${active===v?'aria-current="page"':''}>${label}</a>`).join('')}</nav><details class="library-sections" ${matchMedia("(min-width: 761px)").matches?"open":""}><summary>Разделы</summary>${DATA.sections.map(s=>`<a data-route href="${href({view:'catalog',category:s.id})}"><span>${esc(s.name)}</span><small>${s.count}</small></a>`).join('')}</details></aside>`;
+  const rail = active => `<aside class="library-sidebar" aria-label="Навигация библиотеки"><nav>${[['home','Главная'],['catalog','Все материалы'],...(DATA.semantic_enabled?[['concepts','Темы и словарь']]:[]),['recent','Недавние публикации'],['graph','Граф связей']].map(([v,label])=>`<a data-route href="${v==='graph'?graphHash:'#view='+v}" ${active===v?'aria-current="page"':''}>${label}</a>`).join('')}</nav><details class="library-sections" ${matchMedia("(min-width: 761px)").matches?"open":""}><summary>Разделы</summary>${DATA.sections.map(s=>`<a data-route href="${href({view:'catalog',category:s.id})}"><span>${esc(s.name)}</span><small>${s.count}</small></a>`).join('')}</details></aside>`;
   const shell = (active, body) => `${rail(active)}<main class="library-main">${body}</main>`;
   const search = query => `<div class="library-search">${icon}<label class="sr" for="catalog-search">Поиск по материалам</label><input id="catalog-search" type="search" maxlength="300" placeholder="Найти материал или тему" value="${esc(query)}" autocomplete="off"></div>`;
   const params = () => new URLSearchParams(location.hash.slice(1));
   const href = (values) => '#' + new URLSearchParams(values).toString();
-  const articleLink = n => `<a class="material-card" data-route href="${href({view:'article',id:n.id})}"><span class="material-dot"></span><span><strong>${esc(n.label)}</strong><small>${esc(n.sub || sections.get(n.sec)?.name)}${n.date ? ' · '+esc(n.date) : ''}</small></span></a>`;
+  const semantic = mountSemanticViews({root,api,esc,shell,href,ticket:()=>ticket,onAuth:()=>showLogin('Доступ закончился или был отозван.'),restoreScroll});
+  const articleLink = n => n.concept_id ? conceptCard(n) : `<a class="material-card" data-route href="${href({view:'article',id:n.id})}"><span class="material-dot"></span><span><strong>${esc(n.label)}</strong><small>${esc(n.sub || sections.get(n.sec)?.name)}${n.date ? ' · '+esc(n.date) : ''}</small></span></a>`;
+  function conceptCard(n) {
+    const date = 'Обновлено '+new Intl.DateTimeFormat('ru-RU', {day:'numeric',month:'short',year:'numeric',timeZone:'Asia/Jerusalem'}).format(new Date(n.updated_ts));
+    return `<a class="material-card" data-route href="${href({view:'concept',id:n.concept_id})}"><span><strong>${esc(n.label)}</strong><small>${esc(date)}</small></span></a>`;
+  }
   function go(hash, replace = false) {
     rememberInput();
     scroll.set(current, window.scrollY);
@@ -36,7 +45,7 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph }) {
     clearTimeout(timer); ++ticket;
     const p = params();
     view = p.get('view') || (location.pathname === '/wiki' ? 'home' : 'graph');
-    if (!['home','recent','catalog','article','graph'].includes(view)) view = 'home';
+    if (!['home','recent','catalog','article','concepts','concept','graph'].includes(view)) view = 'home';
     current = location.hash;
     root.hidden = view === 'graph'; workspace.hidden = view !== 'graph';
     document.body.classList.toggle('library-open', view !== 'graph');
@@ -46,6 +55,8 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph }) {
     document.querySelector('#nav-graph').setAttribute('aria-pressed', String(view === 'graph'));
     if (view === 'graph') { onGraph(p, graphHash === location.hash); graphHash = location.hash; }
     else if (view === 'article') renderArticle(p.get('id'));
+    else if (view === 'concepts') semantic.listing(p.get('q')||'');
+    else if (view === 'concept') semantic.page(p.get('id'));
     else { if(view==='catalog') catalogHash = location.hash || '#view=catalog'; renderCatalog(p); }
     restoreScroll();
   }
@@ -69,13 +80,13 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph }) {
     if (!resultsOnly) {
       const home = currentView === 'home';
       const title = home ? 'Библиотека школы' : currentView === 'recent' ? 'Недавние публикации' : category ? sections.get(category).name : 'Все материалы';
-      root.innerHTML = shell(currentView, `<div class="library-heading ${home?'home-heading':''}"><h1>${esc(title)}</h1><p class="library-intro">${home?'Материалы для практики и изучения. Найдите знакомую тему или откройте что-то новое.':currentView==='recent'?'Последние записи по дате публикации в источнике.':'Записи занятий и материалы по разделам.'}</p>${search(query)}</div>
+      root.innerHTML = shell(currentView, `<div class="library-heading ${home?'home-heading':''}"><h1>${esc(title)}</h1><p class="library-intro">${home?'Материалы для практики и изучения. Найдите знакомую тему или откройте что-то новое.':currentView==='recent'?(DATA.semantic_enabled?'Последние добавленные и обновлённые страницы.':'Последние записи по дате публикации в источнике.'):'Записи занятий и материалы по разделам.'}</p>${search(query)}</div>
         ${!home?`<div class="catalog-filters" aria-label="Разделы">${[{id:'',name:'Все',count:materials.length},...DATA.sections].map(s => `<button data-category="${esc(s.id)}" aria-pressed="${category===s.id}">${esc(s.name)}</button>`).join('')}</div>`:''}<div id="catalog-content"></div>`);
     }
     const content = root.querySelector('#catalog-content');
     if (!found.length) content.innerHTML = `<div class="library-empty"><h2>Ничего не найдено</h2><p class="muted">Попробуйте другое слово или откройте все материалы.</p><button class="btn" data-reset>Сбросить поиск</button></div>`;
     else if (currentView === 'home' && !query) content.innerHTML = `<section class="home-recent"><div class="section-heading"><h2>Недавние публикации</h2><a data-route href="#view=recent">Посмотреть все →</a></div><p class="muted small">По дате публикации в источнике</p><div class="material-grid">${recent.slice(0,5).map(articleLink).join('')}</div></section><section class="home-sections"><div class="section-heading"><h2>Разделы библиотеки</h2><a data-route href="#view=catalog">Все материалы →</a></div><div class="section-list">${DATA.sections.map(s=>`<a data-route href="${href({view:'catalog',category:s.id})}"><strong>${esc(s.name)}</strong><span>${s.count} материалов</span></a>`).join('')}</div></section>`;
-    else content.innerHTML = `<p class="muted result-count" role="status">${query?'Найдено: ':''}${found.length} ${query?'':'материалов'}</p><div class="material-grid">${found.slice(0,page*36).map(articleLink).join('')}</div>${found.length>page*36 ? '<button class="btn load-more" data-more>Показать ещё</button>' : ''}`;
+    else content.innerHTML = `<p class="muted result-count" role="status">${query?'Найдено: ':''}${found.length} ${query?'':currentView==='recent'&&DATA.semantic_enabled?'страниц':'материалов'}</p><div class="material-grid">${found.slice(0,page*36).map(articleLink).join('')}</div>${found.length>page*36 ? '<button class="btn load-more" data-more>Показать ещё</button>' : ''}`;
     function filters(values, replace = false) { go(href({view:currentView,...(category?{category}:{}),...(query?{q:query}:{}),...values}), replace); }
     // Preserve the actual input element, selection and IME composition while filtering.
     if (!resultsOnly) {
@@ -120,8 +131,8 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph }) {
       <article><h1 tabindex="-1">${esc(n.label)}</h1><p class="muted">${esc(n.date)}${n.sub?' · '+esc(n.sub):''}</p>
       <section id="article-about"><h2>О материале</h2><div id="article-detail" role="status">Загружаем описание…</div></section>
       <section id="article-sources"><h2>Источники</h2><div id="article-links"></div></section>
-      <section id="article-connections"><h2>Связи</h2><div id="article-related"></div><div class="reader-actions"><a class="btn" data-route href="${href({view:'graph',sel:id,mode:'local',depth:'1'})}">Локальный граф</a><a class="open" data-route href="${href({view:'graph',sel:id})}">В общем графе →</a></div><p class="muted small">Связи из структуры каталога и соседних номеров серии. Смысловые ссылки появятся после редакторской проверки.</p></section></article></div>`);
-    const related = DATA.edges.filter(e=>e.s===id || e.t===id).map(e=>({node:nodes.get(e.s===id?e.t:e.s),kind:e.k}));
+      <section id="article-semantic" hidden></section><section id="article-connections"><h2>Связи</h2><div id="article-related"></div><div class="reader-actions"><a class="btn" data-route href="${href({view:'graph',sel:id,mode:'local',depth:'1'})}">Локальный граф</a><a class="open" data-route href="${href({view:'graph',sel:id})}">В общем графе →</a></div><p class="muted small">Связи из структуры каталога и соседних номеров серии. Темы и понятия, если они есть, показаны отдельно с подтверждающими цитатами.</p></section></article></div>`);
+    const related = DATA.edges.filter(e=>e.k!=='semantic' && (e.s===id || e.t===id)).map(e=>({node:nodes.get(e.s===id?e.t:e.s),kind:e.k}));
     root.querySelector('#article-related').innerHTML = related.length ? `<div class="material-grid related-grid">${related.map(({node:m,kind})=>m.type==='material'?articleLink(m):`<a class="material-card" data-route href="${href({view:'graph',sel:m.id,mode:'local'})}"><span><strong>${esc(m.label)}</strong><small>${m.type==='section'?'Раздел':'Подтема'} · структура каталога</small></span></a>`).join('')}</div>` : '<p class="muted">У этой записи пока нет связей.</p>';
     let userMoved = false, initialY = window.scrollY;
     const movement = new AbortController();
@@ -131,6 +142,7 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph }) {
     try {
       const d=await api('/api/wiki/materials/'+encodeURIComponent(id));
       if (request!==ticket) return;
+      if (DATA.semantic_enabled) semantic.article(id);
       root.querySelector('#article-detail').innerHTML=d.annotation ? renderAnnotation(d.annotation, esc) : `<p class="source-description">${esc(d.description && d.description!==d.title ? d.description : 'В исходном каталоге отдельного описания нет.')}</p>`;
       const links=(d.links||[]).filter(l=>l.type!=='zoom' && /^https?:\/\//i.test(l.url));
       root.querySelector('#article-links').innerHTML=links.length?`<ul class="source-links">${links.map(l=>`<li><a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">${esc(l.label||l.type)} ↗</a></li>`).join('')}</ul>`:'<p class="muted">Для этой записи нет ссылки на материал.</p>';

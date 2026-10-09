@@ -269,3 +269,8 @@ body.library-open #library .library-sidebar a { color: #635e56; }
 body.library-open #library .library-sidebar a[aria-current] { color: #312d28; }
 body.library-open #library .btn { background: #985220; color: #fff; }
 body.library-open #library .btn:hover { background: #7b421d; color: #fff; }
+
+/* Candidate: source-bound glossary pages share the accepted reader width. */
+.semantic-reader { max-width: 72ch; min-width: 0; }
+.semantic-reader .link-inline { min-height: 44px; min-width: 44px; }
+.semantic-relation { margin: 24px 0; }

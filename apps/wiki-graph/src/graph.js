@@ -61,7 +61,7 @@ async function api(path) {
 async function boot() {
   if (!token) return showLogin();
   showView("loading");
-  try { start(await api("/api/wiki/graph")); }
+  try { start(await api("/api/wiki/graph?semantics=1")); }
   catch (e) { e.auth ? showLogin("Доступ закончился или был отозван. Введите новый код.") : showView("error"); }
 }
 
@@ -75,9 +75,9 @@ function start(DATA) {
   const SEC_COLORS = ["#c67139", "#7a8a5e", "#b5895a", "#8c6f9e", "#5f8a8b", "#c2a14a", "#a25a5a",
     "#6b7fa8", "#9a6b4f", "#4f7a5a", "#b97a95", "#7d7466", "#d08f6a"];
   const SEC = Object.fromEntries(DATA.sections.map((s, i) => [s.id, { ...s, color: SEC_COLORS[i % SEC_COLORS.length] }]));
-  const C = { dim: "#e2d8c8", dimEdge: "#ece3d4", text: "#201e1d", other: "#82796a", structure: "#cbbfab", series: "#8fa073" };
-  const TYPE_LABEL = { section: "Раздел", subtopic: "Подтема", material: "Материал" };
-  const EDGE_LABEL = { structure: "структура", series: "серия" };
+  const C = { dim: "#e2d8c8", dimEdge: "#ece3d4", text: "#201e1d", other: "#82796a", structure: "#cbbfab", series: "#8fa073", semantic: "#c67139" };
+  const TYPE_LABEL = { section: "Раздел", subtopic: "Подтема", material: "Материал", term: "Термин", topic: "Тема" };
+  const EDGE_LABEL = { structure: "структура", series: "серия", semantic: "смысловая связь по цитате" };
   const ALL_SECTIONS = DATA.sections.map((s) => s.id);
   const narrowQuery = matchMedia("(max-width: 900px)");
   const touch = matchMedia("(hover: none)").matches; // на тач-экранах «наведения» нет — только выбор
@@ -86,14 +86,15 @@ function start(DATA) {
   const adj = new Map(DATA.nodes.map((n) => [n.id, []]));
   DATA.edges.forEach((e) => { adj.get(e.s).push([e.t, e.k]); adj.get(e.t).push([e.s, e.k]); });
   const colorOf = (n) => (n.sec && SEC[n.sec] ? SEC[n.sec].color : C.other);
+  const semanticNode = n => n.type === "term" || n.type === "topic";
   const sizeOf = (n) => n.type === "section" ? 13 : n.type === "subtopic" ? 3 + Math.sqrt(n.count || 1) * 0.9 : 3;
 
   // ---- Состояние в адресе. Выбор и режим — новые записи истории (Back возвращает), фильтры — замена ----
-  const state = { structure: true, series: true, orphans: true, sections: new Set(ALL_SECTIONS),
+  const state = { structure: true, series: true, semantic: true, orphans: true, sections: new Set(ALL_SECTIONS),
     mode: "global", depth: 1, selected: null, hovered: null };
   function readHash() {
     const p = new URLSearchParams(location.hash.slice(1));
-    ["structure", "series", "orphans"].forEach((k) => { state[k] = p.has(k) ? p.get(k) === "1" : true; });
+    ["structure", "series", "semantic", "orphans"].forEach((k) => { state[k] = p.has(k) ? p.get(k) === "1" : true; });
     const secs = p.get("sec") ? p.get("sec").split(",").filter((s) => SEC[s]) : [];
     state.sections = new Set(secs.length ? secs : ALL_SECTIONS);
     state.selected = p.get("sel") && byId.has(p.get("sel")) ? p.get("sel") : null;
@@ -103,7 +104,7 @@ function start(DATA) {
   function hashNow() {
     const q = new URLSearchParams();
     if (location.pathname === "/wiki") q.set("view", "graph");
-    ["structure", "series", "orphans"].forEach((k) => { if (!state[k]) q.set(k, "0"); });
+    ["structure", "series", "semantic", "orphans"].forEach((k) => { if (!state[k]) q.set(k, "0"); });
     if (state.sections.size !== ALL_SECTIONS.length) q.set("sec", [...state.sections].join(","));
     if (state.selected) q.set("sel", state.selected);
     if (state.mode === "local") { q.set("mode", "local"); q.set("depth", state.depth); }
@@ -120,6 +121,7 @@ function start(DATA) {
   const edgeOn = (k) => state[k];
   function visibleSet() {
     if (state.mode === "local" && state.selected) {
+      if (semanticNode(byId.get(state.selected)) && !state.semantic) return { ids: [], total: 0 };
       const seen = new Map([[state.selected, 0]]), queue = [state.selected];
       while (queue.length) {
         const id = queue.shift(), d = seen.get(id);
@@ -129,8 +131,9 @@ function start(DATA) {
       const all = [...seen.keys()];
       return { ids: all.slice(0, 60), total: all.length };
     }
-    const ids = DATA.nodes.filter((n) => (!n.sec || state.sections.has(n.sec))
-      && (state.structure || n.type === "material")).map((n) => n.id);
+    const ids = DATA.nodes.filter((n) => semanticNode(n)
+      ? state.semantic && adj.get(n.id).some(([id])=>state.sections.has(byId.get(id).sec))
+      : (!n.sec || state.sections.has(n.sec)) && (state.structure || n.type === "material")).map((n) => n.id);
     const idSet = new Set(ids), connected = new Set();
     DATA.edges.forEach((e) => { if (edgeOn(e.k) && idSet.has(e.s) && idSet.has(e.t)) { connected.add(e.s); connected.add(e.t); } });
     const out = state.orphans ? ids : ids.filter((id) => connected.has(id));
@@ -167,7 +170,7 @@ function start(DATA) {
     const links = [];
     for (const e of DATA.edges) {
       if (!edgeOn(e.k) || !ids.has(e.s) || !ids.has(e.t)) continue;
-      graph.addEdge(e.s, e.t, { kind: e.k, color: C[e.k], size: e.k === "structure" ? 0.5 : 1.2 });
+      graph.addEdge(e.s, e.t, { kind: e.k, color: C[e.k], size: e.k === "structure" ? 0.5 : e.k === "semantic" ? 1.8 : 1.2 });
       links.push({ source: e.s, target: e.t, k: e.k });
     }
     // Чем меньше узлов, тем раньше появляются подписи материалов
@@ -328,7 +331,8 @@ function start(DATA) {
     const n = byId.get(id);
     let changed = false;
     if (n.sec && !state.sections.has(n.sec)) { state.sections.add(n.sec); changed = true; }
-    if (n.type !== "material" && !state.structure) { state.structure = true; changed = true; }
+    if (semanticNode(n) && !state.semantic) { state.semantic = true; changed = true; }
+    if (["section","subtopic"].includes(n.type) && !state.structure) { state.structure = true; changed = true; }
     if (changed) { syncControls(); writeHash(); }
     if (changed || (state.mode !== "local" && !graph.hasNode(id))) { state.selected = null; rebuild(); focusOnSettle = id; }
     select(id);
@@ -347,6 +351,7 @@ function start(DATA) {
           <dt><i class="dot" data-color="#c67139"></i></dt><dd>Материал</dd>
           <dt><i class="line" data-color="${C.structure}"></i></dt><dd>Структура каталога</dd>
           <dt><i class="line" data-color="${C.series}"></i></dt><dd>Серия: соседние номера в названии</dd>
+          ${DATA.semantic_enabled?`<dt><i class="line" data-color="${C.semantic}"></i></dt><dd>Смысловая связь: подтверждена цитатой</dd>`:""}
         </dl>`;
       paint(el);
       return;
@@ -361,8 +366,9 @@ function start(DATA) {
         ${n.type === "material" && n.sub ? `<span class="tag soft">${esc(n.sub)}</span>` : ""}</div>
       <h2>${esc(n.label)}</h2>
       ${n.date ? `<p class="muted">${esc(n.date)}</p>` : ""}
-      ${n.count ? `<p class="muted">${n.count} материалов в каталоге</p>` : ""}
+      ${n.count ? `<p class="muted">${n.count} ${semanticNode(n)?"материалов с цитатами":"материалов в каталоге"}</p>` : ""}
       <div id="detail"></div>
+      ${semanticNode(n)?`<a class="open" data-route href="#view=concept&id=${encodeURIComponent(n.concept_id)}">Читать ${n.type==='term'?'термин':'тему'} и цитаты →</a>`:""}
       ${n.type === "material" ? `<a class="open" href="#view=article&id=${encodeURIComponent(n.id)}" data-article="${esc(n.id)}">Читать материал →</a>` : ""}
       <div class="row"><button class="btn" id="to-local">${state.mode === "local" ? "К общему графу" : "Локальный граф"}</button></div>
       <p class="muted small">Связи: ${nbs.length}</p>
@@ -412,14 +418,15 @@ function start(DATA) {
     local.title = state.selected ? "" : "Сначала выберите узел";
   }
   function syncControls() {
-    ["structure", "series", "orphans"].forEach((k) => { $(`#t-${k}`).checked = state[k]; });
+    ["structure", "series", "semantic", "orphans"].forEach((k) => { $(`#t-${k}`).checked = state[k]; });
     // Пока включена структура, у каждого узла есть связь — переключатель ничего бы не менял
-    $("#t-orphans").disabled = state.structure;
-    $("#t-orphans").closest("label").title = state.structure ? "Все узлы связаны структурой — выключите «Разделы и подтемы»" : "";
+    $("#t-semantic").closest("label").hidden = !DATA.semantic_enabled;
+    $("#t-orphans").disabled = state.structure && !DATA.semantic_enabled;
+    $("#t-orphans").closest("label").title = state.structure && !DATA.semantic_enabled ? "Все узлы связаны структурой — выключите «Разделы и подтемы»" : "";
     renderSections();
     renderFilterBadge();
   }
-  ["structure", "series", "orphans"].forEach((k) => {
+  ["structure", "series", "semantic", "orphans"].forEach((k) => {
     $(`#t-${k}`).addEventListener("change", (e) => {
       state[k] = e.target.checked;
       syncControls(); rebuild({ refit: k !== "series" }); renderPanel(); writeHash();
@@ -445,7 +452,7 @@ function start(DATA) {
     syncControls(); rebuild(); renderPanel(); renderModes(); writeHash();
   });
   function renderFilterBadge() {
-    const n = (state.sections.size !== ALL_SECTIONS.length) + !state.structure + !state.series;
+    const n = (state.sections.size !== ALL_SECTIONS.length) + !state.structure + !state.series + !state.semantic;
     $("#filters-toggle").textContent = n ? `Фильтры · ${n}` : "Фильтры";
   }
   $("#filters-toggle").addEventListener("click", () => {

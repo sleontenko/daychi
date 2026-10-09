@@ -52,7 +52,7 @@ def public_material(row, content=None):
     return result
 
 
-def mount_public_wiki(app, load, content, *, enabled):
+def mount_public_wiki(app, load, content, *, enabled, semantic=None):
     def rows():
         if not enabled:
             raise HTTPException(404, 'Публичная вики ещё не включена')
@@ -101,5 +101,5 @@ def mount_public_wiki(app, load, content, *, enabled):
         raise HTTPException(404, 'Материал больше не доступен')
 
     @app.get('/api/public/wiki/graph')
-    def graph():
-        return build_graph(rows())
+    def graph(semantics: bool = False):
+        return build_graph(rows(), semantic=semantic if semantics else None)
