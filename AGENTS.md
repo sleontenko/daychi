@@ -1,3 +1,10 @@
+<!-- Repository routing approved 2026-10-09. -->
+Knowledge pipeline work now belongs to [daychi-knowledge](https://github.com/sleontenko/daychi-knowledge).
+Read [migration instructions](docs/knowledge-repository.md) before continuing old
+editorial assignments. Daychi retains its app, wiki UI and content API.
+Do not merge old editorial docs/tools over the new forwarding paths; carry
+unfinished pipeline changes to daychi-knowledge and retain product changes here.
+
 # Daychi
 
 Перед продуктовыми изменениями прочитать README.md, docs/PRODUCT.md,
