@@ -3,7 +3,9 @@ from collections import defaultdict
 from contextlib import closing
 import hashlib
 import json
+import re
 import time
+from urllib.parse import parse_qsl, unquote, urlsplit
 
 from fastapi import Depends, HTTPException
 
@@ -255,9 +257,28 @@ class ArticleStore:
             con.execute('BEGIN')
             current = {identity: json.loads(payload) for identity, payload in con.execute('SELECT material_id,payload FROM content')}
         result = []
+        fields = ('id', 'title', 'date', 'timestamp', 'category', 'category_name', 'subtopic', 'subtopic_key', 'description')
+        def source_link(link):
+            if link.get('type') == 'zoom':
+                return False
+            try:
+                url = link['url']
+                if not isinstance(url, str) or '\\' in url or any(ord(c) < 33 for c in url):
+                    return False
+                parts = urlsplit(url)
+                host = unquote(parts.hostname or '', errors='strict').encode('idna').decode('ascii').lower().rstrip('.')
+                if (parts.scheme != 'https' or not re.fullmatch(r'[a-z0-9.-]+', host)
+                        or parts.username or parts.password or parts.port not in (None, 443)
+                        or any(host == domain or host.endswith('.' + domain) for domain in ('zoom.us', 'zoom.com'))):
+                    return False
+                secret_keys = {'pwd', 'passcode', 'password', 'token', 'invite', 'auth', 'access_token', 'code'}
+                return not any(key.casefold() in secret_keys for key, _ in parse_qsl(parts.query + '&' + parts.fragment))
+            except (KeyError, ValueError, UnicodeError, TypeError):
+                return False
         for row in catalog:
-            item = dict(row, links=[link for link in row['links'] if link['type'] != 'zoom'])
-            item.pop('annotation', None)
+            item = {key: row[key] for key in fields}
+            item['links'] = [{key: link[key] for key in ('url', 'type', 'label') if key in link}
+                             for link in row['links'] if source_link(link)]
             annotation = current.get(row['id'])
             if annotation and annotation['resource_id'] in SemanticStore.sources([row]):
                 item['annotation'] = annotation

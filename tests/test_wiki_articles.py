@@ -50,6 +50,33 @@ def stores(tmp_path):
     return content, ArticleStore(content, enabled=True), rows
 
 
+def test_owner_inventory_keeps_source_pins_without_connection_credentials(tmp_path):
+    _, store, rows = stores(tmp_path)
+    row = rows[0]
+    row.update(date='Дата', timestamp=1, category='test', category_name='Раздел',
+               subtopic='', subtopic_key='', description='Описание',
+               zoom_password='PRIVATE-ZOOM-PASSWORD', unknown_secret='PRIVATE-UNKNOWN')
+    video = dict(row['links'][0], type='video', label='Запись', password='PRIVATE-LINK-FIELD')
+    row['links'] = [video] + [
+        {'url': url, 'type': 'video', 'label': 'PRIVATE-ZOOM-LINK'} for url in (
+            'https://us02web.zoom.us/j/123?pwd=secret',
+            'https://ZOOM.COM./j/123',
+            'https://%7Aoom.us/j/123',
+            'https://ｚｏｏｍ.us/j/123',
+            'https://zoom.us\\@example.test/j/123',
+            'https://example.test/video?%70assword=secret',
+            'https://user:secret@example.test/video',
+        )
+    ] + [{'url': 'https://example.test/video', 'type': 'zoom', 'label': 'PRIVATE-ZOOM-LINK'}]
+    inventory = store.source_inventory([row])['materials'][0]
+    assert inventory['annotation']['resource_id'] == 'abcdefghijk'
+    assert inventory['annotation']['transcript_sha256'] == 'a' * 64
+    assert inventory['links'] == [{key: video[key] for key in ('url', 'type', 'label')}]
+    assert 'PRIVATE-' not in json.dumps(inventory)
+    assert set(inventory) == {'id', 'title', 'date', 'timestamp', 'category', 'category_name',
+                              'subtopic', 'subtopic_key', 'description', 'links', 'annotation'}
+
+
 def test_structure_destinations_replay_and_processing_noop(tmp_path):
     content, store, rows = stores(tmp_path)
     legacy = [content.get(r['id'], r['links']) for r in rows]
