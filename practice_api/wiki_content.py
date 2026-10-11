@@ -2,6 +2,7 @@
 from contextlib import closing
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -64,13 +65,13 @@ class ContentStore:
         if not self.path.exists():
             return None
         with closing(self.db()) as con:
-            row = con.execute('SELECT payload FROM content WHERE material_id=?',(material_id,)).fetchone()
+            row = con.execute('SELECT payload,updated FROM content WHERE material_id=?',(material_id,)).fetchone()
         if not row:
             return None
         value = json.loads(row[0])
         if value['resource_id'] not in {youtube_id(l['url']) for l in links}:
             return None  # Changed source must never inherit an old summary.
-        return {k:value[k] for k in ['resource_id','revision','summary','points','status']}
+        return {k:value[k] for k in ['resource_id','revision','summary','points','status']} | {'updated_at': row[1]}
 
     def import_batch(self, batch, catalog):
         if len({r.resource_id for r in batch.records}) != len(batch.records):
@@ -108,10 +109,30 @@ class ContentStore:
             return {'materials':con.execute('SELECT count(*) FROM content').fetchone()[0],
                     'batches':[{'id':r[0],'count':r[1]} for r in con.execute('SELECT id,count FROM batches ORDER BY id')]}
 
+    def update_times(self, catalog):
+        """Read current, source-matched annotation times in one query (milliseconds)."""
+        if not self.path.exists():
+            return {}
+        with closing(self.db()) as con:
+            stored = {identity: (json.loads(payload), updated) for identity, payload, updated
+                      in con.execute('SELECT material_id,payload,updated FROM content')}
+        result = {}
+        for row in catalog:
+            value = stored.get(row['id'])
+            if not value:
+                continue
+            payload, updated = value
+            if (math.isfinite(updated) and updated > 0 and payload['resource_id'] in
+                    {youtube_id(link['url']) for link in row['links']}):
+                result[row['id']] = updated * 1000
+        return result
+
 
 def mount_content_import(app, session, mutation):
     from .wiki_semantics import mount_semantic_import
+    from .wiki_articles import mount_article_import
     mount_semantic_import(app, session, mutation)
+    mount_article_import(app, session, mutation)
 
     @app.get('/api/admin/wiki/content', dependencies=[Depends(session)])
     def content_status():

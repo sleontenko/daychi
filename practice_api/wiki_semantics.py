@@ -263,12 +263,12 @@ class SemanticStore:
                     'batches': [{'id': i, 'pages': p, 'links': l} for i, p, l in con.execute('SELECT id,pages,links FROM semantic_batches ORDER BY id')]}
 
 
-def mount_semantic_reads(app, load, store, *, prefix, authorize=None):
+def mount_semantic_reads(app, load, store, *, prefix, authorize=None, project=lambda value: value):
     dependencies = [Depends(authorize)] if authorize else []
     def pages():
         if not store.enabled:
             raise HTTPException(404, 'Смысловые страницы ещё не включены')
-        return store.active_pages(load())
+        return [project(page) for page in store.active_pages(load())]
 
     @app.get(prefix + '/concepts', dependencies=dependencies)
     def concepts(q: str = Query('', max_length=200), kind: str = Query('', pattern='^(|term|topic)$')):
@@ -290,7 +290,7 @@ def mount_semantic_reads(app, load, store, *, prefix, authorize=None):
         catalog = load()
         if not store.enabled or not any(r['id'] == material_id for r in catalog):
             raise HTTPException(404)
-        return {'items': store.material_links(material_id, catalog)}
+        return {'items': [project(link) for link in store.material_links(material_id, catalog)]}
 
 
 def mount_semantic_import(app, session, mutation):

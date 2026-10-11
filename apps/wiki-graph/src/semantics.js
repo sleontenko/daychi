@@ -4,7 +4,8 @@ export const conceptKind = kind => kind === 'term' ? 'Термин' : 'Тема'
 export function quoteEvidence(link, esc) {
   return `<ul class="source-links">${link.points.map(p => {
     const n=Math.floor(p.start_seconds), label=`${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`;
-    return `<li><a href="https://www.youtube.com/watch?v=${encodeURIComponent(link.resource_id)}&amp;t=${n}s" target="_blank" rel="noopener noreferrer">${label} ↗</a> — «${esc(p.text)}»</li>`;
+    const recording = typeof link.resource_id === 'string' && /^[A-Za-z0-9_-]{11}$/.test(link.resource_id);
+    return `<li>${recording ? `<a href="https://www.youtube.com/watch?v=${encodeURIComponent(link.resource_id)}&amp;t=${n}s" target="_blank" rel="noopener noreferrer">${label} ↗</a>` : `<span class="muted small">${label} · Запись доступна после проверки доступа</span>`} — «${esc(p.text)}»</li>`;
   }).join('')}</ul>`;
 }
 export function materialConcepts(items, esc, href) {

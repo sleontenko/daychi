@@ -21,9 +21,10 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from .wiki_graph import mount_wiki_graph
-from .public_wiki import mount_public_wiki, public_material
+from .public_wiki import mount_public_wiki, public_article
 from .wiki_content import ContentStore
 from .wiki_semantics import SemanticStore, mount_semantic_reads
+from .wiki_articles import ArticleStore, mount_article_reads
 
 
 @dataclass
@@ -69,6 +70,8 @@ def create_wiki_app(settings=None, access_authorizer=None):
     app.state.wiki_content = content
     semantic = SemanticStore(content, enabled=os.getenv("DAYCHEE_WIKI_SEMANTICS_ENABLED") == "1")
     app.state.wiki_semantics = semantic
+    articles = ArticleStore(content, enabled=os.getenv('DAYCHEE_WIKI_ARTICLES_ENABLED') == '1')
+    app.state.wiki_articles = articles
     generation = hashlib.sha256((cfg.username + '\0' + cfg.password).encode()).hexdigest()
 
     def db():
@@ -222,9 +225,15 @@ def create_wiki_app(settings=None, access_authorizer=None):
     def public_semantic_catalog():
         if os.getenv('DAYCHEE_PUBLIC_WIKI_ENABLED') != '1':
             raise HTTPException(404)
-        return [public_material(row) for row in load()]
-    mount_semantic_reads(app, public_semantic_catalog, semantic, prefix='/api/public/wiki')
-    mount_public_wiki(app, load, content, enabled=os.getenv('DAYCHEE_PUBLIC_WIKI_ENABLED') == '1', semantic=semantic)
+        return load()
+    mount_semantic_reads(app, public_semantic_catalog, semantic, prefix='/api/public/wiki', project=public_article)
+    mount_article_reads(app, load, articles, prefix='/api/wiki', authorize=authorize)
+    def public_article_catalog():
+        if os.getenv('DAYCHEE_PUBLIC_WIKI_ENABLED') != '1':
+            raise HTTPException(404)
+        return load()
+    mount_article_reads(app, public_article_catalog, articles, prefix='/api/public/wiki', project=public_article)
+    mount_public_wiki(app, load, content, enabled=os.getenv('DAYCHEE_PUBLIC_WIKI_ENABLED') == '1', semantic=semantic, article_store=articles)
     mount_wiki_graph(app, load, authorize)
     return app
 
