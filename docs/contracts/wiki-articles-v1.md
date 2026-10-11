@@ -5,14 +5,31 @@ reader. This contract adds a separately requested article layer; it does not cha
 content v1, semantic v1, authentication, admission or Cabinet protocols. A mobile
 binary without this capability continues to read its existing summary/points.
 
+Executable authority: `practice_api/wiki_article_models.py` and the generated
+[owner schema](wiki-articles-v1.schema.json). `ArticleDocument` is the private
+pre-review preparation model; only `ArticleBatch`, with its mandatory independent
+review, is accepted by the owner endpoint. The common synthetic conformance packet
+is `tests/fixtures/article-batch-v1.json`; Knowledge carries the same wire models
+and fixture, not server/storage code.
+
 ## Operations and access
 
 - Owner `GET/POST /api/admin/wiki/articles`: status / atomic `ArticleBatch` import.
   Reuse existing owner session, same-origin/CSRF mutation dependencies and receipts.
+- Owner `GET /api/admin/wiki/articles/sources`: coordinator-only fresh catalog and
+  current source-bound content payload inventory, excluding Zoom links. This
+  preflight carries private source IDs/hashes required for reservation and revision
+  checks; it is never a reader/public endpoint. Existing public metadata cannot
+  establish source binding after recording IDs were removed on 11 October.
 - Reader `GET /api/wiki/articles/materials/{material_id}` and
   `GET /api/wiki/articles/concepts/{concept_id}`: existing authorized wiki session.
 - Public equivalents under `/api/public/wiki/articles/`: same allowlisted reader
-  objects only when the existing public-wiki setting permits public content.
+  text/navigation only when the existing public-wiki setting permits it. Preserve
+  the 11 October recording protection: omit every `resource_id`, hash opaque
+  claim/section/evidence/link IDs as `a:` + SHA256(original UTF-8 ID), and apply the
+  same mapping to their references and graph `link_ids`. Public material IDs and
+  canonical concept slugs remain unchanged. Times/quotes have no recording URL;
+  authorized reader objects retain source/time navigation.
 - Existing graph and recent routes gain optional boolean `articles=false`.
   Only `articles=true` adds article update dates, reviewed concept nodes/edges and
   concept update entries where supported by the existing graph consumer.
@@ -75,6 +92,14 @@ a no-op across batches; changed content requires a strictly greater object revis
 Version history remains immutable. Existing summary revisions are not incremented
 by article publication.
 
+Because each object pins the complete bundle source/evidence/link context, changing
+that shared context requires new revisions for all affected objects in a replacement
+bundle. Changing one article's prose alone affects its own revision. A replacement
+must include the articles whose relations use a supplemented concept; an older
+bundle is hidden if any of its included objects has been superseded. Whole-page
+supplements preserve retained claim text/quotation windows and relations. Removing
+or correcting retained facts needs a separately agreed correction protocol.
+
 The stored bundle is read from one content/extension snapshot. Any catalog/source
 pin change hides the dependent coherent bundle, including articles, concepts,
 graph edges, backlinks and related paths. Whole-bundle hiding is deliberately
@@ -90,6 +115,19 @@ paragraphs), referenced `evidence`, concept-link metadata for inline mentions,
 and `related` entries with target title/reason/shared concept identity.
 Paragraphs expose id/text/mentions/evidence IDs; the client slices Unicode code
 points and escapes every run. Concept links open the concept page, not graph.
+
+`evidence` entries contain only id/resource_id/text/start_seconds/end_seconds.
+`links` contain id/resource_id/concept_id/relation/rationale/evidence_ids plus
+material_id/title/concept_title/concept_kind. `related` contains the owner related
+fields plus title/concept_title. The article's full claim table and source/review
+records are omitted. The concept has its owner id/kind/title/aliases/revision/status/
+claims plus format/updated_at/evidence/links. No endpoint returns a file path,
+source hash, owner review metadata or stored batch payload.
+
+The server checks current source pins and strict references. Exact quotation
+windows and full-source meaning are checked by the Knowledge editorial validator
+and independent reviewer against private TXT/SRT; they cannot be inferred by the
+server from a hash alone.
 
 Concept response: `format`, `id`, `kind`, `title`, `aliases`, `revision`, draft
 `status`, `updated_at`, claims/evidence and material backlinks with relation,
@@ -115,7 +153,8 @@ navigation. Keep the accepted Claude iteration3 styling and graph behavior.
 5. Changed source hides all bundle projections coherently; replay does not restore
    them. Reviewed replacement succeeds only against current source pins.
 6. Private anonymous reads are 401; public-disabled reads are 404. Public responses
-   contain no owner audit/hashes/credentials. Capability cannot broaden access.
+   contain no owner audit/source hashes/credentials/recording IDs, including IDs
+   embedded in editorial references. Capability cannot broaden access.
 7. Default graph/recent/material v1 responses remain unchanged; opted-in graph,
    reader mentions, concept backlinks and related paths use matching identities.
 8. Authorized UI exercises article → concept → Back, article → related article →

@@ -21,8 +21,9 @@ PAGE_HEADERS = {
 }
 
 
-def build_graph(rows, content=None, semantic=None):
+def build_graph(rows, content=None, semantic=None, articles=None):
     sections, subtopics, nodes, edges = {}, {}, [], []
+    updates = content.update_times(rows) if content else {}
     for row in rows:
         category = row['category']
         section = sections.setdefault(category, {'id': 'c:' + category, 'type': 'section', 'sec': category,
@@ -38,6 +39,8 @@ def build_graph(rows, content=None, semantic=None):
         nodes.append({'id': row['id'], 'type': 'material', 'sec': category, 'label': row['title'],
                       'sub': row['subtopic'], 'date': row['date'], 'ts': row['timestamp'],
                       'media': next((l['type'] for l in row['links'] if l['type'] != 'zoom'), None)})
+        if row['id'] in updates:
+            nodes[-1]['updated_ts'] = updates[row['id']]
         edges.append({'s': row['id'], 't': parent, 'k': 'structure'})
     for sub in subtopics.values():
         edges.append({'s': sub['id'], 't': 'c:' + sub['sec'], 'k': 'structure'})
@@ -62,6 +65,15 @@ def build_graph(rows, content=None, semantic=None):
         result['nodes'].extend(layer['nodes'])
         result['edges'].extend(layer['edges'])
         result['semantic_enabled'] = True
+    if articles and articles.enabled:
+        layer = articles.projection(rows)
+        replaced = {node['id'] for node in layer['nodes']}
+        result['nodes'] = [n for n in result['nodes'] if n['id'] not in replaced] + layer['nodes']
+        result['edges'] = [e for e in result['edges'] if not (e['k'] == 'semantic' and e['t'] in replaced)] + layer['edges']
+        for node in result['nodes']:
+            if node['id'] in layer['updates']:
+                node['updated_ts'] = max(node.get('updated_ts', 0), layer['updates'][node['id']])
+        result['articles_enabled'] = True
     return result
 
 
@@ -80,5 +92,6 @@ def mount_wiki_graph(app, load, authorize):
         return FileResponse(folder / name, headers=PAGE_HEADERS)
 
     @app.get('/api/wiki/graph', dependencies=[Depends(authorize)])
-    def graph(semantics: bool = False):
-        return build_graph(load(), semantic=app.state.wiki_semantics if semantics else None)
+    def graph(semantics: bool = False, articles: bool = False):
+        return build_graph(load(), app.state.wiki_content, semantic=app.state.wiki_semantics if semantics else None,
+                           articles=app.state.wiki_articles if articles else None)

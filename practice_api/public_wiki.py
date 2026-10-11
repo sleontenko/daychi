@@ -1,6 +1,9 @@
-"""Public, explicitly allowlisted wiki DTOs. Connection credentials stay private."""
+"""Public wiki text DTOs. Recording locations and connection credentials stay private."""
+import hashlib
+import json
+import math
 import re
-from urllib.parse import parse_qsl, urlsplit
+from urllib.parse import parse_qsl, unquote, urlsplit
 
 from fastapi import HTTPException, Query
 
@@ -12,14 +15,21 @@ PUBLIC_LINK_TYPES = frozenset(('video', 'drive', 'doc', 'article'))
 
 def public_text(value):
     # Source descriptions are already cleaned; protect annotations/labels too.
-    text = re.sub(r'https?://\S+', '', str(value), flags=re.I)
+    text = re.sub(r'https?://\S+|(?:[\w-]+\.)*(?:youtube(?:-nocookie)?\.com|youtu\.be)[/?]\S+', '', str(value), flags=re.I)
     return re.sub(r'(?:код\s*доступа|пароль|password|passcode)\s*:?\s*\S+', '', text, flags=re.I).strip()
 
 
 def public_link(link):
     try:
-        parts = urlsplit(link.get('url', ''))
-        host = (parts.hostname or '').lower().rstrip('.')
+        url = link.get('url', '')
+        # Browsers treat backslashes as slashes and normalize encoded/IDN hosts.
+        # Compare the same canonical host before granting an anonymous source link.
+        if not isinstance(url, str) or '\\' in url or any(ord(char) < 33 for char in url):
+            return None
+        parts = urlsplit(url)
+        host = unquote(parts.hostname or '', errors='strict').encode('idna').decode('ascii').lower().rstrip('.')
+        if not re.fullmatch(r'[a-z0-9.-]+', host):
+            return None
         # Accessing port also validates malformed authority strings.
         if parts.port not in (None, 443):
             return None
@@ -28,6 +38,8 @@ def public_link(link):
     if (parts.scheme != 'https' or not host or parts.username or parts.password
             or host == 'zoom.us' or host.endswith('.zoom.us')
             or host == 'zoom.com' or host.endswith('.zoom.com')
+            or any(host == domain or host.endswith('.' + domain)
+                   for domain in ('youtube.com', 'youtu.be', 'youtube-nocookie.com'))
             or link.get('type') not in PUBLIC_LINK_TYPES):
         return None
     # Unknown credential-bearing links remain closed even if misclassified.
@@ -41,22 +53,67 @@ def public_material(row, content=None):
     result = {key: public_text(row[key]) if isinstance(row[key], str) else row[key] for key in FIELDS}
     links = [item for link in row['links'] if (item := public_link(link)) is not None]
     result.update(links=links, restricted_links=len(links) != len(row['links']))
-    annotation = content.get(row['id'], links) if content else None
+    # Validate against the original source, while exposing only text and timestamps.
+    annotation = content.get(row['id'], row['links']) if content else None
     if annotation:
         result['annotation'] = {
-            'resource_id': annotation['resource_id'], 'revision': annotation['revision'],
+            'revision': annotation['revision'],
             'status': annotation['status'], 'summary': public_text(annotation['summary']),
             'points': [{'text': public_text(point['text']), 'start_seconds': point['start_seconds'],
                         'end_seconds': point['end_seconds']} for point in annotation['points']],
         }
+        updated = annotation.get('updated_at')
+        if isinstance(updated, (int, float)) and math.isfinite(updated) and updated > 0:
+            result['annotation']['updated_at'] = updated
     return result
 
 
-def mount_public_wiki(app, load, content, *, enabled, semantic=None):
-    def rows():
+def public_article_identity(value):
+    return 'a:' + hashlib.sha256(value.encode()).hexdigest()
+
+
+def public_article(value):
+    """Text and navigation remain public; recording IDs stay behind reader access."""
+    def clean(item, key=''):
+        if isinstance(item, dict):
+            return {k: clean(v, k) for k, v in item.items() if k != 'resource_id'}
+        if isinstance(item, list):
+            return [clean(v, key) for v in item]
+        if isinstance(item, str):
+            if key in ('id', 'link_id', 'evidence_ids', 'supporting_link_ids'):
+                return public_article_identity(item)
+            return public_text(item)
+        return item
+    result = clean(value)
+    if 'id' in value:
+        result['id'] = value['id']  # Public concept navigation keeps its canonical slug.
+    return result
+
+
+def mount_public_wiki(app, load, content, *, enabled, semantic=None, article_store=None):
+    def catalog():
         if not enabled:
             raise HTTPException(404, 'Публичная вики ещё не включена')
-        return [public_material(row) for row in load()]
+        return load()
+
+    def rows():
+        return [public_material(row) for row in catalog()]
+
+    def summary(row):
+        return {key: row[key] for key in ('id', 'title', 'date', 'timestamp', 'category_name', 'subtopic')}
+
+    @app.get('/api/public/wiki/recent')
+    def recent(limit: int = Query(10, ge=1, le=40), articles: bool = False):
+        source = catalog()
+        updates = content.update_times(source) if content else {}
+        if articles and article_store and article_store.enabled:
+            for identity, updated in article_store.projection(source)['updates'].items():
+                updates[identity] = max(updates.get(identity, 0), updated)
+        selected = [public_material(row) for row in source if updates.get(row['id'], row['timestamp']) > 0]
+        selected.sort(key=lambda row: (-updates.get(row['id'], row['timestamp']), row['id']))
+        return {'date_basis': 'last_update', 'items': [summary(row) | {
+            'updated_timestamp': updates.get(row['id'], row['timestamp'])}
+            for row in selected[:limit]]}
 
     @app.get('/api/public/wiki/categories')
     def categories():
@@ -86,10 +143,9 @@ def mount_public_wiki(app, load, content, *, enabled, semantic=None):
                     and (not subtopic or row['subtopic_key'] == subtopic)
                     and (wanted is None or row['id'] in wanted) and score(row) >= 0]
         selected.sort(key=lambda row: (-score(row), row['timestamp'] if sort == 'old' else -row['timestamp'], row['id']))
-        fields = ('id', 'title', 'date', 'category_name', 'subtopic')
         return {'total': len(selected),
                 'missing_ids': sorted(wanted - {row['id'] for row in catalog}) if wanted and wanted != {'none'} else [],
-                'items': [{key: row[key] for key in fields} for row in selected[offset:offset + limit]]}
+                'items': [summary(row) for row in selected[offset:offset + limit]]}
 
     @app.get('/api/public/wiki/materials/{material_id}')
     def material(material_id: str):
@@ -101,5 +157,22 @@ def mount_public_wiki(app, load, content, *, enabled, semantic=None):
         raise HTTPException(404, 'Материал больше не доступен')
 
     @app.get('/api/public/wiki/graph')
-    def graph(semantics: bool = False):
-        return build_graph(rows(), semantic=semantic if semantics else None)
+    def graph(semantics: bool = False, articles: bool = False):
+        # Graph building needs original source bindings for update dates.
+        # Its DTO never includes links or resource IDs; redact display text separately.
+        result = build_graph(catalog(), content, semantic=semantic if semantics else None,
+                             articles=article_store if articles else None)
+        for section in result['sections']:
+            section['name'] = public_text(section['name'])
+        for node in result['nodes']:
+            for key in ('label', 'sub', 'date'):
+                if key in node:
+                    node[key] = public_text(node[key])
+            if 'aliases' in node:
+                node['aliases'] = [public_text(alias) for alias in node['aliases']]
+        for edge in result['edges']:
+            if edge.get('article_relation'):
+                edge['link_ids'] = [public_article_identity(identity) for identity in edge['link_ids']]
+        result['version'] = hashlib.sha256(json.dumps(result, ensure_ascii=False, sort_keys=True,
+            separators=(',', ':')).encode()).hexdigest()
+        return result

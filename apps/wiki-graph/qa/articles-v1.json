@@ -1,0 +1,390 @@
+{
+  "graph": {
+    "sections": [
+      {
+        "id": "fixture",
+        "name": "Учебные примеры",
+        "count": 2
+      }
+    ],
+    "nodes": [
+      {
+        "id": "c:fixture",
+        "type": "section",
+        "sec": "fixture",
+        "label": "Учебные примеры",
+        "count": 2
+      },
+      {
+        "id": "stable",
+        "type": "material",
+        "sec": "fixture",
+        "label": "Урок",
+        "sub": "",
+        "date": "Пример",
+        "ts": 100,
+        "media": "video",
+        "updated_ts": 1791750661861
+      },
+      {
+        "id": "other",
+        "type": "material",
+        "sec": "fixture",
+        "label": "Урок",
+        "sub": "",
+        "date": "Пример",
+        "ts": 101,
+        "media": "video",
+        "updated_ts": 1791750661861
+      },
+      {
+        "id": "g:fixture-topic",
+        "type": "topic",
+        "sec": "glossary",
+        "concept_id": "fixture-topic",
+        "label": "Понятие",
+        "aliases": [],
+        "article_concept": true,
+        "updated_ts": 1791750661861
+      }
+    ],
+    "edges": [
+      {
+        "s": "stable",
+        "t": "c:fixture",
+        "k": "structure"
+      },
+      {
+        "s": "other",
+        "t": "c:fixture",
+        "k": "structure"
+      },
+      {
+        "s": "stable",
+        "t": "g:fixture-topic",
+        "k": "semantic",
+        "article_relation": true,
+        "link_ids": [
+          "l0"
+        ],
+        "relation": "explains",
+        "evidence_count": 1
+      },
+      {
+        "s": "other",
+        "t": "g:fixture-topic",
+        "k": "semantic",
+        "article_relation": true,
+        "link_ids": [
+          "l1"
+        ],
+        "relation": "explains",
+        "evidence_count": 1
+      }
+    ],
+    "articles_enabled": true
+  },
+  "materials": [
+    {
+      "id": "stable",
+      "title": "Урок",
+      "category": "fixture",
+      "category_name": "Учебные примеры",
+      "subtopic": "",
+      "subtopic_key": "",
+      "date": "Пример",
+      "timestamp": 100,
+      "description": "Синтетическое описание для проверки reader.",
+      "links": [
+        {
+          "url": "https://youtu.be/abcdefghijk",
+          "type": "video",
+          "label": "Запись"
+        }
+      ],
+      "annotation": {
+        "resource_id": "abcdefghijk",
+        "revision": 1,
+        "summary": "Краткий конспект содержания записанного занятия.",
+        "points": [
+          {
+            "end_seconds": 15.0,
+            "start_seconds": 10.0,
+            "text": "Точная фраза из расшифровки"
+          },
+          {
+            "end_seconds": 25.0,
+            "start_seconds": 20.0,
+            "text": "Вторая фраза из расшифровки"
+          }
+        ],
+        "status": "source_checked_draft",
+        "updated_at": 1791750661.860097
+      }
+    },
+    {
+      "id": "other",
+      "title": "Урок",
+      "category": "fixture",
+      "category_name": "Учебные примеры",
+      "subtopic": "",
+      "subtopic_key": "",
+      "date": "Пример",
+      "timestamp": 101,
+      "description": "Синтетическое описание для проверки reader.",
+      "links": [
+        {
+          "url": "https://youtu.be/otherid1234",
+          "type": "video",
+          "label": "Запись"
+        }
+      ],
+      "annotation": {
+        "resource_id": "otherid1234",
+        "revision": 1,
+        "summary": "Краткий конспект содержания записанного занятия.",
+        "points": [
+          {
+            "end_seconds": 15.0,
+            "start_seconds": 10.0,
+            "text": "Точная фраза из расшифровки"
+          },
+          {
+            "end_seconds": 25.0,
+            "start_seconds": 20.0,
+            "text": "Вторая фраза из расшифровки"
+          }
+        ],
+        "status": "source_checked_draft",
+        "updated_at": 1791750661.860123
+      }
+    }
+  ],
+  "articles": {
+    "stable": {
+      "format": "daychi-wiki-articles/1",
+      "material_id": "stable",
+      "resource_id": "abcdefghijk",
+      "revision": 1,
+      "status": "source_checked_draft",
+      "updated_at": 1791750661.8617222,
+      "introduction": [
+        {
+          "evidence_ids": [
+            "e0"
+          ],
+          "id": "intro",
+          "mentions": [],
+          "text": "Короткое введение."
+        }
+      ],
+      "sections": [
+        {
+          "id": "first",
+          "heading": "Смысл раздела",
+          "paragraphs": [
+            {
+              "evidence_ids": [
+                "e0"
+              ],
+              "id": "body",
+              "mentions": [
+                {
+                  "end": 13,
+                  "link_id": "l0",
+                  "start": 6
+                }
+              ],
+              "text": "🪷 Это понятие в контексте урока."
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "end_seconds": 15.0,
+          "id": "e0",
+          "resource_id": "abcdefghijk",
+          "start_seconds": 10.0,
+          "text": "Точная фраза из расшифровки"
+        }
+      ],
+      "links": [
+        {
+          "concept_id": "fixture-topic",
+          "evidence_ids": [
+            "e0"
+          ],
+          "id": "l0",
+          "rationale": "Источник объясняет тему.",
+          "relation": "explains",
+          "resource_id": "abcdefghijk",
+          "material_id": "stable",
+          "title": "Урок",
+          "concept_title": "Понятие",
+          "concept_kind": "topic"
+        }
+      ],
+      "related": [
+        {
+          "material_id": "other",
+          "reason": "Оба занятия объясняют понятие.",
+          "supporting_link_ids": [
+            "l0",
+            "l1"
+          ],
+          "via_concept_id": "fixture-topic",
+          "title": "Урок",
+          "concept_title": "Понятие"
+        }
+      ]
+    },
+    "other": {
+      "format": "daychi-wiki-articles/1",
+      "material_id": "other",
+      "resource_id": "otherid1234",
+      "revision": 1,
+      "status": "source_checked_draft",
+      "updated_at": 1791750661.861747,
+      "introduction": [
+        {
+          "evidence_ids": [
+            "e1"
+          ],
+          "id": "intro",
+          "mentions": [],
+          "text": "Короткое введение."
+        }
+      ],
+      "sections": [
+        {
+          "id": "first",
+          "heading": "Смысл раздела",
+          "paragraphs": [
+            {
+              "evidence_ids": [
+                "e1"
+              ],
+              "id": "body",
+              "mentions": [
+                {
+                  "end": 13,
+                  "link_id": "l1",
+                  "start": 6
+                }
+              ],
+              "text": "🪷 Это понятие в контексте урока."
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "end_seconds": 15.0,
+          "id": "e1",
+          "resource_id": "otherid1234",
+          "start_seconds": 10.0,
+          "text": "Точная фраза из расшифровки"
+        }
+      ],
+      "links": [
+        {
+          "concept_id": "fixture-topic",
+          "evidence_ids": [
+            "e1"
+          ],
+          "id": "l1",
+          "rationale": "Источник объясняет тему.",
+          "relation": "explains",
+          "resource_id": "otherid1234",
+          "material_id": "other",
+          "title": "Урок",
+          "concept_title": "Понятие",
+          "concept_kind": "topic"
+        }
+      ],
+      "related": [
+        {
+          "material_id": "stable",
+          "reason": "Оба занятия объясняют понятие.",
+          "supporting_link_ids": [
+            "l0",
+            "l1"
+          ],
+          "via_concept_id": "fixture-topic",
+          "title": "Урок",
+          "concept_title": "Понятие"
+        }
+      ]
+    }
+  },
+  "concepts": {
+    "fixture-topic": {
+      "aliases": [],
+      "claims": [
+        {
+          "evidence_ids": [
+            "e0",
+            "e1"
+          ],
+          "id": "definition",
+          "mentions": [],
+          "text": "Описание понятия по двум занятиям."
+        }
+      ],
+      "id": "fixture-topic",
+      "kind": "topic",
+      "revision": 1,
+      "status": "source_checked_draft",
+      "title": "Понятие",
+      "format": "daychi-wiki-articles/1",
+      "updated_at": 1791750661.8617651,
+      "evidence": [
+        {
+          "end_seconds": 15.0,
+          "id": "e0",
+          "resource_id": "abcdefghijk",
+          "start_seconds": 10.0,
+          "text": "Точная фраза из расшифровки"
+        },
+        {
+          "end_seconds": 15.0,
+          "id": "e1",
+          "resource_id": "otherid1234",
+          "start_seconds": 10.0,
+          "text": "Точная фраза из расшифровки"
+        }
+      ],
+      "links": [
+        {
+          "concept_id": "fixture-topic",
+          "evidence_ids": [
+            "e0"
+          ],
+          "id": "l0",
+          "rationale": "Источник объясняет тему.",
+          "relation": "explains",
+          "resource_id": "abcdefghijk",
+          "material_id": "stable",
+          "title": "Урок",
+          "concept_title": "Понятие",
+          "concept_kind": "topic"
+        },
+        {
+          "concept_id": "fixture-topic",
+          "evidence_ids": [
+            "e1"
+          ],
+          "id": "l1",
+          "rationale": "Источник объясняет тему.",
+          "relation": "explains",
+          "resource_id": "otherid1234",
+          "material_id": "other",
+          "title": "Урок",
+          "concept_title": "Понятие",
+          "concept_kind": "topic"
+        }
+      ]
+    }
+  }
+}

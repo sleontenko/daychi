@@ -1,12 +1,19 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import {readFileSync} from 'node:fs';
 import test from 'node:test';
 const source=readFileSync(new URL('./src/content.js',import.meta.url));
-const {renderAnnotation}=await import('data:text/javascript;base64,'+source.toString('base64'));
-const esc=s=>s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
-test('source text is escaped; timecode URL is fixed to YouTube; draft status visible',()=>{
-  const html=renderAnnotation({summary:'<script>alert(1)</script>',resource_id:'abcdefghijk',points:[{text:'<img src=x onerror=alert(1)>',start_seconds:390}]},esc);
-  assert.ok(!html.includes('<script>')&&!html.includes('<img'));
-  assert.ok(html.includes('06:30')&&html.includes('&amp;t=390s'));
-  assert.ok(html.includes('черновик')&&html.includes('noopener noreferrer'));
+const {renderFragments}=await import('data:text/javascript;base64,'+source.toString('base64'));
+const esc=value=>String(value).replaceAll('<','&lt;').replaceAll('>','&gt;');
+const annotation={points:[{text:'<script>Цитата</script>',start_seconds:65,end_seconds:80}]};
+test('public evidence keeps quotes and timecodes without a reconstructible recording URL',()=>{
+  const html=renderFragments(annotation,esc);
+  assert.match(html,/01:05/);assert.match(html,/&lt;script&gt;/);
+  assert.doesNotMatch(html,/<a|href=|youtube|youtu\.be|undefined/);
+  assert.match(html,/после проверки доступа/);
+});
+test('authorized recording evidence keeps timecode links only for a valid source identifier',()=>{
+  assert.match(renderFragments({...annotation,resource_id:'abcdefghijk'},esc),/watch\?v=abcdefghijk&amp;t=65s/);
+  for(const id of [undefined,'',null,'not-a-source','<script>']) {
+    assert.doesNotMatch(renderFragments({...annotation,resource_id:id},esc),/href=|youtube/);
+  }
 });

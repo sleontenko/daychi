@@ -1,0 +1,539 @@
+{
+  "$defs": {
+    "Article": {
+      "additionalProperties": false,
+      "properties": {
+        "material_id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Material Id",
+          "type": "string"
+        },
+        "resource_id": {
+          "pattern": "^[A-Za-z0-9_-]{11}$",
+          "title": "Resource Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 100000,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "status": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Status",
+          "type": "string"
+        },
+        "introduction_claim_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Introduction Claim Ids",
+          "type": "array"
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/$defs/Section"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "Sections",
+          "type": "array"
+        },
+        "claims": {
+          "items": {
+            "$ref": "#/$defs/Claim"
+          },
+          "maxItems": 200,
+          "minItems": 1,
+          "title": "Claims",
+          "type": "array"
+        },
+        "related": {
+          "items": {
+            "$ref": "#/$defs/Related"
+          },
+          "maxItems": 20,
+          "title": "Related",
+          "type": "array"
+        }
+      },
+      "required": [
+        "material_id",
+        "resource_id",
+        "revision",
+        "introduction_claim_ids",
+        "sections",
+        "claims"
+      ],
+      "title": "Article",
+      "type": "object"
+    },
+    "Claim": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 6000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "mentions": {
+          "items": {
+            "$ref": "#/$defs/Mention"
+          },
+          "maxItems": 30,
+          "title": "Mentions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "evidence_ids"
+      ],
+      "title": "Claim",
+      "type": "object"
+    },
+    "Concept": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z][a-z0-9-]{1,79}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "term",
+            "topic"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 200,
+          "minLength": 2,
+          "title": "Title",
+          "type": "string"
+        },
+        "aliases": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 12,
+          "title": "Aliases",
+          "type": "array"
+        },
+        "revision": {
+          "maximum": 100000,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "status": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Status",
+          "type": "string"
+        },
+        "claims": {
+          "items": {
+            "$ref": "#/$defs/Claim"
+          },
+          "maxItems": 30,
+          "minItems": 1,
+          "title": "Claims",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "title",
+        "revision",
+        "claims"
+      ],
+      "title": "Concept",
+      "type": "object"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "resource_id": {
+          "pattern": "^[A-Za-z0-9_-]{11}$",
+          "title": "Resource Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 6000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "start_seconds": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Start Seconds",
+          "type": "number"
+        },
+        "end_seconds": {
+          "exclusiveMinimum": 0,
+          "maximum": 100000,
+          "title": "End Seconds",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "resource_id",
+        "text",
+        "start_seconds",
+        "end_seconds"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "Link": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "resource_id": {
+          "pattern": "^[A-Za-z0-9_-]{11}$",
+          "title": "Resource Id",
+          "type": "string"
+        },
+        "concept_id": {
+          "pattern": "^[a-z][a-z0-9-]{1,79}$",
+          "title": "Concept Id",
+          "type": "string"
+        },
+        "relation": {
+          "enum": [
+            "explains",
+            "practices",
+            "discusses"
+          ],
+          "title": "Relation",
+          "type": "string"
+        },
+        "rationale": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "resource_id",
+        "concept_id",
+        "relation",
+        "rationale",
+        "evidence_ids"
+      ],
+      "title": "Link",
+      "type": "object"
+    },
+    "Mention": {
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "end": {
+          "exclusiveMinimum": 0,
+          "title": "End",
+          "type": "integer"
+        },
+        "link_id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Link Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end",
+        "link_id"
+      ],
+      "title": "Mention",
+      "type": "object"
+    },
+    "Related": {
+      "additionalProperties": false,
+      "properties": {
+        "material_id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Material Id",
+          "type": "string"
+        },
+        "via_concept_id": {
+          "pattern": "^[a-z][a-z0-9-]{1,79}$",
+          "title": "Via Concept Id",
+          "type": "string"
+        },
+        "supporting_link_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "title": "Supporting Link Ids",
+          "type": "array"
+        },
+        "reason": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "material_id",
+        "via_concept_id",
+        "supporting_link_ids",
+        "reason"
+      ],
+      "title": "Related",
+      "type": "object"
+    },
+    "Review": {
+      "additionalProperties": false,
+      "properties": {
+        "editor": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Editor",
+          "type": "string"
+        },
+        "reviewer": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Reviewer",
+          "type": "string"
+        },
+        "editorial_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Editorial Sha256",
+          "type": "string"
+        },
+        "review_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Review Sha256",
+          "type": "string"
+        },
+        "decision": {
+          "const": "pass",
+          "title": "Decision",
+          "type": "string"
+        },
+        "full_source_read": {
+          "const": true,
+          "title": "Full Source Read",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "editor",
+        "reviewer",
+        "editorial_sha256",
+        "review_sha256",
+        "decision",
+        "full_source_read"
+      ],
+      "title": "Review",
+      "type": "object"
+    },
+    "Section": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "heading": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Heading",
+          "type": "string"
+        },
+        "claim_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 200,
+          "minItems": 1,
+          "title": "Claim Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "heading",
+        "claim_ids"
+      ],
+      "title": "Section",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {
+          "pattern": "^[A-Za-z0-9_-]{11}$",
+          "title": "Resource Id",
+          "type": "string"
+        },
+        "material_id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Material Id",
+          "type": "string"
+        },
+        "expected_title": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Expected Title",
+          "type": "string"
+        },
+        "content_revision": {
+          "maximum": 100000,
+          "minimum": 1,
+          "title": "Content Revision",
+          "type": "integer"
+        },
+        "transcript_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Transcript Sha256",
+          "type": "string"
+        },
+        "subtitles_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subtitles Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "resource_id",
+        "material_id",
+        "expected_title",
+        "content_revision",
+        "transcript_sha256",
+        "subtitles_sha256"
+      ],
+      "title": "Source",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "daychi-wiki-articles/1",
+      "title": "Format",
+      "type": "string"
+    },
+    "batch_id": {
+      "pattern": "^[a-zA-Z0-9_-]{1,80}$",
+      "title": "Batch Id",
+      "type": "string"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/Source"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Sources",
+      "type": "array"
+    },
+    "articles": {
+      "items": {
+        "$ref": "#/$defs/Article"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Articles",
+      "type": "array"
+    },
+    "concepts": {
+      "items": {
+        "$ref": "#/$defs/Concept"
+      },
+      "maxItems": 100,
+      "title": "Concepts",
+      "type": "array"
+    },
+    "links": {
+      "items": {
+        "$ref": "#/$defs/Link"
+      },
+      "maxItems": 300,
+      "title": "Links",
+      "type": "array"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/Evidence"
+      },
+      "maxItems": 1000,
+      "minItems": 1,
+      "title": "Evidence",
+      "type": "array"
+    },
+    "review": {
+      "$ref": "#/$defs/Review"
+    }
+  },
+  "required": [
+    "format",
+    "batch_id",
+    "sources",
+    "articles",
+    "evidence",
+    "review"
+  ],
+  "title": "ArticleBatch",
+  "type": "object"
+}

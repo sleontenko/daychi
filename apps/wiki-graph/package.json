@@ -1,10 +1,11 @@
 {
   "name": "daychi-wiki-graph",
   "private": true,
-  "description": "Граф вики для сайта школы; собирается в practice_api/wiki_graph_web/graph.js",
+  "description": "\u0413\u0440\u0430\u0444 \u0432\u0438\u043a\u0438 \u0434\u043b\u044f \u0441\u0430\u0439\u0442\u0430 \u0448\u043a\u043e\u043b\u044b; \u0441\u043e\u0431\u0438\u0440\u0430\u0435\u0442\u0441\u044f \u0432 practice_api/wiki_graph_web/graph.js",
   "scripts": {
     "build": "esbuild src/graph.js --bundle --minify --format=iife --target=es2020 --legal-comments=eof --outfile=../../practice_api/wiki_graph_web/graph.js",
-    "test": "node --test *.test.mjs"
+    "test": "node --test *.test.mjs",
+    "build:native": "node build-native.mjs"
   },
   "dependencies": {
     "d3-force": "3.0.0",
