@@ -78,3 +78,39 @@ article source pins match exactly. The saved QA invitation is confirmed revoked.
 No replacement access or editorial import is inferred from this runtime release.
 Exact-batch acceptance, import/receipt/replay, registry merge and authenticated
 production reader QA remain pending.
+
+## Publication completion · 12 October 2026 Jerusalem
+
+The owner explicitly accepted and authorized modeled batch
+`f57c0c3820d1c0bc1b28e16f1bf6234a932bdfdfed7d833ab5fe102bc5144384`
+and temporary QA access. The ordinary owner importer published three articles,
+five complete concept pages and 13 source links. Its saved first-write receipt and
+replay confirm one batch, eight revision-1 objects and `already_imported=true` on
+the repeat. Existing material IDs and source-summary revisions remain unchanged.
+
+Production authorized and public DTOs for all eight objects match the accepted
+packet exactly apart from server-assigned update times. Public recording IDs and
+private audit fields remain absent. The coordinator read the complete owner
+inventory after import and confirmed equality with the saved pre-import inventory:
+1145 cards, 476 summaries and 1428 excerpts. This equality is coordinator-observed;
+the separate final reviewer has no owner credentials or saved after-inventory copy.
+
+Actual authenticated Chrome production QA at 1920×817 verifies all 29 paragraphs,
+13 headings, 10 inline mentions, two direct article paths, five concept pages,
+11 concept claims and 13 backlinks. Recent displays all eight updates. Real controls
+exercise article→concept→Back, article→related→Back and concept→local graph→reader→Back;
+there is no horizontal overflow. Production mobile viewport override did not apply:
+responsive/error-state evidence remains the earlier local candidate check, whose
+compiled assets match production. No physical-phone or native proof is claimed.
+
+All four temporary QA invitations used for browser/API checks are revoked; the
+browser returns to invitation entry and the local temporary secret file is deleted.
+The registry merge changes only six dated notes and three row heights, preserving
+all previous cell values, formulas, manual assignments, periods and other XLSX parts
+byte for byte. Render was inspected; native Excel recalculation was not performed.
+Preparation and publication assignments are now `verified` in the authority ledger.
+Receipts, API/DOM checks, screenshots, registry backup and merge proof remain private.
+Final independent read-only evidence audit passes: all eight live anonymous DTOs,
+saved private DTO/DOM/receipt hashes and exact six-cell/three-height XLSX preservation
+were checked separately. Owner inventory equality and invitation revocations remain
+identified as coordinator-observed facts.

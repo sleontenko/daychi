@@ -85,7 +85,7 @@ does not authorize publishing, deployment, TestFlight releases or fixture mutati
 While waiting, notify only on meaningful changes or a required operator action.
 This instruction is durable authorization, not a configured background schedule.
 
-Coexisting structured article layer prepared 2026-10-11: Knowledge→Daychi owner
+Coexisting structured article layer deployed and pilot verified 2026-10-12: Knowledge→Daychi owner
 article import; shared reader→Daychi opt-in article/concept/graph projections.
 [Provider contract](docs/contracts/wiki-articles-v1.md) and
 [Workshop9](https://github.com/dveyarangi/xuanxue-workshop/issues/9) preserve activev1
