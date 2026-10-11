@@ -20,7 +20,7 @@ API, reader and UI QA. [Daychi PR9](https://github.com/sleontenko/daychi/pull/9)
   history/no-op dates, source-change hiding/replay, owner Origin/CSRF and private/public
   access. Owner-only source inventory preserves source pins for current reservations.
 - Shared web15tests and bundle build pass; independent build reproduces exact assets.
-  Knowledge114tests and provider/consumer models/schema/common fixture checks pass.
+  Knowledge 114tests and provider/consumer models/schema/common fixture checks pass.
   Independent implementation review reports no unresolved findings.
 - Chrome uses the candidate API projections for all three actual reviewed articles
   and five complete concept pages. Exact DOM comparison verifies29paragraphs,
@@ -53,3 +53,28 @@ No native/TestFlight build is part of this release. Actual post-import authentic
 production UI, owner final batch acceptance, receipt/replay and registry merge are
 pending. The existing production Chrome tab currently shows invitation login; the
 previous saved QA code was revoked. Do not mark those checks completed from local QA.
+
+## Production runtime follow-up · 11 October 2026 UTC
+
+Runtime deployed successfully as Railway `4605687f-4299-4eda-ac05-307ca29599b2`
+at 21:00:46 UTC (12 October in Jerusalem), using source
+`151cbdf73560cc94d1019873326d5efab721e1ae`. The isolated 58-file stage preserves 47
+baseline files byte for byte; its manifest remains private. JS/CSS fetched over
+production HTTPS match the stage exactly. Health is 200; anonymous owner inventory
+and private article reads are 401. Article/concept storage is enabled and empty
+before the separate editorial import. Opt-in graph nodes/edges/sections equal v1;
+its `version` digest differs because it includes the capability flag.
+
+Final independent review found and resolved a P2 in owner source inventory:
+allowlist catalog/link fields and canonicalize hosts before excluding Zoom and
+credential-bearing URLs regardless of their declared type. The full backend suite
+now passes 150 tests, including the privacy regression; independent 23 article tests
+and synthetic unsafe-URL checks pass. GitHub backend/app/wiki CI is green.
+
+Existing owner credentials were found and used through the ordinary owner login,
+then logged out. A fresh owner inventory matches 1350 registry rows, 476 source
+summaries and 1428 excerpts, with zero registry/server disagreements; all six
+article source pins match exactly. The saved QA invitation is confirmed revoked.
+No replacement access or editorial import is inferred from this runtime release.
+Exact-batch acceptance, import/receipt/replay, registry merge and authenticated
+production reader QA remain pending.

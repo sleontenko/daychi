@@ -17,7 +17,9 @@ and fixture, not server/storage code.
 - Owner `GET/POST /api/admin/wiki/articles`: status / atomic `ArticleBatch` import.
   Reuse existing owner session, same-origin/CSRF mutation dependencies and receipts.
 - Owner `GET /api/admin/wiki/articles/sources`: coordinator-only fresh catalog and
-  current source-bound content payload inventory, excluding Zoom links. This
+  current source-bound content payload inventory, allowing only declared catalog
+  and link fields and excluding Zoom/credential-bearing URLs by canonical host
+  and query checks regardless of their declared link type. This
   preflight carries private source IDs/hashes required for reservation and revision
   checks; it is never a reader/public endpoint. Existing public metadata cannot
   establish source binding after recording IDs were removed on 11 October.
