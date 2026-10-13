@@ -12,6 +12,7 @@ COPY practice_api/admin.py /app/practice_api/admin.py
 COPY practice_api/access_requests.py practice_api/access_request_api.py practice_api/access_request_notifications.py /app/practice_api/
 COPY practice_api/admin_web /app/practice_api/admin_web
 COPY practice_api/wiki_graph.py /app/practice_api/wiki_graph.py
+COPY practice_api/web_wiki_session.py /app/practice_api/web_wiki_session.py
 COPY practice_api/wiki_content.py /app/practice_api/wiki_content.py
 COPY practice_api/wiki_semantics.py /app/practice_api/wiki_semantics.py
 COPY practice_api/wiki_article_models.py practice_api/wiki_articles.py /app/practice_api/

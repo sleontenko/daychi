@@ -32,3 +32,12 @@
 !practice_api/access_requests.py
 !practice_api/access_request_api.py
 !practice_api/access_request_notifications.py
+!practice_api/web_wiki_session.py
+!practice_api/public_wiki.py
+!practice_api/wiki_semantics.py
+!practice_api/wiki_article_models.py
+!practice_api/wiki_articles.py
+!practice_api/access_deletion.py
+!practice_api/public_pages.py
+!practice_api/public_pages/
+!practice_api/public_pages/**

@@ -27,11 +27,13 @@ class RedeemCode(BaseModel):
     code: str = Field(min_length=12, max_length=40)
 
 
-def create_daychee_app(settings=None, invitations=None, zoom_path=None, schedule_source=None):
+def create_daychee_app(settings=None, invitations=None, zoom_path=None, schedule_source=None, *, web_session_check=None, web_session_profile=None):
     store = invitations or Invitations(os.getenv('DAYCHEE_ACCESS_DATABASE', 'data/daychee-access.sqlite3'))
     rooms = Path(zoom_path or os.getenv('DAYCHEE_ZOOM', 'data/daychee-zoom.json'))
     schedule = schedule_source or ScheduleSource()
-    def authorize(authorization: str = Header(default='')):
+    def authorize(request: Request, authorization: str = Header(default='')):
+        if getattr(request.state, 'cabinet_web_authorized', False):
+            return None
         if not authorization.startswith('Bearer ') or not store.authorized(authorization[7:]):
             raise HTTPException(401, 'Доступ отсутствует или отозван. Попросите новое приглашение.')
         return authorization[7:]
@@ -159,6 +161,14 @@ def create_daychee_app(settings=None, invitations=None, zoom_path=None, schedule
             return rows
         except (OSError, ValueError):
             raise HTTPException(503, 'Подключения к занятиям временно недоступны') from None
+    if web_session_check is not None or os.getenv('DAYCHI_WEB_CABINET_ENABLED') == '1':
+        from .web_wiki_session import WebWikiBoundary, cabinet_web_session_check
+        profile = web_session_profile or os.getenv('DAYCHI_WEB_CABINET_PROFILE')
+        if profile is None and web_session_check is not None:
+            profile = 'production'  # Controlled injection only; runtime needs explicit config.
+        app.add_middleware(WebWikiBoundary, profile=profile,
+                           check=web_session_check or cabinet_web_session_check(profile=profile))
+        app.state.cabinet_web_enabled = True
     return app
 
 

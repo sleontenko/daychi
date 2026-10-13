@@ -19,7 +19,7 @@ def public_text(value):
     return re.sub(r'(?:код\s*доступа|пароль|password|passcode)\s*:?\s*\S+', '', text, flags=re.I).strip()
 
 
-def public_link(link):
+def public_link(link, *, include_recordings=False):
     try:
         url = link.get('url', '')
         # Browsers treat backslashes as slashes and normalize encoded/IDN hosts.
@@ -38,8 +38,8 @@ def public_link(link):
     if (parts.scheme != 'https' or not host or parts.username or parts.password
             or host == 'zoom.us' or host.endswith('.zoom.us')
             or host == 'zoom.com' or host.endswith('.zoom.com')
-            or any(host == domain or host.endswith('.' + domain)
-                   for domain in ('youtube.com', 'youtu.be', 'youtube-nocookie.com'))
+            or (not include_recordings and any(host == domain or host.endswith('.' + domain)
+                   for domain in ('youtube.com', 'youtu.be', 'youtube-nocookie.com')))
             or link.get('type') not in PUBLIC_LINK_TYPES):
         return None
     # Unknown credential-bearing links remain closed even if misclassified.
@@ -49,9 +49,9 @@ def public_link(link):
     return {'url': link['url'], 'type': link['type'], 'label': public_text(link.get('label', 'Оригинал'))}
 
 
-def public_material(row, content=None):
+def public_material(row, content=None, *, include_recordings=False):
     result = {key: public_text(row[key]) if isinstance(row[key], str) else row[key] for key in FIELDS}
-    links = [item for link in row['links'] if (item := public_link(link)) is not None]
+    links = [item for link in row['links'] if (item := public_link(link, include_recordings=include_recordings)) is not None]
     result.update(links=links, restricted_links=len(links) != len(row['links']))
     # Validate against the original source, while exposing only text and timestamps.
     annotation = content.get(row['id'], row['links']) if content else None

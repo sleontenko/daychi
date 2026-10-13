@@ -1,4 +1,5 @@
 import { mountLibrary } from "./library.js";
+import { cabinetEntry, cabinetOrigin, cabinetLogout, createWebSessionReader } from "./web-session.js";
 import Graph from "graphology";
 import Sigma from "sigma";
 import { seedPosition, settleLayoutAsync } from "./graph-layout.js";
@@ -12,7 +13,38 @@ const store = {
   set(v) { try { v ? localStorage.setItem(TOKEN_KEY, v) : localStorage.removeItem(TOKEN_KEY); } catch { /* приватный режим */ } },
 };
 const host = window.__daycheeNative;
-let token = host ? null : store.get();
+const cabinetWeb = !host && document.body.dataset.cabinetWeb === '1';
+const cabinetProfile = cabinetWeb ? document.body.dataset.cabinetProfile : null;
+let token = host || cabinetWeb ? null : store.get();
+let teardown = () => {};
+let resumeScroll = Number(history.state?.wikiScroll) || 0;
+let appTemplate = $("#view-app").innerHTML;
+let blockedLogin = false;
+const webReader = cabinetWeb ? createWebSessionReader({ fetch: (...args) => fetch(...args),
+  suspend: () => {
+    if (viewState === 'app') {
+      resumeScroll = window.scrollY;
+      const input = $("#catalog-search"), params = new URLSearchParams(location.hash.slice(1));
+      if (input) { input.value ? params.set('q', input.value) : params.delete('q'); }
+      history.replaceState({ ...history.state, wikiScroll: resumeScroll }, '', input ? '#'+params : location.href);
+    }
+    teardown(); teardown = () => {}; started = false; $("#view-app").innerHTML = appTemplate; showView("loading"); },
+  failure: status => status === 401 ? showLogin("Войдите через кабинет школы")
+    : status === 403 ? showLogin("Доступ к кабинету ограничен", true) : showView("error"),
+}) : null;
+if (cabinetWeb) {
+  try { localStorage.removeItem(TOKEN_KEY); } catch {}
+  $("#view-login").innerHTML = '<p class="hint-title">Вход через кабинет школы</p><p class="muted">Войдите в кабинет, чтобы открыть вики. После входа вы вернётесь на эту страницу.</p><a id="cabinet-login" class="btn">Войти через кабинет</a><p id="login-error" class="error" role="alert"></p><button id="cabinet-retry" class="link-inline">Проверить снова</button>';
+  $("#cabinet-retry").onclick = () => boot();
+  $("#logout").outerHTML = '<a id="logout" class="wiki-logout" href="'+cabinetLogout(cabinetProfile)+'" hidden>Выйти через кабинет</a>';
+  appTemplate = $("#view-app").innerHTML;
+  document.addEventListener('visibilitychange', () => document.hidden ? webReader.invalidate() : boot());
+  window.addEventListener('pagehide', () => webReader.invalidate());
+  window.addEventListener('pageshow', event => { if (event.persisted) boot(); });
+  const refreshEntry = () => { if (viewState === 'login') showLogin($("#login-error").textContent, blockedLogin); };
+  window.addEventListener('popstate', refreshEntry);
+  window.addEventListener('hashchange', refreshEntry);
+}
 
 // CSP запрещает style="" в разметке: цвета выставляем через CSSOM после вставки
 function paint(root) { root.querySelectorAll("[data-color]").forEach((el) => { el.style.background = el.dataset.color; }); }
@@ -25,18 +57,24 @@ function showView(name) {
   viewState=name;
   $("#wiki-status").hidden = name === "app" || name === "login";
   ["login", "loading", "error", "app"].forEach((v) => { $("#view-" + v).hidden = v !== name; });
-  $("#logout").hidden = !token;
-  $("#wiki-nav").hidden = name === "login";
-  $("#wiki-rail").hidden = name === "login";
+  $("#logout").hidden = cabinetWeb ? name !== "app" : !token;
+  $("#wiki-nav").hidden = cabinetWeb ? name !== "app" : name === "login";
+  $("#wiki-rail").hidden = cabinetWeb ? name !== "app" : name === "login";
   document.body.classList.toggle("in-app", name !== "login");
   if(name !== "app") { const current=new URLSearchParams(location.hash.slice(1)).get("view")||"home"; for(const key of ["home","recent","graph","saved"]) {const button=$("#nav-"+key);if(key===current)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current");} }
 }
-function showLogin(message) {
+function showLogin(message, blocked = false) {
+  blockedLogin = blocked;
   showView("login");
   $("#login-error").textContent = message || "";
-  $("#code").focus();
+  if (cabinetWeb) {
+    const link = $("#cabinet-login");
+    link.href = blocked ? cabinetOrigin(cabinetProfile)+'/' : cabinetEntry(location, cabinetProfile);
+    link.textContent = blocked ? 'Открыть кабинет' : 'Войти через кабинет';
+    $("#cabinet-retry").hidden = !blocked; link.focus();
+  } else $("#code").focus();
 }
-$("#login").addEventListener("submit", async (e) => {
+if (!cabinetWeb) $("#login").addEventListener("submit", async (e) => {
   e.preventDefault();
   const raw = $("#code").value.trim();
   const code = raw.includes("#") ? raw.slice(raw.lastIndexOf("#") + 1) : raw;
@@ -51,7 +89,9 @@ $("#login").addEventListener("submit", async (e) => {
   } catch { $("#login-error").textContent = "Нет связи с сервером. Проверьте интернет."; }
   finally { button.disabled = false; }
 });
-$("#logout").addEventListener("click", async () => {
+document.addEventListener("click", async (event) => {
+  if (!event.target.closest?.("#logout")) return;
+  if (cabinetWeb) return; // Ordinary Cabinet link; pagehide discards the reader.
   try { await fetch("/api/access/logout", { method: "POST", headers: { Authorization: "Bearer " + token } }); } catch { /* выходим локально */ }
   token = null; store.set(null); location.replace(location.pathname);
 });
@@ -59,6 +99,7 @@ $("#retry").addEventListener("click", () => boot());
 for(const key of ["home","recent","graph","saved"]) $("#nav-"+key).onclick=()=>{history.replaceState({wiki:true},"","#view="+key);showView(viewState);};
 
 async function api(path) {
+  if (webReader) return webReader.read(path);
   if (host) return host.request(path);
   const r = await fetch(path, { headers: { Authorization: "Bearer " + token } });
   if (r.status === 401) { token = null; store.set(null); throw Object.assign(new Error("auth"), { auth: true }); }
@@ -67,10 +108,10 @@ async function api(path) {
 }
 
 async function boot() {
-  if (!token && !host) return showLogin();
+  if (!token && !host && !cabinetWeb) return showLogin();
   showView("loading");
   try { start(await api(host ? "/api/wiki/graph?articles=1" : "/api/wiki/graph?semantics=1&articles=1")); }
-  catch (e) { e.auth ? showLogin("Доступ закончился или был отозван. Введите новый код.") : showView("error"); }
+  catch (e) { if (cabinetWeb) { if (!e.handled && !e.stale) { webReader.invalidate(); showView("error"); } return; } e.auth ? showLogin("Доступ закончился или был отозван. Введите новый код.") : showView("error"); }
 }
 
 // ---- Граф ----
@@ -80,6 +121,8 @@ function start(DATA) {
   showView("app");
   if (started) return;
   started = true;
+  const lifecycle = new AbortController();
+  const listen = (target, event, callback) => target.addEventListener(event, callback, { signal: lifecycle.signal });
 
   const SEC_COLORS = ["#c67139", "#7a8a5e", "#b5895a", "#8c6f9e", "#5f8a8b", "#c2a14a", "#a25a5a",
     "#6b7fa8", "#9a6b4f", "#4f7a5a", "#b97a95", "#7d7466", "#d08f6a"];
@@ -317,9 +360,9 @@ function start(DATA) {
     if (!dragged) return;
     dragged = null;
   };
-  window.addEventListener("pointerup", release);
-  window.addEventListener("pointercancel", release);
-  window.addEventListener("blur", release);
+  listen(window, "pointerup", release);
+  listen(window, "pointercancel", release);
+  listen(window, "blur", release);
 
   function select(id, { push = true, center = false } = {}) {
     const before = state.selected, wasLocal = state.mode === "local";
@@ -504,7 +547,7 @@ function start(DATA) {
     if (e.key === "Enter") list.querySelector("button")?.click();
     if (e.key === "Escape") { q.value = ""; search(); q.blur(); }
   });
-  document.addEventListener("pointerdown", (e) => { if (!e.target.closest(".search")) closeResults(); });
+  listen(document, "pointerdown", (e) => { if (!e.target.closest(".search")) closeResults(); });
 
   // ---- Камера и клавиатура ----
   const cam = renderer.getCamera();
@@ -525,10 +568,10 @@ function start(DATA) {
       cam.setState({x:cam.getState().x+x,y:cam.getState().y+y});
     } else if (e.key === "Escape") select(null);
   });
-  document.addEventListener("keydown", (e) => { if (!$("#graph-workspace").hidden && e.key === "Escape" && state.selected && document.activeElement !== q) select(null); });
+  listen(document, "keydown", (e) => { if (!$("#graph-workspace").hidden && e.key === "Escape" && state.selected && document.activeElement !== q) select(null); });
 
   // Back/Forward is owned by the wiki router (catalog, reader, graph).
-  narrowQuery.addEventListener("change", () => { renderer.resize(); refresh(); });
+  listen(narrowQuery, "change", () => { renderer.resize(); refresh(); });
 
   readHash();
   syncControls();
@@ -542,7 +585,7 @@ function start(DATA) {
 
     graphViews.set(hash,{camera:renderer.getCamera().getState(),bbox:renderer.getCustomBBox(),positions:new Map(simNodes.map(n=>[n.id,{x:n.x,y:n.y}]))});
   }
-  mountLibrary({ DATA, api, esc, showLogin, host, onGraph: (params, restored, action) => {
+  const library = mountLibrary({ DATA, api, esc, showLogin, host, initialScroll: resumeScroll, beforeRoute: webReader ? () => webReader.read("/api/wiki/session") : null, onGraph: (params, restored, action) => {
     if(action==='leave') { saveGraphView(params.hash); return; }
     renderer.resize();
     const savedView = graphViews.get(location.hash);
@@ -565,7 +608,11 @@ function start(DATA) {
   };
   graph.on('eachNodeAttributesUpdated',layoutState);
   renderer.on('enterNode',layoutState); renderer.on('leaveNode',layoutState);
-  window.addEventListener('wiki-graph-navigation',layoutState); layoutState();
+  listen(window, 'wiki-graph-navigation',layoutState); layoutState();
+  teardown = () => { ++layoutGeneration; lifecycle.abort(); library.dispose(); renderer.kill(); graph.clear();
+    byId.clear(); adj.clear(); graphViews.clear(); window.__graphTest = null;
+    document.body.classList.remove('library-open'); delete document.body.dataset.wikiView;
+  };
   window.__graphTest = { renderer, graph, state, byId,
     pinned: () => 0 }; // для браузерных проверок; данных сверх видимых на странице нет
 }

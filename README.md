@@ -72,3 +72,9 @@ CI запускает тесты без production-данных и секрет�
 Agents start with [AGENTS.md](AGENTS.md) and invoke the installed
 [/collaborate skill](.agents/skills/collaborate/SKILL.md) to discover addressed
 Workshop assignments and coordinate changes at project boundaries.
+
+## Подготовленный вход веб-вики через кабинет · 13 октября
+
+Изолированный кандидат следует совместному browser-session контракту Workshop #13,
+включая отдельные production/staging профили. [Проверки и условия запуска](docs/qa-web-wiki-cabinet-2026-10-13/README.md).
+Кандидат по умолчанию отключён; опубликованный сервер и мобильные сборки не менялись.

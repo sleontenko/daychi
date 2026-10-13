@@ -1,0 +1,23 @@
+{
+  "checked_at_utc": "2026-10-13T10:37:30.682262+00:00",
+  "anonymous_checks_only": true,
+  "observations": [
+    {
+      "url": "https://xuanxue.su/api/auth/session",
+      "status": 404,
+      "no_store": false,
+      "tls_verified": true
+    },
+    {
+      "url": "https://staging.xuanxue.su/api/auth/session",
+      "status": 404,
+      "no_store": false,
+      "tls_verified": true
+    },
+    {
+      "url": "https://wiki.staging.xuanxue.su/wiki",
+      "error_type": "ConnectError",
+      "reachability_unverified": true
+    }
+  ]
+}

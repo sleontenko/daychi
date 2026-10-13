@@ -56,16 +56,31 @@ Simulator не подтверждает установку или доставк
 
 ## Workshop collaboration
 
-Existing boundaries: Daychi app (`apps/practice-app`) and web wiki (`apps/wiki-graph`)
-↔ Daychi backend (`practice_api`); the native schedule also reads the school's public HTML
-(`apps/practice-app/src/features/schedule/load.ts`, `source.ts`). Schedule loading
-applies Telegram corrections (`zoom.ts`); wiki and access clients use Daychi APIs
-(`apps/practice-app/src/features/wiki/api.ts`,
-`apps/practice-app/src/features/access/request-client.ts`, `apps/wiki-graph/src/library.js`).
-Target boundaries, integration unverified: Daychi clients ↔ Cabinet backend;
-Daychi backend ↔ Cabinet backend. The content API remains in Daychi.
-See [current source evidence](https://github.com/dveyarangi/xuanxue-workshop/blob/HEAD/docs/current-system.md#daychi)
-and [target contracts](https://github.com/dveyarangi/xuanxue-workshop/blob/HEAD/docs/boundaries.md#target-connections).
+Existing boundaries: native Daychi (`apps/practice-app`) and shared wiki reader
+(`apps/wiki-graph`) ↔ Daychi content backend (`practice_api`). Native schedule
+also retains its school-HTML and Telegram-correction path. Native/private reader,
+Zoom and owner/import access remain Daychi-owned; Cabinet web authentication does
+not replace them. [Current scope/evidence](https://github.com/dveyarangi/xuanxue-workshop/blob/25def59e25fc847764cc43de8d963bf62a16512e/docs/current-system.md#daychi).
+
+Knowledge→Daychi editorial/owner import and shared reader→Daychi article/concept/
+graph projections remain existing content boundaries. [Original article issue 9](https://github.com/dveyarangi/xuanxue-workshop/issues/9)
+and Daychi's provider-owned content definitions govern active v1, projection,
+identity/redaction and source consistency. Authentication work does not retire v1
+or change editorial authority.
+
+Accepted target boundaries, joint integration not established: Daychi clients ↔
+Cabinet backend for schedule/account capabilities; Daychi backend ↔ Cabinet backend
+for authoritative access checks. [Target contracts](https://github.com/dveyarangi/xuanxue-workshop/blob/25def59e25fc847764cc43de8d963bf62a16512e/docs/boundaries.md#target-connections)
+and [native account-session profile](https://github.com/dveyarangi/xuanxue-workshop/blob/3c98d4a5201710f8f777183dd7b61caefe47e2d5/docs/contracts/native-account-session.md) own
+their distinct scopes.
+
+Accepted web-wiki target: Cabinet owns the shared browser session and current-account
+validation; Daychi owns protected web delivery and calls Cabinet for each protected
+read. All and only valid Cabinet-authenticated web readers receive the same content,
+without extra wiki eligibility or persisted reader credentials/accounts.
+[Web-wiki session contract](https://github.com/dveyarangi/xuanxue-workshop/blob/25def59e25fc847764cc43de8d963bf62a16512e/docs/contracts/web-wiki-session.md) owns common cookie,
+entry/return, renewal/logout, environment separation and failure guarantees. Coordinated anonymous-access
+cutover, recipient implementation and deployed proof are separate from acceptance.
 
 Use the [/collaborate skill](.agents/skills/collaborate/SKILL.md) at the start of every session,
 before work affecting any boundary described above, and whenever coordinating
@@ -91,3 +106,11 @@ article import; shared reader→Daychi opt-in article/concept/graph projections.
 [Workshop9](https://github.com/dveyarangi/xuanxue-workshop/issues/9) preserve activev1
 and admission. Recording IDs remain authorized-only under the11October protection.
 [Runtime QA](docs/qa-wiki-articles-2026-10-11/README.md); no native release implied.
+
+Local prepared web boundary (2026-10-13): isolated candidate implements Workshop #13
+contract 25def59e with fixed production/staging profiles, per-read cookie validation,
+recording protection, Cabinet entry/logout and reader teardown. 180 backend / 21 web
+tests and synthetic Chrome pairs; default off, no deployment/release. Both real check
+URLs returned 404; staging wiki HTTPS, aliases/caches and actual two-site lifecycle
+remain unverified. Native public-reader migration needs #9 coordination; native/private
+API and owner/import/Zoom authority are retained. [QA/cutover](docs/qa-web-wiki-cabinet-2026-10-13/README.md).
