@@ -19,7 +19,7 @@ def public_text(value):
     return re.sub(r'(?:код\s*доступа|пароль|password|passcode)\s*:?\s*\S+', '', text, flags=re.I).strip()
 
 
-def public_link(link):
+def public_link(link, *, protect_drive_recordings=False):
     try:
         url = link.get('url', '')
         # Browsers treat backslashes as slashes and normalize encoded/IDN hosts.
@@ -40,6 +40,7 @@ def public_link(link):
             or host == 'zoom.com' or host.endswith('.zoom.com')
             or any(host == domain or host.endswith('.' + domain)
                    for domain in ('youtube.com', 'youtu.be', 'youtube-nocookie.com'))
+            or (protect_drive_recordings and host == 'drive.google.com')
             or link.get('type') not in PUBLIC_LINK_TYPES):
         return None
     # Unknown credential-bearing links remain closed even if misclassified.
@@ -51,7 +52,8 @@ def public_link(link):
 
 def public_material(row, content=None):
     result = {key: public_text(row[key]) if isinstance(row[key], str) else row[key] for key in FIELDS}
-    links = [item for link in row['links'] if (item := public_link(link)) is not None]
+    links = [item for link in row['links'] if (item := public_link(
+        link, protect_drive_recordings=bool(row.get('_archive_recording')))) is not None]
     result.update(links=links, restricted_links=len(links) != len(row['links']))
     # Validate against the original source, while exposing only text and timestamps.
     annotation = content.get(row['id'], row['links']) if content else None
@@ -76,7 +78,7 @@ def public_article(value):
     """Text and navigation remain public; recording IDs stay behind reader access."""
     def clean(item, key=''):
         if isinstance(item, dict):
-            return {k: clean(v, k) for k, v in item.items() if k != 'resource_id'}
+            return {k: clean(v, k) for k, v in item.items() if k not in ('resource_id', 'source_url')}
         if isinstance(item, list):
             return [clean(v, key) for v in item]
         if isinstance(item, str):

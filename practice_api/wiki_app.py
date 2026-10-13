@@ -88,7 +88,7 @@ def create_wiki_app(settings=None, access_authorizer=None):
             try:
                 stamp = cfg.index.stat().st_mtime_ns
                 if catalog is not None and stamp == version:
-                    return catalog
+                    return articles.archive_catalog(catalog)
                 raw = json.loads(cfg.index.read_text())
                 if not isinstance(raw, list) or not raw:
                     raise ValueError('Empty index')
@@ -122,7 +122,7 @@ def create_wiki_app(settings=None, access_authorizer=None):
             except (OSError, ValueError, KeyError, TypeError):
                 if catalog is None:
                     raise HTTPException(503, 'Каталог временно недоступен') from None
-            return catalog
+            return articles.archive_catalog(catalog)
 
     def authorize(authorization: str = Header(default='')):
         if not cfg.username or not cfg.password:
