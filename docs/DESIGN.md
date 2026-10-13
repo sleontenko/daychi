@@ -64,3 +64,10 @@ Build/CI и один совпавший кадр не заменяют UI QA.
 [парные опубликованные/runtime снимки и ограничения](qa-web-wiki-cabinet-2026-10-13/README.md).
 Существующие экраны библиотеки, статей и графа сохранены; новый вход/выход
 описан отдельно. Кандидат не заменяет принятый референс и не означает выпуск.
+
+### Website Cabinet-entry follow-up · 13 October
+
+The latest published homepage/Android4 styling is retained in the isolated
+[site-entry candidate](../design/candidates/site-cabinet-links-2026-10-13/README.md).
+[Paired QA and fixed-origin redirects](qa-site-cabinet-links-2026-10-13/README.md)
+cover the protected homepage graph state. This is a candidate, not a promoted reference.

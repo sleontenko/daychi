@@ -1,2 +1,2 @@
-function followHash() { const id = location.hash.slice(1); const el = document.getElementById(id); if (el?.tagName === 'DETAILS') el.open = true; }
-addEventListener('hashchange', followHash); followHash();
+// The public homepage contains no protected graph payload and makes no reader API requests.
+// Open the graph through the Cabinet-authenticated wiki entry linked in HTML.

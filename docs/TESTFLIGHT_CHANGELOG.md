@@ -225,3 +225,11 @@ Chrome QA; парные reference/runtime кадры сохранены. Source 
 Нет deployment, DNS/cache изменений, нового Apple upload, release tag или изменения
 Apple status; предыдущие мобильные факты этой записью не подтверждаются заново.
 [Проверки, исходники и оставшаяся совместная проверка](qa-web-wiki-cabinet-2026-10-13/README.md).
+
+Уточнение веб-кандидата 13 октября: ссылки сайта и alias app/wiki подготовлены
+на основе последнего опубликованного c964041f пакета, сохраняя Android4, native
+session-details, retention/restore и текущие public pages. Главная не читает корпус
+анонимно; вход ведёт к закреплённому wiki origin с исходным hash/query.
+198 backend tests, public-pages recheck, Chrome 360/390/768/1440 и 59-file stage.
+Оба endpoint кабинета снова вернули 404 в 11:08 UTC. Deployment и Apple status
+не менялись. [Новая проверка сайта](qa-site-cabinet-links-2026-10-13/README.md).

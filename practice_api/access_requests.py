@@ -70,7 +70,7 @@ class AccessRequests:
                 exists = con.execute('SELECT 1 FROM access_sessions WHERE token_hash=? AND invite_id=?',
                                      (row['session_hash'], row['invite_id'])).fetchone()
                 status = 'active' if exists else 'signed_out'
-        return {'id': row['id'], 'status': status}
+        return {'id': row['id'], 'status': status, 'created_at': row['created_at'], 'decided_at': row['decided_at']}
 
     def submit(self, secret, first_name, last_name, telegram='', *, host='unknown'):
         hashed = credential(secret)
@@ -94,7 +94,7 @@ class AccessRequests:
                         (identity, hashed, *fields, now))
             con.execute('INSERT INTO access_request_limits VALUES (?,?)', (digest(host), now))
             con.execute('INSERT INTO access_request_notifications (request_id,next_attempt) VALUES (?,?)', (identity, now))
-            return {'id': identity, 'status': 'pending'}
+            return {'id': identity, 'status': 'pending', 'created_at': now, 'decided_at': None}
 
     def status(self, secret):
         hashed = credential(secret)
@@ -164,4 +164,4 @@ class AccessRequests:
                 raise RequestConflict('Session credential already in use') from None
             con.execute('UPDATE access_requests SET session_hash=? WHERE id=?', (session_hash, row['id']))
             con.execute('UPDATE invites SET activated_at=? WHERE id=?', (time.time(), row['invite_id']))
-            return {'id': row['id'], 'status': 'active'}
+            return {'id': row['id'], 'status': 'active', 'created_at': row['created_at'], 'decided_at': row['decided_at']}

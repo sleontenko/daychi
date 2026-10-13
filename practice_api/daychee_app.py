@@ -14,6 +14,7 @@ from .feedback import mount_feedback
 from .access_request_api import mount_access_requests
 from .access_deletion import mount_access_deletion
 from .public_pages import mount_public_pages
+from .retention import mount_retention, mount_retention_status
 from .wiki_app import WikiSettings, create_wiki_app
 from .wiki_content import mount_content_import
 from .schedule_source import ScheduleSource, ScheduleSourceError, SCHOOL_TIMEZONE, SOURCE_URL
@@ -40,6 +41,7 @@ def create_daychee_app(settings=None, invitations=None, zoom_path=None, schedule
     app = create_wiki_app(settings or WikiSettings.from_env(), access_authorizer=authorize)
     mount_public_pages(app, enabled=os.getenv('DAYCHEE_PUBLIC_PAGES_ENABLED') == '1')
     admin_session, admin_mutation = mount_admin(app, store)
+    mount_retention_status(app, store, admin_session)
     mount_content_import(app, admin_session, admin_mutation)
     # Enable together with the reviewed mobile/admin UI, not during an
     # unrelated deployment from this shared working tree.
@@ -47,6 +49,8 @@ def create_daychee_app(settings=None, invitations=None, zoom_path=None, schedule
         mount_access_requests(app, store, admin_session, admin_mutation)
     if os.getenv('DAYCHEE_DATA_DELETION_ENABLED') == '1':
         mount_access_deletion(app, store)
+    if os.getenv('DAYCHEE_RETENTION_ENABLED') == '1':
+        mount_retention(app, store)
     mount_feedback(app, Path(store.path).with_name("feedback.sqlite3"))
     attempts = {}
     lock = threading.Lock()
@@ -89,7 +93,7 @@ def create_daychee_app(settings=None, invitations=None, zoom_path=None, schedule
     assets = Path(__file__).with_name('invitation_web')
     website = Path(__file__).with_name('website')
     website_headers = {
-        'Content-Security-Policy': "default-src 'none'; img-src 'self'; font-src 'self'; script-src 'self'; style-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
+        'Content-Security-Policy': "default-src 'none'; img-src 'self'; font-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
         'Referrer-Policy': 'no-referrer',
         'X-Content-Type-Options': 'nosniff',
     }
@@ -104,13 +108,13 @@ def create_daychee_app(settings=None, invitations=None, zoom_path=None, schedule
         if not apk.is_file():
             raise HTTPException(404, 'Android-сборка пока недоступна')
         return FileResponse(apk, media_type='application/vnd.android.package-archive',
-                            filename='daychee-1.0.0-3.apk',
+                            filename='daychee-1.0.0-4.apk',
                             headers={'X-Content-Type-Options': 'nosniff',
                                      'Cache-Control': 'no-cache'})
 
     @app.get('/website-assets/{name}', include_in_schema=False)
     def website_asset(name: str):
-        if name not in ('apple.svg', 'android.svg', 'simple-icons-LICENSE.md', 'caprasimo-OFL.txt', 'figtree-OFL.txt', 'site.css', 'site.js', 'schedule-ios.png', 'font-0.ttf', 'font-1.ttf', 'font-2.ttf', 'font-3.ttf'):
+        if name not in ('apple.svg', 'android.svg', 'simple-icons-LICENSE.md', 'graph-layout.mjs', 'golos-text.ttf', 'golos-OFL.txt', 'caprasimo-OFL.txt', 'figtree-OFL.txt', 'site.css', 'site.js', 'schedule-ios.png', 'font-0.ttf', 'font-1.ttf', 'font-2.ttf', 'font-3.ttf'):
             raise HTTPException(404)
         return FileResponse(website / name, headers=website_headers)
 
@@ -144,9 +148,12 @@ def create_daychee_app(settings=None, invitations=None, zoom_path=None, schedule
         return {**data, 'source_url': SOURCE_URL, 'timezone': SCHOOL_TIMEZONE,
                 'kind': 'weekly_template', 'exceptions_verified': False}
 
-    @app.get('/api/access/session', dependencies=[Depends(authorize)])
-    def session():
-        return {'active': True}
+    @app.get('/api/access/session')
+    def session(session_token: str = Depends(authorize)):
+        details = store.session_details(session_token)
+        if details is None:
+            raise HTTPException(401, 'Доступ отсутствует или отозван.')
+        return details
 
     @app.post('/api/access/logout')
     def logout(token=Depends(authorize)):

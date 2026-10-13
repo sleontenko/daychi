@@ -235,3 +235,37 @@ def test_renewal_domain_rejects_multiple_leading_dots():
     from practice_api.web_wiki_session import renewal_cookie
     with pytest.raises(ValueError):
         renewal_cookie([RENEWAL.replace('Domain=xuanxue.su','Domain=..xuanxue.su')])
+
+
+@pytest.mark.parametrize('profile,alias', [('production','app.xuanxue.su'),('production','daychee-api-production.up.railway.app'),('staging','staging-reader.test')])
+def test_web_entry_alias_redirects_fixed_profile_without_authority(tmp_path, monkeypatch, profile, alias):
+    from practice_api.web_wiki_session import PROFILES
+    calls=[]
+    async def check(v): calls.append(v); return SessionResult(204)
+    app, _, _ = fixture(tmp_path, monkeypatch, check, profile)
+    client=TestClient(app,base_url='https://'+alias)
+    for path in ('/wiki','/wiki/graph'):
+        response=client.get(path+'?q=%D1%82&returnTo=https%3A%2F%2Fevil.test',follow_redirects=False,headers={'Cookie':'session=ignored'})
+        assert response.status_code==307 and response.headers['cache-control']=='no-store'
+        assert response.headers['location']=='https://'+PROFILES[profile].wiki_host+path+'?q=%D1%82&returnTo=https%3A%2F%2Fevil.test'
+        assert not response.headers.get_list('set-cookie')
+    assert not calls
+    wiki=TestClient(app,base_url='https://'+PROFILES[profile].wiki_host)
+    assert 'href="https://app.xuanxue.su/"' in wiki.get('/wiki').text
+
+
+def test_new_homepage_has_no_anonymous_corpus_fetch_and_preserves_public_release(tmp_path, monkeypatch):
+    app, _, store=fixture(tmp_path,monkeypatch,lambda _:None)
+    client=TestClient(app,base_url='https://app.xuanxue.su')
+    page=client.get('/')
+    assert page.status_code==200 and 'https://app.xuanxue.su/wiki#view=graph' in page.text
+    assert 'https://app.xuanxue.su/downloads/daychee-android.apk?v=4' in page.text
+    assert 'daychee-1.0.0-4.apk' in page.text and 'iPhone и iPad' in page.text
+    assert '/api/public/wiki/' not in page.text and 'Загружаем граф' not in page.text
+    script=client.get('/website-assets/site.js')
+    assert script.status_code==200 and 'fetch(' not in script.text
+    assert client.get('/api/public/wiki/graph').status_code==401
+    token=store.redeem(store.issue()[1])
+    session=client.get('/api/access/session',headers={'Authorization':'Bearer '+token})
+    assert session.status_code==200 and session.json()==store.session_details(token)
+    assert client.get('/api/access/zoom').status_code==401

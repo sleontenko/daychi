@@ -114,3 +114,11 @@ tests and synthetic Chrome pairs; default off, no deployment/release. Both real 
 URLs returned 404; staging wiki HTTPS, aliases/caches and actual two-site lifecycle
 remain unverified. Native public-reader migration needs #9 coordination; native/private
 API and owner/import/Zoom authority are retained. [QA/cutover](docs/qa-web-wiki-cabinet-2026-10-13/README.md).
+
+Website follow-up (2026-10-13): operator supplied app.xuanxue.su / app.xuanxue.su/wiki.
+Prepared site links use that origin; enabled wiki entry aliases redirect to the
+contract-fixed wiki origin while retaining query/browser hash. Public homepage
+contains no corpus fetch. Candidate now carries hash-verified published c964041f
+site/Android4/native privacy/session/retention/restore source; 198 backend tests and
+59-file stage. Cabinet checks still 404 at 11:08 UTC, so activation/publication and
+joint acceptance remain outstanding. [QA](docs/qa-site-cabinet-links-2026-10-13/README.md).
