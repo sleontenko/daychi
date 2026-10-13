@@ -233,7 +233,7 @@ class ArticleStore:
             evidence_ids.update(i for link in links for i in link['evidence_ids'])
             sources = {s['material_id']: s for s in data['sources']}
             concepts = {c['id']: c for c in data['concepts']}
-            result = {'format': data['format'], 'material_id': identity, 'resource_id': article['resource_id'],
+            result = {'format': archive_sources.FORMAT if article['resource_id'].startswith('drive:') else 'daychi-wiki-articles/1', 'material_id': identity, 'resource_id': article['resource_id'],
                     'revision': article['revision'], 'status': article['status'], 'updated_at': updated,
                     'introduction': [claims[i] for i in article['introduction_claim_ids']],
                     'sections': [{'id': s['id'], 'heading': s['heading'], 'paragraphs': [claims[i] for i in s['claim_ids']]}
@@ -254,7 +254,8 @@ class ArticleStore:
             links = self.links(data, {l['id'] for l in data['links'] if l['concept_id'] == identity})
             evidence_ids = {i for c in page['claims'] for i in c['evidence_ids']}
             evidence_ids.update(i for link in links for i in link['evidence_ids'])
-            return dict(page, format=data['format'], updated_at=updated,
+            reader_format = archive_sources.FORMAT if any(e['id'] in evidence_ids and e['resource_id'].startswith('drive:') for e in data['evidence']) else 'daychi-wiki-articles/1'
+            return dict(page, format=reader_format, updated_at=updated,
                         evidence=self.evidence(data, evidence_ids), links=links)
         return None
 
@@ -302,6 +303,19 @@ class ArticleStore:
             current = {identity: json.loads(payload) for identity, payload in con.execute('SELECT material_id,payload FROM content')}
             archives = archive_sources.current_sources(con) if con.execute(
                 "SELECT name FROM sqlite_master WHERE name='archive_sources'").fetchone() else {}
+        active_archives = {}
+        if archives:
+            for bundle in self.active_bundles(catalog):
+                bundle_sources = {source['resource_id']: source for source in bundle['sources']}
+                for article in bundle['articles']:
+                    resource_id = article['resource_id']
+                    if resource_id.startswith('drive:') and bundle_sources.get(resource_id) == archives.get(resource_id):
+                        active_archives.setdefault(article['material_id'], {
+                            'format': archive_sources.FORMAT,
+                            'revision': article['revision'],
+                            'status': article['status'],
+                        })
+        archive_by_material = {source['material_id']: source for source in archives.values()}
         result = []
         fields = ('id', 'title', 'date', 'timestamp', 'category', 'category_name', 'subtopic', 'subtopic_key', 'description')
         def source_link(link):
@@ -328,9 +342,11 @@ class ArticleStore:
             annotation = current.get(row['id'])
             if annotation and annotation['resource_id'] in SemanticStore.sources([row]):
                 item['annotation'] = annotation
-            source = next((s for s in archives.values() if s['material_id'] == row['id']), None)
+            source = archive_by_material.get(row['id'])
             if source and row.get('_archive_recording'):
                 item['archive_source'] = source
+                if row['id'] in active_archives:
+                    item['archive_article'] = active_archives[row['id']]
             result.append(item)
         return {'materials': result}
 

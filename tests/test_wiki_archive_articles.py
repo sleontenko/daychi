@@ -98,6 +98,8 @@ def test_atomic_overlay_replay_private_provenance_and_no_legacy_mutation(tmp_pat
     assert rows == base and overlay[:2] == rows and len(overlay) == 4
     inventory = store.source_inventory(overlay)['materials']
     assert inventory[-2]['archive_source'] == batch.sources[0].model_dump()
+    assert inventory[-2]['archive_article'] == dict(format=batch.format, revision=1, status='text_reviewed_asr_draft')
+    assert 'archive_article' not in inventory[0]
     assert len(inventory[-2]['links']) == 2 and 'annotation' not in inventory[-2]
     body = store.article('1'*32, rows)
     assert body['status'] == 'text_reviewed_asr_draft' and body['coverage_note']
@@ -140,6 +142,8 @@ def test_source_change_invalidates_all_projections_and_replay_cannot_reactivate(
     assert store.projection([]) == {'nodes':[], 'edges':[], 'updates':{}}
     assert store.import_archive_batch(batch, [])['already_imported']
     assert store.active_bundles([]) == []
+    inventory = store.source_inventory(store.archive_catalog([]))['materials']
+    assert all('archive_source' in row and 'archive_article' not in row for row in inventory)
 
 
 def test_corrected_revision_preserves_original_and_does_not_replay_old_source(tmp_path):
@@ -254,3 +258,68 @@ def test_owner_import_auth_csrf_cached_catalog_and_public_projection(tmp_path, m
     _,code=invitations.issue_code(); token=invitations.redeem(code)
     private=client.get('/api/wiki/articles/materials/'+'1'*32,headers={'Authorization':'Bearer '+token})
     assert private.status_code==200 and 'https://drive.google.com/' in private.text
+
+
+@pytest.mark.parametrize('archive_concept_support', [False, True])
+def test_coherent_replacement_keeps_legacy_article_reader_format(tmp_path, archive_concept_support):
+    content, store, rows = stores(tmp_path)
+    for row in rows:
+        row.update(date='Дата', timestamp=1, category='test', category_name='Раздел',
+                   subtopic='', subtopic_key='', description='Описание')
+    old = ArticleBatch(**article_payload()).model_dump()
+    store.import_batch(ArticleBatch(**old), rows)
+    before = {identity: store.article(identity, rows) for identity in ('stable', 'other')}
+    value = copy.deepcopy(old)
+    value.update(format='daychi-wiki-archive-articles/1', batch_id='coherent-archive-replacement')
+    value['sources'].append(copy.deepcopy(archive_payload()['sources'][0]))
+    for article in value['articles']:
+        article['revision'] += 1
+    value['concepts'][0]['revision'] += 1
+    if archive_concept_support:
+        quote = copy.deepcopy(archive_payload()['evidence'][0]); quote['id'] = 'archive-quote'
+        value['evidence'].append(quote)
+        value['concepts'][0]['status'] = 'text_reviewed_asr_draft'
+        value['concepts'][0]['claims'].append(dict(id='archive-example', text='Архивный пример в общей теме.', evidence_ids=['archive-quote']))
+        value['links'].append(dict(id='archive-link', resource_id=quote['resource_id'], concept_id='fixture-topic',
+            relation='explains', rationale='Архивный пример поясняет эту тему.', evidence_ids=['archive-quote']))
+    store.import_archive_batch(ArchiveBatch(**value), rows)
+    assert store.summary()['articles'] == 2
+    assert store.summary()['concepts'] == 1
+    inventory = store.source_inventory(store.archive_catalog(rows))['materials']
+    registered = next(row for row in inventory if row['id'] == '1'*32)
+    assert 'archive_source' in registered and 'archive_article' not in registered
+    assert all('archive_article' not in row for row in inventory)
+    for identity, prior in before.items():
+        current = store.article(identity, rows)
+        assert current['format'] == 'daychi-wiki-articles/1'
+        assert current['revision'] == 2
+        for field in ('resource_id', 'status', 'introduction', 'sections', 'related', 'links'):
+            assert current[field] == prior[field]
+    expected = 'daychi-wiki-archive-articles/1' if archive_concept_support else 'daychi-wiki-articles/1'
+    assert store.concept('fixture-topic', rows)['format'] == expected
+    assert store.import_archive_batch(ArchiveBatch(**value), rows)['already_imported'] is True
+
+
+def test_owner_inventory_never_pairs_old_source_with_new_active_article(tmp_path, monkeypatch):
+    store = ArticleStore(ContentStore(tmp_path/'content.sqlite3'), enabled=True)
+    old = ArchiveBatch(**archive_payload())
+    store.import_archive_batch(old, [])
+    catalog = store.archive_catalog([])
+    value = corrected(archive_payload()); value['batch_id'] = 'interleaved-corrected-source'
+    value['sources'][0].update(content_revision=2, transcript_sha256='6'*64, subtitles_sha256='a'*64)
+    for article in value['articles']: article['revision'] = 2
+    value['concepts'][0]['revision'] = 2
+    original_active = store.active_bundles
+    def change_between_snapshots(rows):
+        store.import_archive_batch(ArchiveBatch(**value), [])
+        return original_active(rows)
+    monkeypatch.setattr(store, 'active_bundles', change_between_snapshots)
+    inventory = store.source_inventory(catalog)['materials']
+    assert inventory[0]['archive_source'] == old.sources[0].model_dump()
+    assert 'archive_article' not in inventory[0]
+    assert inventory[1]['archive_article']['revision'] == 2
+    monkeypatch.setattr(store, 'active_bundles', original_active)
+    refreshed = store.source_inventory(store.archive_catalog([]))['materials']
+    current = next(row for row in refreshed if row['id'] == old.sources[0].material_id)
+    assert current['archive_source']['content_revision'] == 2
+    assert current['archive_article']['revision'] == 2

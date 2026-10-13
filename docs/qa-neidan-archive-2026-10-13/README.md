@@ -14,3 +14,18 @@ The new owner archive endpoint coexists with the existing YouTube article contra
 ## Limits and publication
 
 These checks establish synthetic web/runtime behavior, not recognition accuracy, teacher approval, actual Drive-file permissions, or native-app acceptance. Editorial and exact-batch review belong to Daychi Knowledge. No production deployment or archive import has been performed at this checkpoint; those results will be appended after execution.
+
+
+## Production runtime checkpoint
+
+The provider implementation was merged in Daychi PR #10 (adb4b76123d6d64337b9a2af7cb1735e6f2919fc) and deployed as afbaf3e1-cdf8-4d0e-b6a8-fbc5093c7eaf. Railway reported SUCCESS on 13 October. The live graph bundle matches the prepared SHA256 42bd08fc98a86c53554632637794e4b5ad73630a3d2b3e487de98b6a4d55e4d6. Existing owner inventory/status returned 200; an invalid empty archive payload returned 422 without an import. All 13 prior articles and 13 prior concepts were still present. Archive content had not been imported at this checkpoint.
+
+## Coherent replacement and reader compatibility
+
+Object fingerprints include the bundle's complete source/evidence/link envelope. Superseding one concept can deactivate its old bundle, so the publication candidate carries all objects of both affected prior bundles with explicit next editorial revisions. The corresponding source/content revisions remain unchanged.
+
+A disposable local database was seeded with the exact two previously published bundles and their current owner source annotations. Importing the prepared 70-article/34-concept closure retained all 13 previous articles and 13 previous concepts; old article introduction, sections, related paths, link order, source identity and status matched exactly. Replay was idempotent. The new draft used an explicitly labelled local schema stub only: this experiment establishes runtime retention, not editorial review or publication permission.
+
+The follow-up keeps YouTube article reader DTOs in daychi-wiki-articles/1 when stored in an archive bundle. Concepts supported only by legacy YouTube evidence also retain that format; Drive-supported pages report the archive format. Two synthetic replacement tests cover both cases. The full backend suite passed: 183 tests.
+
+The owner source inventory now distinguishes an active Drive article from source registration through optional archive_article metadata. Tests cover active publication, a stale source deactivating its bundle, and an unused registered source in a coherent replacement; legacy inventory rows receive no new field. This supplies the Knowledge registry adapter with publication evidence without counting archive articles as legacy summaries.

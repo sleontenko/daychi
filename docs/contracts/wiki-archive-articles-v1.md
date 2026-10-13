@@ -64,6 +64,11 @@ binding. The original catalog file and existing summary/point payloads are uncha
 Owner `GET /api/admin/wiki/articles/sources` includes the exact registered source as
 `materials[].archive_source`, only for the additive archive rows. It does not expose
 Zoom credentials and is never a public or ordinary-reader inventory.
+An actually active Drive article also adds `materials[].archive_article` with
+`format`, its editorial `revision` and `status`. Registered sources without an
+active article omit that field, including stale/superseded bundles and sources
+used only as evidence. Registration alone does not establish publication. Legacy
+YouTube inventory rows retain their existing fields.
 
 The overlay derives one catalog material per unique original and canonical Drive
 links for all aliases. It participates in categories, catalog, graph and recent
