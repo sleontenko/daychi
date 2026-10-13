@@ -1,0 +1,834 @@
+{
+  "$defs": {
+    "ArchiveAlias": {
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {
+          "pattern": "^drive:[A-Za-z0-9_-]{10,200}$",
+          "title": "Resource Id",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "original_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Original Sha256",
+          "type": "string"
+        },
+        "original_bytes": {
+          "exclusiveMinimum": 0,
+          "maximum": 100000000000,
+          "title": "Original Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "resource_id",
+        "title",
+        "original_sha256",
+        "original_bytes"
+      ],
+      "title": "ArchiveAlias",
+      "type": "object"
+    },
+    "ArchiveArticle": {
+      "additionalProperties": false,
+      "properties": {
+        "material_id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Material Id",
+          "type": "string"
+        },
+        "resource_id": {
+          "pattern": "^(?:[A-Za-z0-9_-]{11}|drive:[A-Za-z0-9_-]{10,200})$",
+          "title": "Resource Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 100000,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "status": {
+          "default": "text_reviewed_asr_draft",
+          "enum": [
+            "source_checked_draft",
+            "text_reviewed_asr_draft"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "introduction_claim_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Introduction Claim Ids",
+          "type": "array"
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/$defs/Section"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "Sections",
+          "type": "array"
+        },
+        "claims": {
+          "items": {
+            "$ref": "#/$defs/Claim"
+          },
+          "maxItems": 200,
+          "minItems": 1,
+          "title": "Claims",
+          "type": "array"
+        },
+        "related": {
+          "items": {
+            "$ref": "#/$defs/Related"
+          },
+          "maxItems": 20,
+          "title": "Related",
+          "type": "array"
+        },
+        "coverage_note": {
+          "default": "",
+          "maxLength": 2000,
+          "title": "Coverage Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "material_id",
+        "resource_id",
+        "revision",
+        "introduction_claim_ids",
+        "sections",
+        "claims"
+      ],
+      "title": "ArchiveArticle",
+      "type": "object"
+    },
+    "ArchiveConcept": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z][a-z0-9-]{1,79}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "term",
+            "topic"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 200,
+          "minLength": 2,
+          "title": "Title",
+          "type": "string"
+        },
+        "aliases": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 12,
+          "title": "Aliases",
+          "type": "array"
+        },
+        "revision": {
+          "maximum": 100000,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "status": {
+          "default": "text_reviewed_asr_draft",
+          "enum": [
+            "source_checked_draft",
+            "text_reviewed_asr_draft"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "claims": {
+          "items": {
+            "$ref": "#/$defs/Claim"
+          },
+          "maxItems": 30,
+          "minItems": 1,
+          "title": "Claims",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "title",
+        "revision",
+        "claims"
+      ],
+      "title": "ArchiveConcept",
+      "type": "object"
+    },
+    "ArchiveEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "resource_id": {
+          "pattern": "^(?:[A-Za-z0-9_-]{11}|drive:[A-Za-z0-9_-]{10,200})$",
+          "title": "Resource Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 6000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "start_seconds": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Start Seconds",
+          "type": "number"
+        },
+        "end_seconds": {
+          "exclusiveMinimum": 0,
+          "maximum": 100000,
+          "title": "End Seconds",
+          "type": "number"
+        },
+        "admission": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EvidenceAdmission"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "resource_id",
+        "text",
+        "start_seconds",
+        "end_seconds"
+      ],
+      "title": "ArchiveEvidence",
+      "type": "object"
+    },
+    "ArchiveLink": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "resource_id": {
+          "pattern": "^(?:[A-Za-z0-9_-]{11}|drive:[A-Za-z0-9_-]{10,200})$",
+          "title": "Resource Id",
+          "type": "string"
+        },
+        "concept_id": {
+          "pattern": "^[a-z][a-z0-9-]{1,79}$",
+          "title": "Concept Id",
+          "type": "string"
+        },
+        "relation": {
+          "enum": [
+            "explains",
+            "practices",
+            "discusses"
+          ],
+          "title": "Relation",
+          "type": "string"
+        },
+        "rationale": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "resource_id",
+        "concept_id",
+        "relation",
+        "rationale",
+        "evidence_ids"
+      ],
+      "title": "ArchiveLink",
+      "type": "object"
+    },
+    "ArchiveOrigin": {
+      "additionalProperties": false,
+      "properties": {
+        "collection_id": {
+          "pattern": "^[a-z][a-z0-9-]{1,79}$",
+          "title": "Collection Id",
+          "type": "string"
+        },
+        "cohort": {
+          "enum": [
+            "neidan",
+            "retreat2016",
+            "retreat2017"
+          ],
+          "title": "Cohort",
+          "type": "string"
+        },
+        "aliases": {
+          "items": {
+            "$ref": "#/$defs/ArchiveAlias"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "Aliases",
+          "type": "array"
+        },
+        "pcm_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Pcm Sha256",
+          "type": "string"
+        },
+        "pcm_seconds": {
+          "exclusiveMinimum": 0,
+          "maximum": 100000,
+          "title": "Pcm Seconds",
+          "type": "number"
+        },
+        "paired_asr_sha256": {
+          "$ref": "#/$defs/PairedHashes"
+        },
+        "provenance_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Provenance Sha256",
+          "type": "string"
+        },
+        "quarantine_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Quarantine Sha256",
+          "type": "string"
+        },
+        "source_warnings": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Source Warnings",
+          "type": "array"
+        },
+        "corrected_asr": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CorrectedASR"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "collection_id",
+        "cohort",
+        "aliases",
+        "pcm_sha256",
+        "pcm_seconds",
+        "paired_asr_sha256",
+        "provenance_sha256",
+        "quarantine_sha256"
+      ],
+      "title": "ArchiveOrigin",
+      "type": "object"
+    },
+    "ArchiveSource": {
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {
+          "pattern": "^(?:[A-Za-z0-9_-]{11}|drive:[A-Za-z0-9_-]{10,200})$",
+          "title": "Resource Id",
+          "type": "string"
+        },
+        "material_id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Material Id",
+          "type": "string"
+        },
+        "expected_title": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Expected Title",
+          "type": "string"
+        },
+        "content_revision": {
+          "maximum": 100000,
+          "minimum": 1,
+          "title": "Content Revision",
+          "type": "integer"
+        },
+        "transcript_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Transcript Sha256",
+          "type": "string"
+        },
+        "subtitles_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subtitles Sha256",
+          "type": "string"
+        },
+        "archive": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArchiveOrigin"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "resource_id",
+        "material_id",
+        "expected_title",
+        "content_revision",
+        "transcript_sha256",
+        "subtitles_sha256"
+      ],
+      "title": "ArchiveSource",
+      "type": "object"
+    },
+    "Claim": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 6000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "mentions": {
+          "items": {
+            "$ref": "#/$defs/Mention"
+          },
+          "maxItems": 30,
+          "title": "Mentions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "evidence_ids"
+      ],
+      "title": "Claim",
+      "type": "object"
+    },
+    "CorrectedASR": {
+      "additionalProperties": false,
+      "properties": {
+        "full_text_sha256": {
+          "maxProperties": 2,
+          "minProperties": 2,
+          "patternProperties": {
+            "^[A-Za-z0-9_.:-]{1,160}$": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          },
+          "title": "Full Text Sha256",
+          "type": "object"
+        },
+        "model_ids": {
+          "maxProperties": 2,
+          "minProperties": 2,
+          "patternProperties": {
+            "^[A-Za-z0-9_.:-]{1,160}$": {
+              "type": "string"
+            }
+          },
+          "title": "Model Ids",
+          "type": "object"
+        },
+        "provenance_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Provenance Sha256",
+          "type": "string"
+        },
+        "quarantine_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Quarantine Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "full_text_sha256",
+        "model_ids",
+        "provenance_sha256",
+        "quarantine_sha256"
+      ],
+      "title": "CorrectedASR",
+      "type": "object"
+    },
+    "EvidenceAdmission": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "const": "paired_asr_text_supported",
+          "title": "Basis",
+          "type": "string"
+        },
+        "source_basis": {
+          "default": "original_pair",
+          "enum": [
+            "original_pair",
+            "corrected_pair"
+          ],
+          "title": "Source Basis",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 2000,
+          "minLength": 30,
+          "title": "Reason",
+          "type": "string"
+        },
+        "clip_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 30,
+          "minItems": 1,
+          "title": "Clip Ids",
+          "type": "array"
+        },
+        "source_warning_codes": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Source Warning Codes",
+          "type": "array"
+        },
+        "clip_warning_codes": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Clip Warning Codes",
+          "type": "array"
+        },
+        "unresolved_issue_codes": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Unresolved Issue Codes",
+          "type": "array"
+        },
+        "audio_verified": {
+          "const": false,
+          "default": false,
+          "title": "Audio Verified",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "basis",
+        "reason",
+        "clip_ids"
+      ],
+      "title": "EvidenceAdmission",
+      "type": "object"
+    },
+    "Mention": {
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "end": {
+          "exclusiveMinimum": 0,
+          "title": "End",
+          "type": "integer"
+        },
+        "link_id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Link Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end",
+        "link_id"
+      ],
+      "title": "Mention",
+      "type": "object"
+    },
+    "PairedHashes": {
+      "additionalProperties": false,
+      "properties": {
+        "turbo": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Turbo",
+          "type": "string"
+        },
+        "parakeet": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Parakeet",
+          "type": "string"
+        }
+      },
+      "required": [
+        "turbo",
+        "parakeet"
+      ],
+      "title": "PairedHashes",
+      "type": "object"
+    },
+    "Related": {
+      "additionalProperties": false,
+      "properties": {
+        "material_id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Material Id",
+          "type": "string"
+        },
+        "via_concept_id": {
+          "pattern": "^[a-z][a-z0-9-]{1,79}$",
+          "title": "Via Concept Id",
+          "type": "string"
+        },
+        "supporting_link_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "title": "Supporting Link Ids",
+          "type": "array"
+        },
+        "reason": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "material_id",
+        "via_concept_id",
+        "supporting_link_ids",
+        "reason"
+      ],
+      "title": "Related",
+      "type": "object"
+    },
+    "Review": {
+      "additionalProperties": false,
+      "properties": {
+        "editor": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Editor",
+          "type": "string"
+        },
+        "reviewer": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Reviewer",
+          "type": "string"
+        },
+        "editorial_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Editorial Sha256",
+          "type": "string"
+        },
+        "review_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Review Sha256",
+          "type": "string"
+        },
+        "decision": {
+          "const": "pass",
+          "title": "Decision",
+          "type": "string"
+        },
+        "full_source_read": {
+          "const": true,
+          "title": "Full Source Read",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "editor",
+        "reviewer",
+        "editorial_sha256",
+        "review_sha256",
+        "decision",
+        "full_source_read"
+      ],
+      "title": "Review",
+      "type": "object"
+    },
+    "Section": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "heading": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Heading",
+          "type": "string"
+        },
+        "claim_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9_.:-]{1,160}$",
+            "type": "string"
+          },
+          "maxItems": 200,
+          "minItems": 1,
+          "title": "Claim Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "heading",
+        "claim_ids"
+      ],
+      "title": "Section",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "daychi-wiki-archive-articles/1",
+      "title": "Format",
+      "type": "string"
+    },
+    "batch_id": {
+      "pattern": "^[a-zA-Z0-9_-]{1,80}$",
+      "title": "Batch Id",
+      "type": "string"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/ArchiveSource"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Sources",
+      "type": "array"
+    },
+    "articles": {
+      "items": {
+        "$ref": "#/$defs/ArchiveArticle"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Articles",
+      "type": "array"
+    },
+    "concepts": {
+      "items": {
+        "$ref": "#/$defs/ArchiveConcept"
+      },
+      "maxItems": 100,
+      "title": "Concepts",
+      "type": "array"
+    },
+    "links": {
+      "items": {
+        "$ref": "#/$defs/ArchiveLink"
+      },
+      "maxItems": 300,
+      "title": "Links",
+      "type": "array"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/ArchiveEvidence"
+      },
+      "maxItems": 1000,
+      "minItems": 1,
+      "title": "Evidence",
+      "type": "array"
+    },
+    "review": {
+      "$ref": "#/$defs/Review"
+    }
+  },
+  "required": [
+    "format",
+    "batch_id",
+    "sources",
+    "articles",
+    "evidence",
+    "review"
+  ],
+  "title": "ArchiveBatch",
+  "type": "object"
+}

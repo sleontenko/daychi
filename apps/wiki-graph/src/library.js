@@ -200,7 +200,7 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host }) {
         root.querySelector('.reader-toc nav').innerHTML=articleContents(body,esc);
         root.querySelector('#article-related').innerHTML=relatedArticles(body,esc,href);
         root.querySelector('#article-connections .section-number').textContent=String(body.sections.length+1).padStart(2,'0');
-        const status=root.querySelector('#article-status');status.hidden=false;status.textContent='Статья по расшифровке · черновик';
+        const status=root.querySelector('#article-status');status.hidden=false;status.textContent=body.status==='text_reviewed_asr_draft'?'Статья по машинным текстам · аудио не прослушано · черновик':'Статья по расшифровке · черновик';
       } else if(!failed) {
         if (DATA.semantic_enabled) semantic.article(id);
         root.querySelector('#article-summary').innerHTML=d.annotation ? renderSummary(d.annotation, esc) : `<p class="source-description">${esc(d.description && d.description!==d.title ? d.description : 'В исходном каталоге отдельного описания нет.')}</p>`;

@@ -23,6 +23,9 @@ export function sourceTimes(ids, evidence, esc) {
   return `<span class="article-evidence">${ids.map(id => {
     const e = evidence.get(id);
     if (!e) return '';
+    if (typeof e.resource_id === 'string' && /^drive:[A-Za-z0-9_-]{10,200}$/.test(e.resource_id) &&
+        e.source_url === `https://drive.google.com/file/d/${e.resource_id.slice(6)}/view`)
+      return `<a href="${esc(e.source_url)}" target="_blank" rel="noopener noreferrer" title="${esc(e.text)}" aria-label="Запись в Drive; время фрагмента ${timeLabel(e.start_seconds)}; ссылка открывает файл целиком">${timeLabel(e.start_seconds)} · Drive ↗</a>`;
     if (typeof e.resource_id !== 'string' || !/^[A-Za-z0-9_-]{11}$/.test(e.resource_id))
       return `<span title="${esc(e.text)}">${timeLabel(e.start_seconds)} · Запись доступна после проверки доступа</span>`;
     return `<a href="https://www.youtube.com/watch?v=${encodeURIComponent(e.resource_id)}&amp;t=${Math.floor(e.start_seconds)}s" target="_blank" rel="noopener noreferrer" title="${esc(e.text)}" aria-label="Источник: ${timeLabel(e.start_seconds)}">${timeLabel(e.start_seconds)} ↗</a>`;
@@ -32,7 +35,8 @@ export function sourceTimes(ids, evidence, esc) {
 export function articleBody(article, esc, href) {
   const links = new Map(article.links.map(l=>[l.id,l])), evidence = new Map(article.evidence.map(e=>[e.id,e]));
   const paragraph = (p,lead=false) => `<p class="source-description${lead?' reader-lead':''}">${paragraphText(p,links,esc,href)} ${sourceTimes(p.evidence_ids,evidence,esc)}</p>`;
-  return article.introduction.map(p=>paragraph(p,true)).join('') + article.sections.map((s,i)=>
+  const caveat = article.status === 'text_reviewed_asr_draft' ? `<p class="source-description">${esc(article.coverage_note)}</p>` : '';
+  return caveat + article.introduction.map(p=>paragraph(p,true)).join('') + article.sections.map((s,i)=>
     `<section id="article-section-${esc(s.id)}"><h2><span class="section-number" aria-hidden="true">${String(i+1).padStart(2,'0')}</span>${esc(s.heading)}</h2>${s.paragraphs.map(p=>paragraph(p)).join('')}</section>`).join('');
 }
 
@@ -47,7 +51,8 @@ export function relatedArticles(article, esc, href) {
 
 export function articleConceptBody(page, esc, href) {
   const evidence = new Map(page.evidence.map(e=>[e.id,e]));
-  return `<p class="muted small">${conceptKind(page.kind)} · По проверенным расшифровкам · Черновик</p>
+  const basis = page.status === 'text_reviewed_asr_draft' ? 'По машинным текстам · Аудио не прослушано' : 'По проверенным расшифровкам';
+  return `<p class="muted small">${conceptKind(page.kind)} · ${basis} · Черновик</p>
     ${page.aliases.length?`<p class="muted">Также: ${page.aliases.map(esc).join(', ')}</p>`:''}
     ${page.claims.map(c=>`<p class="source-description">${esc(c.text)} ${sourceTimes(c.evidence_ids,evidence,esc)}</p>`).join('')}
     <section><h2>Материалы и подтверждения</h2>${page.links.map(link=>`<div class="semantic-relation"><h3><a data-route href="${href({view:'article',id:link.material_id})}">${esc(link.title)}</a></h3><p class="muted small">${RELATIONS[link.relation]}</p><p>${esc(link.rationale)}</p>${sourceTimes(link.evidence_ids,evidence,esc)}</div>`).join('')}</section>`;

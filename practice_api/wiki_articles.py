@@ -11,6 +11,7 @@ from fastapi import Depends, HTTPException
 
 from .wiki_article_models import ArticleBatch, folded
 from .wiki_semantics import SemanticStore, canonical
+from . import wiki_archive_sources as archive_sources
 
 
 def digest(value):
@@ -38,6 +39,12 @@ class ArticleStore:
                 PRIMARY KEY(kind,id,revision));
             CREATE TABLE IF NOT EXISTS article_batches (id TEXT PRIMARY KEY, digest TEXT NOT NULL,
                 payload TEXT NOT NULL, articles INTEGER NOT NULL, concepts INTEGER NOT NULL, links INTEGER NOT NULL);
+            CREATE TABLE IF NOT EXISTS archive_sources (resource_id TEXT PRIMARY KEY,
+                material_id TEXT NOT NULL UNIQUE, revision INTEGER NOT NULL,
+                digest TEXT NOT NULL, payload TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS archive_source_versions (resource_id TEXT NOT NULL,
+                revision INTEGER NOT NULL, digest TEXT NOT NULL, payload TEXT NOT NULL,
+                PRIMARY KEY(resource_id,revision));
         ''')
         return con
 
@@ -106,6 +113,14 @@ class ArticleStore:
                     raise ValueError('Обновление понятия должно сохранять проверенные утверждения и связи.')
 
     def import_batch(self, batch, catalog):
+        return self._import(batch, catalog, archive=False)
+
+    def import_archive_batch(self, batch, catalog):
+        return self._import(batch, catalog, archive=True)
+
+    def _import(self, batch, catalog, *, archive):
+        if (batch.format == archive_sources.FORMAT) != archive:
+            raise ValueError('Article format requires its matching import endpoint')
         if not self.enabled:
             raise ValueError('Структурированные статьи ещё не включены.')
         data = batch.model_dump()
@@ -120,7 +135,12 @@ class ArticleStore:
                 return counts | {'already_imported': True}
             current = {identity: json.loads(payload) for identity, payload in
                        con.execute('SELECT material_id,payload FROM content')}
-            self.validate_sources(data, catalog, current)
+            if archive:
+                sources = archive_sources.register_sources(con, data, catalog, digest)
+                catalog = archive_sources.merged_catalog(catalog, sources)
+                archive_sources.validate_sources(data, catalog, current, sources, self.validate_sources)
+            else:
+                self.validate_sources(data, catalog, current)
             self.check_concepts(con, data)
             self.retained_content(con, data)
             prepared = []
@@ -149,6 +169,8 @@ class ArticleStore:
             con.execute('BEGIN')
             current = {identity: json.loads(payload) for identity, payload in
                        con.execute('SELECT material_id,payload FROM content')}
+            archives = archive_sources.current_sources(con)
+            catalog = archive_sources.merged_catalog(catalog, archives)
             objects = {(kind, identity): (fingerprint, json.loads(payload), updated)
                        for kind, identity, fingerprint, payload, updated in
                        con.execute('SELECT kind,id,digest,payload,updated FROM article_objects')}
@@ -158,7 +180,10 @@ class ArticleStore:
         for payload, in batches:
             data = json.loads(payload)
             try:
-                self.validate_sources(data, catalog, current)
+                if data['format'] == archive_sources.FORMAT:
+                    archive_sources.validate_sources(data, catalog, current, archives, self.validate_sources)
+                else:
+                    self.validate_sources(data, catalog, current)
             except ValueError:
                 continue
             identities = [(kind, v[key], v) for kind, values, key in
@@ -175,7 +200,15 @@ class ArticleStore:
 
     @staticmethod
     def evidence(data, ids):
-        return [dict(e) for e in data['evidence'] if e['id'] in ids]
+        result = []
+        for e in data['evidence']:
+            if e['id'] not in ids:
+                continue
+            item = {k: v for k, v in e.items() if k != 'admission'}
+            if e['resource_id'].startswith('drive:'):
+                item.update(source_url=archive_sources.source_url(e['resource_id']), time_basis='pcm_clip')
+            result.append(item)
+        return result
 
     @staticmethod
     def links(data, ids):
@@ -200,7 +233,7 @@ class ArticleStore:
             evidence_ids.update(i for link in links for i in link['evidence_ids'])
             sources = {s['material_id']: s for s in data['sources']}
             concepts = {c['id']: c for c in data['concepts']}
-            return {'format': data['format'], 'material_id': identity, 'resource_id': article['resource_id'],
+            result = {'format': data['format'], 'material_id': identity, 'resource_id': article['resource_id'],
                     'revision': article['revision'], 'status': article['status'], 'updated_at': updated,
                     'introduction': [claims[i] for i in article['introduction_claim_ids']],
                     'sections': [{'id': s['id'], 'heading': s['heading'], 'paragraphs': [claims[i] for i in s['claim_ids']]}
@@ -208,6 +241,9 @@ class ArticleStore:
                     'evidence': self.evidence(data, evidence_ids), 'links': links,
                     'related': [dict(r, title=sources[r['material_id']]['expected_title'],
                                      concept_title=concepts[r['via_concept_id']]['title']) for r in article['related']]}
+            if article.get('coverage_note'):
+                result['coverage_note'] = article['coverage_note']
+            return result
         return None
 
     def concept(self, identity, catalog):
@@ -251,11 +287,21 @@ class ArticleStore:
                     'batches': [{'id': r[0], 'articles': r[1], 'concepts': r[2], 'links': r[3]}
                                 for r in con.execute('SELECT id,articles,concepts,links FROM article_batches ORDER BY id')]}
 
+    def archive_catalog(self, catalog):
+        if not self.enabled or not self.content.path.exists():
+            return catalog
+        with closing(self.db()) as con:
+            con.execute('BEGIN')
+            sources = archive_sources.current_sources(con)
+        return archive_sources.merged_catalog(catalog, sources)
+
     def source_inventory(self, catalog):
         """Coordinator-only source binding for a fresh publication preflight."""
         with closing(self.content.db()) as con:
             con.execute('BEGIN')
             current = {identity: json.loads(payload) for identity, payload in con.execute('SELECT material_id,payload FROM content')}
+            archives = archive_sources.current_sources(con) if con.execute(
+                "SELECT name FROM sqlite_master WHERE name='archive_sources'").fetchone() else {}
         result = []
         fields = ('id', 'title', 'date', 'timestamp', 'category', 'category_name', 'subtopic', 'subtopic_key', 'description')
         def source_link(link):
@@ -282,6 +328,9 @@ class ArticleStore:
             annotation = current.get(row['id'])
             if annotation and annotation['resource_id'] in SemanticStore.sources([row]):
                 item['annotation'] = annotation
+            source = next((s for s in archives.values() if s['material_id'] == row['id']), None)
+            if source and row.get('_archive_recording'):
+                item['archive_source'] = source
             result.append(item)
         return {'materials': result}
 
@@ -305,6 +354,7 @@ def mount_article_reads(app, load, store, *, prefix, authorize=None, project=lam
 
 
 def mount_article_import(app, session, mutation):
+    from .wiki_archive_models import ArchiveBatch
     @app.get('/api/admin/wiki/articles/sources', dependencies=[Depends(session)])
     def sources():
         return app.state.wiki_articles.source_inventory(app.state.wiki_catalog())
@@ -317,5 +367,12 @@ def mount_article_import(app, session, mutation):
     def article_import(body: ArticleBatch):
         try:
             return app.state.wiki_articles.import_batch(body, app.state.wiki_catalog())
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from None
+
+    @app.post('/api/admin/wiki/archive-articles', dependencies=[Depends(mutation)])
+    def archive_import(body: ArchiveBatch):
+        try:
+            return app.state.wiki_articles.import_archive_batch(body, app.state.wiki_catalog())
         except ValueError as exc:
             raise HTTPException(409, str(exc)) from None
