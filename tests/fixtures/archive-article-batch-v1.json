@@ -1,0 +1,285 @@
+{
+  "format": "daychi-wiki-archive-articles/1",
+  "batch_id": "archive-fixture",
+  "sources": [
+    {
+      "resource_id": "drive:fixtureRecording01",
+      "material_id": "11111111111111111111111111111111",
+      "expected_title": "Урок",
+      "content_revision": 1,
+      "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "subtitles_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "archive": {
+        "collection_id": "archive-neidan",
+        "cohort": "retreat2017",
+        "aliases": [
+          {
+            "resource_id": "drive:fixtureRecording01",
+            "title": "Файл архива",
+            "original_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "original_bytes": 123
+          },
+          {
+            "resource_id": "drive:fixtureRecording03",
+            "title": "Файл архива",
+            "original_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "original_bytes": 123
+          }
+        ],
+        "pcm_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "pcm_seconds": 120.0,
+        "paired_asr_sha256": {
+          "turbo": "2222222222222222222222222222222222222222222222222222222222222222",
+          "parakeet": "3333333333333333333333333333333333333333333333333333333333333333"
+        },
+        "provenance_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+        "quarantine_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+        "source_warnings": [
+          "decoder_warning"
+        ],
+        "corrected_asr": null
+      }
+    },
+    {
+      "resource_id": "drive:fixtureRecording02",
+      "material_id": "22222222222222222222222222222222",
+      "expected_title": "Урок",
+      "content_revision": 1,
+      "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "subtitles_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "archive": {
+        "collection_id": "archive-neidan",
+        "cohort": "retreat2017",
+        "aliases": [
+          {
+            "resource_id": "drive:fixtureRecording02",
+            "title": "Файл архива",
+            "original_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "original_bytes": 123
+          }
+        ],
+        "pcm_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "pcm_seconds": 120.0,
+        "paired_asr_sha256": {
+          "turbo": "2222222222222222222222222222222222222222222222222222222222222222",
+          "parakeet": "3333333333333333333333333333333333333333333333333333333333333333"
+        },
+        "provenance_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+        "quarantine_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+        "source_warnings": [
+          "decoder_warning"
+        ],
+        "corrected_asr": null
+      }
+    }
+  ],
+  "articles": [
+    {
+      "material_id": "11111111111111111111111111111111",
+      "resource_id": "drive:fixtureRecording01",
+      "revision": 1,
+      "status": "text_reviewed_asr_draft",
+      "introduction_claim_ids": [
+        "intro"
+      ],
+      "sections": [
+        {
+          "id": "first",
+          "heading": "Смысл раздела",
+          "claim_ids": [
+            "body"
+          ]
+        }
+      ],
+      "claims": [
+        {
+          "id": "intro",
+          "text": "Короткое введение.",
+          "evidence_ids": [
+            "e0"
+          ],
+          "mentions": []
+        },
+        {
+          "id": "body",
+          "text": "🪷 Это понятие в контексте урока.",
+          "evidence_ids": [
+            "e0"
+          ],
+          "mentions": [
+            {
+              "start": 6,
+              "end": 13,
+              "link_id": "l0"
+            }
+          ]
+        }
+      ],
+      "related": [
+        {
+          "material_id": "22222222222222222222222222222222",
+          "via_concept_id": "fixture-topic",
+          "supporting_link_ids": [
+            "l0",
+            "l1"
+          ],
+          "reason": "Оба занятия объясняют понятие."
+        }
+      ],
+      "coverage_note": "Изложены поддержанные двумя машинными текстами фрагменты; аудио не прослушано."
+    },
+    {
+      "material_id": "22222222222222222222222222222222",
+      "resource_id": "drive:fixtureRecording02",
+      "revision": 1,
+      "status": "text_reviewed_asr_draft",
+      "introduction_claim_ids": [
+        "intro"
+      ],
+      "sections": [
+        {
+          "id": "first",
+          "heading": "Смысл раздела",
+          "claim_ids": [
+            "body"
+          ]
+        }
+      ],
+      "claims": [
+        {
+          "id": "intro",
+          "text": "Короткое введение.",
+          "evidence_ids": [
+            "e1"
+          ],
+          "mentions": []
+        },
+        {
+          "id": "body",
+          "text": "🪷 Это понятие в контексте урока.",
+          "evidence_ids": [
+            "e1"
+          ],
+          "mentions": [
+            {
+              "start": 6,
+              "end": 13,
+              "link_id": "l1"
+            }
+          ]
+        }
+      ],
+      "related": [
+        {
+          "material_id": "11111111111111111111111111111111",
+          "via_concept_id": "fixture-topic",
+          "supporting_link_ids": [
+            "l0",
+            "l1"
+          ],
+          "reason": "Оба занятия объясняют понятие."
+        }
+      ],
+      "coverage_note": "Изложены поддержанные двумя машинными текстами фрагменты; аудио не прослушано."
+    }
+  ],
+  "concepts": [
+    {
+      "id": "fixture-topic",
+      "kind": "topic",
+      "title": "Понятие",
+      "aliases": [],
+      "revision": 1,
+      "status": "text_reviewed_asr_draft",
+      "claims": [
+        {
+          "id": "definition",
+          "text": "Описание понятия по двум занятиям.",
+          "evidence_ids": [
+            "e0",
+            "e1"
+          ],
+          "mentions": []
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "id": "l0",
+      "resource_id": "drive:fixtureRecording01",
+      "concept_id": "fixture-topic",
+      "relation": "explains",
+      "rationale": "Источник объясняет тему.",
+      "evidence_ids": [
+        "e0"
+      ]
+    },
+    {
+      "id": "l1",
+      "resource_id": "drive:fixtureRecording02",
+      "concept_id": "fixture-topic",
+      "relation": "explains",
+      "rationale": "Источник объясняет тему.",
+      "evidence_ids": [
+        "e1"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "e0",
+      "resource_id": "drive:fixtureRecording01",
+      "text": "Точная фраза из расшифровки",
+      "start_seconds": 10.0,
+      "end_seconds": 15.0,
+      "admission": {
+        "basis": "paired_asr_text_supported",
+        "source_basis": "original_pair",
+        "reason": "Обе машинные версии поддерживают смысл этого конкретного фрагмента.",
+        "clip_ids": [
+          "fixture-0000"
+        ],
+        "source_warning_codes": [
+          "decoder_warning"
+        ],
+        "clip_warning_codes": [
+          "model_disagreement"
+        ],
+        "unresolved_issue_codes": [],
+        "audio_verified": false
+      }
+    },
+    {
+      "id": "e1",
+      "resource_id": "drive:fixtureRecording02",
+      "text": "Точная фраза из расшифровки",
+      "start_seconds": 10.0,
+      "end_seconds": 15.0,
+      "admission": {
+        "basis": "paired_asr_text_supported",
+        "source_basis": "original_pair",
+        "reason": "Обе машинные версии поддерживают смысл этого конкретного фрагмента.",
+        "clip_ids": [
+          "fixture-0001"
+        ],
+        "source_warning_codes": [
+          "decoder_warning"
+        ],
+        "clip_warning_codes": [
+          "model_disagreement"
+        ],
+        "unresolved_issue_codes": [],
+        "audio_verified": false
+      }
+    }
+  ],
+  "review": {
+    "editor": "editor",
+    "reviewer": "reviewer",
+    "editorial_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "review_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "decision": "pass",
+    "full_source_read": true
+  }
+}

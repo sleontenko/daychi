@@ -71,6 +71,7 @@ def test_all_anonymous_reader_aliases_closed_and_native_owner_scopes_independent
         if path.startswith('/api/public/'):
             assert backend.get(path, headers=bearer).status_code == 401
     assert not calls
+
     private = backend.get('/api/wiki/materials/'+ids[0], headers=bearer)
     assert private.status_code == 200 and 'secret-zoom' in private.text
     assert backend.get('/api/admin/wiki/articles/sources', headers=COOKIE).status_code == 401
@@ -79,6 +80,50 @@ def test_all_anonymous_reader_aliases_closed_and_native_owner_scopes_independent
     assert wiki.post('/api/access/redeem-code', json={'code':'fake'}).status_code == 404
     assert wiki.post('/api/wiki/logout', headers=COOKIE).status_code == 405
     assert not calls
+
+
+def test_empty_preview_and_cookie_variations_never_authorize_reading(tmp_path, monkeypatch):
+    calls=[]
+    async def check(v): calls.append(v); return SessionResult(204)
+    app, _, _=fixture(tmp_path,monkeypatch,check)
+    app.state.wiki_catalog=lambda: []
+    client=TestClient(app,base_url='https://app.xuanxue.su')
+    for headers in ({}, COOKIE, {'Cookie':'session=a; session=a; session_staging=b'},
+                    {'Authorization':'Bearer synthetic-not-authority','X-Daychee-Native':'1'}):
+        response=client.get('/api/site/wiki-graph?articles=1&semantics=1&profile=staging',headers=headers)
+        assert response.status_code==200 and response.json()=={'sections':[],'nodes':[],'edges':[]}
+        assert response.headers['cache-control']=='no-store' and not response.headers.get_list('set-cookie')
+    assert not calls
+
+
+def test_archive_recordings_stay_private_and_authenticated_wiki_retains_them(tmp_path, monkeypatch):
+    from tests.test_wiki_archive_articles import archive_payload
+    monkeypatch.setenv('DAYCHEE_PUBLIC_WIKI_ENABLED','1')
+    monkeypatch.setenv('DAYCHEE_WIKI_ARTICLES_ENABLED','1')
+    monkeypatch.setenv('DAYCHEE_PUBLIC_ORIGIN','https://backend.test')
+    monkeypatch.setenv('DAYCHEE_ADMIN_PASSWORD_HASH',password_hash('synthetic-owner-password'))
+    index=tmp_path/'index.json';index.write_text(json.dumps([dict(id='legacy',title='Урок',source_timestamp_ms=1,source_date_label='Дата',category_id='test',category_name='Раздел',subtopic='',subtopic_key='',source_text='Описание',links=[])]))
+    store=Invitations(tmp_path/'access.sqlite3')
+    async def check(v): return SessionResult(204)
+    app=create_daychee_app(WikiSettings(index,tmp_path/'wiki.sqlite3','',''),store,
+                          tmp_path/'zoom.json',web_session_check=check)
+    owner=TestClient(app,base_url='https://backend.test')
+    login=owner.post('/api/admin/login',json={'password':'synthetic-owner-password'},headers={'Origin':'https://backend.test'})
+    response=owner.post('/api/admin/wiki/archive-articles',json=archive_payload(),
+                        headers={'Origin':'https://backend.test','X-CSRF-Token':login.json()['csrf']})
+    assert response.status_code==200
+    preview=owner.get('/api/site/wiki-graph?articles=1&semantics=1')
+    assert preview.status_code==200 and sum(s['count'] for s in preview.json()['sections'])==3
+    for forbidden in ('fixtureRecording','drive.google','resource_id','Файл архива','sha256','1'*32,'2'*32):
+        assert forbidden not in preview.text
+    wiki=TestClient(app,base_url='https://wiki.xuanxue.su')
+    for path in ('/api/wiki/materials/'+'1'*32,'/api/wiki/articles/materials/'+'1'*32,
+                 '/api/public/wiki/materials/'+'1'*32,'/api/public/wiki/articles/materials/'+'1'*32):
+        assert wiki.get(path).status_code==401
+    private=wiki.get('/api/wiki/materials/'+'1'*32,headers=COOKIE)
+    assert private.status_code==200 and 'drive.google.com/file/d/fixtureRecording01/' in private.text
+    redacted=wiki.get('/api/public/wiki/materials/'+'1'*32,headers=COOKIE)
+    assert redacted.status_code==200 and 'fixtureRecording01' not in redacted.text
 
 
 def test_private_articles_and_public_projection_redaction_preserved(tmp_path, monkeypatch):

@@ -241,3 +241,9 @@ session-details, retention/restore и текущие public pages. Главна�
 198 backend tests, public-pages recheck, Chrome 360/390/768/1440 и 59-file stage.
 Оба endpoint кабинета снова вернули 404 в 11:08 UTC. Deployment и Apple status
 не менялись. [Новая проверка сайта](qa-site-cabinet-links-2026-10-13/README.md).
+
+Уточнение 14 октября вечером, без выпуска: Workshop принял публичный обзор графа
+в контракте d689c24. В локальный Cabinet-кандидат перенесён опубликованный main
+c7af6f6, сохраняя архив и private/public redaction. 237 backend / 23 web tests,
+61-file stage. Реальный совместный вход и публикация не подтверждены; регулярная
+проверка подготовлена, но расписание ещё не создано. [Проверка](qa-cabinet-followup-2026-10-14/README.md).

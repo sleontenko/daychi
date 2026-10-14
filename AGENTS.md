@@ -144,3 +144,11 @@ decisions; preserve explicit release/publication/destructive approval boundaries
 Requested cadence preparation is hourly, quiet while unchanged. A saved prompt
 does not establish an active schedule; verify task creation/enabled state before
 claiming unattended execution. Main handoff: docs/handoffs/cabinet-workshop-recurring-check.md.
+
+Cabinet follow-up (2026-10-14 evening): active shared web authority is d689c24;
+public homepage preview exception accepted, not implementation/release acceptance.
+Current staging e0e823c guest entry/login/logout page verified read-only; production
+check still404, staging wiki ConnectError at16:31UTC. Isolated candidate incorporates
+current published c7af6f6 archive changes; 237 backend/23 web tests,61-file stage,
+no push/deployment. Automation is prepared but NOT activated: scheduling tool absent
+and Codex UI access disabled. [QA](docs/qa-cabinet-followup-2026-10-14/README.md).

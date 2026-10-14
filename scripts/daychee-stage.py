@@ -11,6 +11,7 @@ FILES = (
     'practice_api/daychee_app.py', 'practice_api/wiki_app.py',
     'practice_api/wiki_content.py', 'practice_api/wiki_semantics.py',
     'practice_api/wiki_article_models.py', 'practice_api/wiki_articles.py',
+    'practice_api/wiki_archive_models.py', 'practice_api/wiki_archive_sources.py',
     'practice_api/public_wiki.py', 'practice_api/web_wiki_session.py',
     'practice_api/access_deletion.py', 'practice_api/retention.py',
     'practice_api/access_restore.py', 'scripts/daychee-restore-access.py',
