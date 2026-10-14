@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#F5EAD8">
   <title>Дейчи — приложение и вики школы</title>
   <link rel="canonical" href="https://app.xuanxue.su/">
+  <script type="module" src="/website-assets/site.js"></script>
   <link rel="stylesheet" href="/website-assets/site.css">
 </head>
 <body>
@@ -49,9 +50,13 @@
           <a class="wiki-link" href="https://app.xuanxue.su/wiki">Открыть вики<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
         </div>
         <div class="graph-panel">
-          <div class="graph-header"><h3>Граф знаний</h3><span id="graph-count">Вход через кабинет школы</span></div>
-          <div class="graph-stage" id="graph-stage">
-            <div class="graph-message" id="graph-message"><p>Откройте вики, чтобы увидеть граф знаний.</p><a class="wiki-link" href="https://app.xuanxue.su/wiki#view=graph">Перейти к графу →</a></div>
+          <div class="graph-header"><h3>Граф знаний</h3><span id="graph-count" aria-live="polite">Текущие разделы вики</span></div>
+          <div class="graph-stage" id="graph-stage" aria-busy="true">
+            <a class="graph-preview-link" href="https://app.xuanxue.su/wiki#view=graph" aria-label="Открыть граф — вход через кабинет школы" hidden>
+            <svg id="knowledge-graph" viewBox="0 0 960 460" role="img" aria-labelledby="graph-description" hidden><title id="graph-description">Разделы вики и связи между материалами</title></svg>
+            </a>
+            <div class="graph-message" id="graph-message" role="status"><p id="graph-message-text">Загружаем граф вики…</p><button id="graph-retry" type="button" hidden>Попробовать снова</button></div>
+            <noscript><p class="no-script">Посмотрите граф знаний в вики.</p></noscript>
           </div>
           <div class="graph-footer"><span>Разделы, занятия и связи между ними</span><a href="https://app.xuanxue.su/wiki#view=graph">Открыть полный граф<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
         </div>

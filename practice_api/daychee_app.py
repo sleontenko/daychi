@@ -6,7 +6,7 @@ from pathlib import Path
 import threading
 import time
 from fastapi import Depends, Header, HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 from .invitations import Invitations, normalize_code
 from .admin import mount_admin
@@ -17,6 +17,7 @@ from .public_pages import mount_public_pages
 from .retention import mount_retention, mount_retention_status
 from .wiki_app import WikiSettings, create_wiki_app
 from .wiki_content import mount_content_import
+from .public_wiki import homepage_graph_preview
 from .schedule_source import ScheduleSource, ScheduleSourceError, SCHOOL_TIMEZONE, SOURCE_URL
 
 
@@ -101,6 +102,11 @@ def create_daychee_app(settings=None, invitations=None, zoom_path=None, schedule
     @app.get('/', include_in_schema=False)
     def website_page():
         return FileResponse(website / 'index.html', headers=website_headers)
+
+    @app.get('/api/site/wiki-graph', include_in_schema=False)
+    def website_graph():
+        return JSONResponse(homepage_graph_preview(app.state.wiki_catalog()),
+                            headers={'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff'})
 
     @app.get('/downloads/daychee-android.apk', include_in_schema=False)
     def android_download():

@@ -1,0 +1,54 @@
+[
+  {
+    "path": "reference/empty-phone.jpg",
+    "sha256": "0fc04e5a4fe19ad5b5edb4840846d52cfe0d5a6743ecb0a25a4e820098b2ebff"
+  },
+  {
+    "path": "reference/error-desktop.jpg",
+    "sha256": "9df0a70970d1b9a3aceab630e8d52393a8e488246bb87a90fa5739cec993b022"
+  },
+  {
+    "path": "reference/loading-desktop.jpg",
+    "sha256": "823b31e6c87041f92c01c052a991075cd602c2bb3add670a6696584c48d9b535"
+  },
+  {
+    "path": "reference/ready-desktop.jpg",
+    "sha256": "6b8b6ccfd09a335122f4633c12a84ad71cebc91618f859f515d821c099455830"
+  },
+  {
+    "path": "reference/ready-phone.jpg",
+    "sha256": "9686bc80ed34e8a7ce08c8a73d46ea9bdb72c8162e97e6a7723682f2c8d32dd8"
+  },
+  {
+    "path": "runtime/click-cabinet-desktop.jpg",
+    "sha256": "c3f527e89e195578ae9ec26f3988ea17c02a9f6d6c430fb6f16be416fbf5262b"
+  },
+  {
+    "path": "runtime/empty-phone.jpg",
+    "sha256": "cc0954fd97394cfb7bc592076d62816d30464fc5d5047751e31aef03e0778c58"
+  },
+  {
+    "path": "runtime/error-desktop.jpg",
+    "sha256": "9a597760ee5fa070556bb0cd3407a686e836c078c04bd0079429abfdd6a6d6f7"
+  },
+  {
+    "path": "runtime/keyboard-cabinet-phone.jpg",
+    "sha256": "0f74dc32cfa38c31056e18d72cedaad663618a6b1aa04d7b4fae4096c8919c0a"
+  },
+  {
+    "path": "runtime/loading-desktop.jpg",
+    "sha256": "9b6f1d32d384ce9e415f6f2264e248d8d7e65ca8bbe9a26d5ff3bbf35c9a8b1d"
+  },
+  {
+    "path": "runtime/ready-desktop.jpg",
+    "sha256": "9b37326400e7164333003c7d498aee8a33656707ec0e6f0f6c4f7b72b1cc6ed7"
+  },
+  {
+    "path": "runtime/ready-phone.jpg",
+    "sha256": "23210e2a3fef94114d799b9815de226dc5202c0952e802df0e13314395505ad3"
+  },
+  {
+    "path": "runtime/recovered-desktop.jpg",
+    "sha256": "692c230fdccaacb784a15b9107735a119dd0b32aa7377e3c800a9cc6c49532a5"
+  }
+]

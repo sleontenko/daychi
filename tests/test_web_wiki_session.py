@@ -254,18 +254,50 @@ def test_web_entry_alias_redirects_fixed_profile_without_authority(tmp_path, mon
     assert 'href="https://app.xuanxue.su/"' in wiki.get('/wiki').text
 
 
-def test_new_homepage_has_no_anonymous_corpus_fetch_and_preserves_public_release(tmp_path, monkeypatch):
+def test_homepage_public_preview_and_protected_readers_preserve_public_release(tmp_path, monkeypatch):
     app, _, store=fixture(tmp_path,monkeypatch,lambda _:None)
     client=TestClient(app,base_url='https://app.xuanxue.su')
     page=client.get('/')
     assert page.status_code==200 and 'https://app.xuanxue.su/wiki#view=graph' in page.text
     assert 'https://app.xuanxue.su/downloads/daychee-android.apk?v=4' in page.text
     assert 'daychee-1.0.0-4.apk' in page.text and 'iPhone и iPad' in page.text
-    assert '/api/public/wiki/' not in page.text and 'Загружаем граф' not in page.text
+    assert '/api/public/wiki/' not in page.text and 'Загружаем граф' in page.text
+    assert 'class="graph-preview-link"' in page.text
     script=client.get('/website-assets/site.js')
-    assert script.status_code==200 and 'fetch(' not in script.text
+    assert script.status_code==200 and "fetch('/api/site/wiki-graph'" in script.text
+    assert '/api/public/wiki/' not in script.text and "credentials:'omit'" in script.text
     assert client.get('/api/public/wiki/graph').status_code==401
     token=store.redeem(store.issue()[1])
     session=client.get('/api/access/session',headers={'Authorization':'Bearer '+token})
     assert session.status_code==200 and session.json()==store.session_details(token)
     assert client.get('/api/access/zoom').status_code==401
+
+
+@pytest.mark.parametrize('status', [401, 403, 503])
+def test_preview_is_anonymous_geometry_only_without_provider_or_query_escalation(tmp_path, monkeypatch, status):
+    calls=[]
+    async def check(v): calls.append(v); return SessionResult(status)
+    app, ids, _=fixture(tmp_path,monkeypatch,check)
+    client=TestClient(app,base_url='https://app.xuanxue.su')
+    response=client.get('/api/site/wiki-graph?articles=1&semantics=1',headers=COOKIE)
+    assert response.status_code==200 and response.headers['cache-control']=='no-store'
+    assert not calls and not response.headers.get_list('set-cookie')
+    graph=response.json()
+    assert set(graph)=={'sections','nodes','edges'}
+    assert graph==client.get('/api/site/wiki-graph').json()
+    for forbidden in (*ids,'abcdefghijk','otherid1234','secret-zoom','https://','Урок','Описание','fixture-topic'):
+        assert forbidden not in response.text
+    assert all(set(s)=={'id','name','count'} for s in graph['sections'])
+    assert all(set(n)=={'id','sec','type','label'} for n in graph['nodes'])
+    assert all(n['label']=='' for n in graph['nodes'] if n['type']!='section')
+    node_ids={n['id'] for n in graph['nodes']}
+    section_ids={s['id'] for s in graph['sections']}
+    assert all(n['sec'] in section_ids for n in graph['nodes'])
+    assert all(e['s'] in node_ids and e['t'] in node_ids and e['k'] in ('structure','series') for e in graph['edges'])
+    assert sum(s['count'] for s in graph['sections'])==len(ids)
+    for path in ('/api/public/wiki/graph','/api/public/wiki/materials/'+ids[0]):
+        assert client.get(path).status_code==401
+    wiki=TestClient(app,base_url='https://wiki.xuanxue.su')
+    assert wiki.get('/api/site/wiki-graph').status_code==404
+    assert wiki.get('/api/wiki/materials/'+ids[0]).status_code==401
+    assert not calls

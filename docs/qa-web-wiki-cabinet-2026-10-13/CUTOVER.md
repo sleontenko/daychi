@@ -14,7 +14,7 @@ This is a preparation inventory for Workshop #13 / contract 25def59e, not a depl
 | /api/admin/*, /api/access/*, feedback, schedule at canonical wiki | Shared backend owns other capabilities | Unavailable at canonical wiki; native/owner backend authority remains unchanged elsewhere |
 | /wiki, /wiki/graph, / | Empty application shells / website | Wiki shell contains no catalog/account credentials; canonical root redirects to /wiki; script fetches protected same-origin API |
 | /wiki-graph-assets/* | Public compiled code/CSS | Retain only generic application assets, no catalog/recording payload. New bundle is built from source and included; re-fetch/hash after deployment |
-| Public site/support/privacy/invite/assets | Existing nonreader delivery | Source has no /api/public/wiki fetch or service-worker registration; do not publish embedded school corpus in assets. Retest actual aliases, not just main hostname |
+| Public site/support/privacy/invite/assets | Existing nonreader delivery | No /api/public/wiki fetch or service-worker registration; retest actual aliases. Operator correction 14 October retains a separate minimal public graph preview; see the explicit allowed projection below |
 | Historical native APK/bundled snapshots | Existing release surface outside this web contribution | No new binary or corpus upload here; preserve native compatibility, separately inspect/migrate any controlled old corpus snapshots before claiming complete exposure closure |
 | Browser preferences | Bookmarks/opened IDs and navigation | New auth layer stores no token/profile/text/recording; old web token key removed in new mode. Hidden/BFCache/stale requests discard reader content |
 | CDN/browser/proxy/service-worker caches | Current sampled replies are no-store | Headers do not prove old entries were purged. Cloudflare rules/cache contents were not accessible; no cache purge performed. Source declares no wiki service worker; inventory other controlled delivery caches |
@@ -22,6 +22,14 @@ This is a preparation inventory for Workshop #13 / contract 25def59e, not a depl
 The complete registered router set is in [route-inventory.json](route-inventory.json): 19 existing GET reader routes plus the new request-checked /api/wiki/session handshake. Public/private article, concept, material, category, recent and graph paths are included. Their anonymous refusal is enumerated by backend tests using actual registered routes, not only a graph smoke check.
 
 ## Required activation sequence
+
+Operator correction 14 October: GET /api/site/wiki-graph on the site/backend is
+an explicitly public overview: section names/counts, anonymous nodes and structural/
+series edges only. No source IDs, material/subtopic titles, texts, dates, URLs,
+recordings, article/concept layers or credentials. Canonical wiki host refuses
+this nonreader site API. Keep the old public/private reader APIs protected. This
+exception needs Workshop exposure reconciliation; it does not retire v1 or admit
+material reading anonymously. [QA](../qa-site-public-graph-2026-10-14/README.md).
 
 1. Obtain Cabinet #12 report for the same immutable contract: separate profile account/key stores, shared active cookies, exact session-check operation/status/deadline/no-store, rolling renewal, existing sign-in entry/return and Cabinet-site logout. Do not substitute native me, a profile body, role/payment/invitation flags or another issuer.
 2. Inventory all actual web aliases and direct origins with their owners, including Cloudflare zone/rules/caches and existing native public-reader consumers. Coordinate #9 prospectively; existing article release remains valid history. New all-origin public gating necessarily changes the current anonymous native read path; preserve native private authority and agree its reader transition before activation.

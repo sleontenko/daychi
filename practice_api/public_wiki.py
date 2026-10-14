@@ -13,6 +13,23 @@ FIELDS = ('id', 'title', 'date', 'timestamp', 'category', 'category_name', 'subt
 PUBLIC_LINK_TYPES = frozenset(('video', 'drive', 'doc', 'article'))
 
 
+def homepage_graph_preview(rows):
+    """Anonymous overview geometry only; never a material reader projection."""
+    graph = build_graph(rows)
+    sections = {key: f'preview-section-{i:05d}'
+                for i, key in enumerate(sorted(s['id'] for s in graph['sections']))}
+    nodes = {key: f'preview-node-{i:05d}'
+             for i, key in enumerate(sorted(n['id'] for n in graph['nodes']))}
+    return {
+        'sections': [{'id': sections[s['id']], 'name': public_text(s['name']), 'count': s['count']}
+                     for s in graph['sections']],
+        'nodes': [{'id': nodes[n['id']], 'sec': sections[n['sec']], 'type': n['type'],
+                   'label': public_text(n['label']) if n['type'] == 'section' else ''}
+                  for n in graph['nodes']],
+        'edges': [{'s': nodes[e['s']], 't': nodes[e['t']], 'k': e['k']} for e in graph['edges']],
+    }
+
+
 def public_text(value):
     # Source descriptions are already cleaned; protect annotations/labels too.
     text = re.sub(r'https?://\S+|(?:[\w-]+\.)*(?:youtube(?:-nocookie)?\.com|youtu\.be)[/?]\S+', '', str(value), flags=re.I)

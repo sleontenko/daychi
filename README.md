@@ -78,3 +78,6 @@ Workshop assignments and coordinate changes at project boundaries.
 Изолированный кандидат следует совместному browser-session контракту Workshop #13,
 включая отдельные production/staging профили. [Проверки и условия запуска](docs/qa-web-wiki-cabinet-2026-10-13/README.md).
 Кандидат по умолчанию отключён; опубликованный сервер и мобильные сборки не менялись.
+
+Уточнение 14 октября: публичный обзор графа на главной возвращён; клик предлагает
+вход через кабинет. [Локальная проверка, без публикации](docs/qa-site-public-graph-2026-10-14/README.md).

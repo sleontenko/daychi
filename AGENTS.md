@@ -122,3 +122,11 @@ contains no corpus fetch. Candidate now carries hash-verified published c964041f
 site/Android4/native privacy/session/retention/restore source; 198 backend tests and
 59-file stage. Cabinet checks still 404 at 11:08 UTC, so activation/publication and
 joint acceptance remain outstanding. [QA](docs/qa-site-cabinet-links-2026-10-13/README.md).
+
+Operator graph clarification (2026-10-14): public homepage overview remains visible;
+click/Enter offers Cabinet entry for the full reader. Separate minimal public
+/api/site/wiki-graph exposes sections/counts and anonymous structure only; existing
+reader APIs, material titles/text and recording IDs/URLs stay protected. Local
+201 backend / 21 web tests, Chrome pairs, 59-file stage; no push/deployment/release.
+Workshop exposure reconciliation and inspectable-source/joint proof still pending.
+[QA](docs/qa-site-public-graph-2026-10-14/README.md).
