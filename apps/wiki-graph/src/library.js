@@ -35,14 +35,15 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host }) {
   const href = (values) => '#' + new URLSearchParams(values).toString();
   const semantic = mountSemanticViews({root,api,esc,shell,href,ticket:()=>ticket,onAuth:()=>showLogin('Доступ закончился или был отозван.'),restoreScroll});
   const structured = mountArticleConcepts({root,api,esc,shell,href,concepts,ticket:()=>ticket,onAuth:()=>showLogin('Доступ закончился или был отозван.'),restoreScroll});
+  const archiveLabel = n => n.sec === 'archive:archive-neidan' ? 'Архивный Нэйдань' : '';
   const articleLink = (n, updated = false, reason = '') => {
     if (n.concept_id) return conceptCard(n);
     const changed = Number(n.updated_ts) > 0;
     const date = updated && (changed || Number(n.ts) > 0)
       ? new Intl.DateTimeFormat('ru-RU', {day:'numeric',month:'short',timeZone:'Asia/Jerusalem'}).format(new Date(changed ? Number(n.updated_ts) : Number(n.ts)))
       : n.date;
-    const caption = updated ? (changed ? 'Материал обновлён' : 'Дата исходной публикации')
-      : reason || (n.sub || sections.get(n.sec)?.name || '') + (date && !reason ? ' · '+date : '');
+    const caption = [archiveLabel(n), updated ? (changed ? 'Материал обновлён' : 'Дата исходной публикации')
+      : reason || (n.sub || sections.get(n.sec)?.name || '') + (date && !reason ? ' · '+date : '')].filter(Boolean).join(' · ');
     return `<a class="material-card ${updated?'publication-card':''}" data-route href="${href({view:'article',id:n.id})}"><span><span class="material-title"><strong>${esc(n.label)}</strong>${updated?`<time class="publication-date ${changed?'changed':''}">${esc(date||'')}</time>`:''}</span><small>${esc(caption)}</small></span></a>`;
   };
   function conceptCard(n) {
@@ -172,7 +173,7 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host }) {
     const back = `<button class="link-inline library-back" data-back>← Назад</button>`;
     if (!n || n.type !== 'material') { root.innerHTML=shell('catalog',back+'<h1>Материал не найден</h1><a href="#view=catalog" data-route>Вернуться в каталог</a>'); return; }
     root.innerHTML = shell('article', `<div class="reader-toolbar">${back}<button class="reader-bookmark" data-bookmark="${esc(id)}" aria-pressed="${saved.has(id)}">${saved.has(id)?'Сохранено':'Сохранить'}</button></div>
-      <div class="reader-layout"><article><header class="reader-header"><span class="reader-kicker">Занятие</span><h1 tabindex="-1">${esc(n.label)}</h1><p class="muted reader-date">${esc(n.date)}${n.sub?' · '+esc(n.sub):''}</p><p class="muted small" id="article-status" hidden></p><div id="article-links"></div></header>
+      <div class="reader-layout"><article><header class="reader-header"><span class="reader-kicker">${esc(archiveLabel(n)||'Занятие')}</span><h1 tabindex="-1">${esc(n.label)}</h1><p class="muted reader-date">${esc(n.date)}${n.sub?' · '+esc(n.sub):''}</p><p class="muted small" id="article-status" hidden></p><div id="article-links"></div></header>
       <details class="reader-toc" ${window.matchMedia('(min-width:1000px)').matches?'open':''}><summary>Содержание</summary><nav aria-label="Содержание"><button data-anchor="article-summary">Конспект</button><button data-anchor="article-connections">Связанные материалы</button></nav></details>
       <div id="article-summary" role="status">Загружаем описание…</div><section id="article-about" hidden><h2><span class="section-number" aria-hidden="true">01</span>Фрагменты записи</h2><div id="article-detail"></div></section>
       <section id="article-online" hidden></section><section id="article-semantic" hidden></section><section id="article-connections"><h2><span class="section-number" aria-hidden="true">02</span>Связанные материалы</h2><div id="article-related"></div><div class="reader-actions"><a class="btn" data-route href="${href({view:'graph',sel:id,mode:'local',depth:'1'})}">Показать на графе</a></div></section></article></div>`);
