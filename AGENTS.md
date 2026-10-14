@@ -60,7 +60,7 @@ Existing boundaries: native Daychi (`apps/practice-app`) and shared wiki reader
 (`apps/wiki-graph`) ↔ Daychi content backend (`practice_api`). Native schedule
 also retains its school-HTML and Telegram-correction path. Native/private reader,
 Zoom and owner/import access remain Daychi-owned; Cabinet web authentication does
-not replace them. [Current scope/evidence](https://github.com/dveyarangi/xuanxue-workshop/blob/25def59e25fc847764cc43de8d963bf62a16512e/docs/current-system.md#daychi).
+not replace them. [Current scope/evidence](https://github.com/dveyarangi/xuanxue-workshop/blob/d689c24af9e848cae8db81e4cc5701f9cb7a610c/docs/current-system.md#daychi).
 
 Knowledge→Daychi editorial/owner import and shared reader→Daychi article/concept/
 graph projections remain existing content boundaries. [Original article issue 9](https://github.com/dveyarangi/xuanxue-workshop/issues/9)
@@ -70,7 +70,7 @@ or change editorial authority.
 
 Accepted target boundaries, joint integration not established: Daychi clients ↔
 Cabinet backend for schedule/account capabilities; Daychi backend ↔ Cabinet backend
-for authoritative access checks. [Target contracts](https://github.com/dveyarangi/xuanxue-workshop/blob/25def59e25fc847764cc43de8d963bf62a16512e/docs/boundaries.md#target-connections)
+for authoritative access checks. [Target contracts](https://github.com/dveyarangi/xuanxue-workshop/blob/d689c24af9e848cae8db81e4cc5701f9cb7a610c/docs/boundaries.md#target-connections)
 and [native account-session profile](https://github.com/dveyarangi/xuanxue-workshop/blob/3c98d4a5201710f8f777183dd7b61caefe47e2d5/docs/contracts/native-account-session.md) own
 their distinct scopes.
 
@@ -78,8 +78,14 @@ Accepted web-wiki target: Cabinet owns the shared browser session and current-ac
 validation; Daychi owns protected web delivery and calls Cabinet for each protected
 read. All and only valid Cabinet-authenticated web readers receive the same content,
 without extra wiki eligibility or persisted reader credentials/accounts.
-[Web-wiki session contract](https://github.com/dveyarangi/xuanxue-workshop/blob/25def59e25fc847764cc43de8d963bf62a16512e/docs/contracts/web-wiki-session.md) owns common cookie,
-entry/return, renewal/logout, environment separation and failure guarantees. Coordinated anonymous-access
+[Web-wiki session contract](https://github.com/dveyarangi/xuanxue-workshop/blob/d689c24af9e848cae8db81e4cc5701f9cb7a610c/docs/contracts/web-wiki-session.md) owns common cookie,
+entry/return, renewal/logout, environment separation and failure guarantees.
+Daychi's homepage may expose only the contract's separate limited public graph
+overview without a Cabinet session. Existing reader APIs remain protected;
+entering the reader reuses a valid session or signs in with original-page return.
+Daychi owns preview data/projection and exposure controls. This exception changes
+no Cabinet wire, account authority, native/private or editorial/import scope.
+Coordinated anonymous-access
 cutover, recipient implementation and deployed proof are separate from acceptance.
 
 Use the [/collaborate skill](.agents/skills/collaborate/SKILL.md) at the start of every session,
@@ -130,3 +136,11 @@ reader APIs, material titles/text and recording IDs/URLs stay protected. Local
 201 backend / 21 web tests, Chrome pairs, 59-file stage; no push/deployment/release.
 Workshop exposure reconciliation and inspectable-source/joint proof still pending.
 [QA](docs/qa-site-public-graph-2026-10-14/README.md).
+
+Operator follow-up authorization (2026-10-14): regularly inspect Cabinet/Workshop
+updates and autonomously process ordinary technical tasks/comments, replying in
+the original assignment and reporting meaningful changes. Ask for new product
+decisions; preserve explicit release/publication/destructive approval boundaries.
+Requested cadence preparation is hourly, quiet while unchanged. A saved prompt
+does not establish an active schedule; verify task creation/enabled state before
+claiming unattended execution. Main handoff: docs/handoffs/cabinet-workshop-recurring-check.md.
