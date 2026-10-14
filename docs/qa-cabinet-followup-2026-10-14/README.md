@@ -64,3 +64,31 @@ active**: automation_update is unavailable here and computer use refuses Codex U
 Official Scheduled documentation says CLI cannot manage Scheduled; no private app
 storage, cron or custom unattended agent was installed as a substitute. Task creation,
 enabled state and next run still need the supported Scheduled interface/tool.
+
+## Published-source review and UTF-8 follow-up · 14 October
+
+Source was published at bdc3cf7 in [draft Daychi PR13](https://github.com/sleontenko/daychi/pull/13)
+with explicit operator approval. [Workshop's source review](https://github.com/dveyarangi/xuanxue-workshop/issues/13#issuecomment-6175265222)
+resolved the source-access gap, found no shared-contract defect in the inspected
+scope and independently reproduced 23 web tests, 39 boundary tests in UTF-8 mode,
+the bundle hash and 119 protocol/exposure observations. This is scoped source
+review, not deployed joint acceptance. Workshop reported staging 75a6262, production
+session-check 404 and unresolved staging DNS at 18:04–18:14 UTC; these are their
+observations, not a new Daychi live probe.
+
+Their concrete Windows finding was an unqualified read of the known UTF-8 wiki
+HTML. The shell read now explicitly uses UTF-8, so cp1252 is never used to decode
+that asset. Four regression cases emulate Windows' default cp1252 at this asset
+read on both production/staging and /wiki /wiki/graph: all four failed before the
+fix with UnicodeDecodeError and pass afterward, preserving Cyrillic text, profile
+marker and UTF-8 response type. This is an emulated default-encoding regression,
+not a native Windows execution claim. The shared wire, accepted layout, source HTML,
+compiled frontend bundle and release/activation state are unchanged.
+
+Final local checks: **43 boundary / 241 full backend tests passed**. A fresh
+61-file stage parses 27 Python files and preserves APK4 hash; [updated module
+checksum](utf8-stage-check.json). The previous 23 web-test result remains applicable
+because frontend source/bundle is unchanged; no additional UI or Windows-device
+acceptance is claimed. The runtime fix is limited to the HTML read. Original QA
+and earlier source/local-only checkpoints above are historical. No merge/deployment,
+fixture/account/cache mutation, release or complete joint acceptance occurred.

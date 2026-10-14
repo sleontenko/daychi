@@ -247,3 +247,10 @@ session-details, retention/restore и текущие public pages. Главна�
 c7af6f6, сохраняя архив и private/public redaction. 237 backend / 23 web tests,
 61-file stage. Реальный совместный вход и публикация не подтверждены; регулярная
 проверка подготовлена, но расписание ещё не создано. [Проверка](qa-cabinet-followup-2026-10-14/README.md).
+
+Уточнение ревью 14 октября, без выпуска: Workshop проверил опубликованный PR13 и
+не нашёл дефекта общего контракта в исследованном объёме. Локальную ошибку Windows
+cp1252 исправили явным UTF-8 при чтении HTML; четыре регрессионных случая сначала
+воспроизвели отказ, затем прошли. 43 boundary / 241 backend tests; native Windows
+запуск не выполнялся. HTML, frontend bundle, дизайн и Apple status неизменны.
+[Проверка и ограничения](qa-cabinet-followup-2026-10-14/README.md).

@@ -152,3 +152,10 @@ check still404, staging wiki ConnectError at16:31UTC. Isolated candidate incorpo
 current published c7af6f6 archive changes; 237 backend/23 web tests,61-file stage,
 no push/deployment. Automation is prepared but NOT activated: scheduling tool absent
 and Codex UI access disabled. [QA](docs/qa-cabinet-followup-2026-10-14/README.md).
+
+Published-source review (2026-10-14): Workshop resolved source access at bdc3cf7/
+draft PR13 and found no contract defect in the inspected source/test scope. Local
+Windows cp1252 HTML-read finding is fixed with explicit UTF-8; four emulated-default
+regressions and 43 boundary / 241 backend tests pass. Frontend/design unchanged.
+No merge/deployment; actual hosting/account/cutover proof remains outstanding.
+[Review/fix QA](docs/qa-cabinet-followup-2026-10-14/README.md).

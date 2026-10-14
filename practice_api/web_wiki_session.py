@@ -193,7 +193,7 @@ class WebWikiBoundary:
                 return await RedirectResponse(destination, status_code=307,
                                                headers={'Cache-Control': 'no-store'})(scope, receive, send)
             page = Path(__file__).with_name('wiki_graph_web') / 'index.html'
-            html = page.read_text().replace('<body>', f'<body data-cabinet-web="1" data-cabinet-profile="{self.profile.name}">')
+            html = page.read_text(encoding='utf-8').replace('<body>', f'<body data-cabinet-web="1" data-cabinet-profile="{self.profile.name}">')
             html = html.replace('href="/"', 'href="https://app.xuanxue.su/"')
             from .wiki_graph import PAGE_HEADERS
             return await HTMLResponse(html, headers={**PAGE_HEADERS, 'Cache-Control': 'no-store'})(scope, receive, send)

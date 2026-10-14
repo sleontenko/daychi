@@ -2,6 +2,7 @@ import asyncio
 import json
 import time
 import sqlite3
+from pathlib import Path
 
 import httpx2 as httpx
 import pytest
@@ -19,6 +20,30 @@ from tests.test_wiki_articles import article_payload
 
 COOKIE = {'Cookie': 'session=synthetic-browser-session'}
 RENEWAL = 'session=synthetic-renewed; Domain=xuanxue.su; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=3600'
+
+
+@pytest.mark.parametrize('profile', ['production', 'staging'])
+@pytest.mark.parametrize('path', ['/wiki', '/wiki/graph'])
+def test_wiki_shell_preserves_utf8_with_windows_default_encoding(tmp_path, monkeypatch, profile, path):
+    from practice_api import web_wiki_session
+    app, _, _ = fixture(tmp_path, monkeypatch, lambda _: None, profile)
+    page = Path(web_wiki_session.__file__).with_name('wiki_graph_web') / 'index.html'
+    read_text = Path.read_text
+
+    def windows_default_read(file, *args, **kwargs):
+        # Simulate Windows cp1252 only for this known UTF-8 asset. Other fixture
+        # reads keep their normal encoding; explicit asset encodings are honored.
+        if file == page and not args and kwargs.get('encoding') is None:
+            kwargs['encoding'] = 'cp1252'
+        return read_text(file, *args, **kwargs)
+
+    monkeypatch.setattr(Path, 'read_text', windows_default_read)
+    client = TestClient(app, base_url='https://' + web_wiki_session.PROFILES[profile].wiki_host)
+    response = client.get(path)
+    assert response.status_code == 200
+    assert response.headers['content-type'] == 'text/html; charset=utf-8'
+    assert 'Дейчи' in response.text
+    assert f'data-cabinet-profile="{profile}"' in response.text
 
 
 def fixture(tmp_path, monkeypatch, check, profile='production'):
