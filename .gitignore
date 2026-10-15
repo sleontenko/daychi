@@ -29,7 +29,8 @@ DerivedData/
 *.db*
 data/
 knowledge/raw/
-.claude/
+.claude/*
+!.claude/skills
 .codex/
 .vscode/
 
