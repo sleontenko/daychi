@@ -13,10 +13,12 @@
   <a class="brand" href="/">Дейчи</a>
   <h1>Вики</h1>
   <span class="badge">Прототип</span>
-  <nav id="wiki-nav" class="seg" aria-label="Разделы вики" hidden><button id="nav-home">Главная</button><button id="nav-recent">Недавние</button><button id="nav-catalog">Каталог</button><button id="nav-graph">Граф связей</button></nav>
-  <button id="logout" class="link" hidden>Выйти</button>
+
+
 </header>
 
+  <aside id="wiki-rail" hidden aria-label="Навигация вики"><a class="wiki-brand" href="/">Дейчи <span>Вики</span></a><nav id="wiki-nav" aria-label="Вики" hidden><button id="nav-home"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>Библиотека</button><button id="nav-recent"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2"/></svg>Обновления</button><button id="nav-graph"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M8.6 13.5l6.8 4 M15.4 6.5l-6.8 4"/></svg><span class="graph-nav-label">Граф</span></button><button id="nav-saved"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4.5L6 21z"/></svg>Закладки</button><button id="nav-catalog" hidden>Каталог</button></nav></aside>
+<div id="wiki-status">
 <section id="view-loading" class="center" hidden>
   <p class="muted">Загружаем вики…</p>
 </section>
@@ -27,6 +29,7 @@
   <button id="retry" class="btn">Повторить</button>
 </section>
 
+</div>
 <section id="view-login" class="center card" hidden>
   <p class="hint-title">Вход по приглашению</p>
   <p class="muted">Вики доступна ученикам школы. Введите код из 12 букв и цифр или вставьте ссылку приглашения.</p>
@@ -40,20 +43,16 @@
 </section>
 
 <div id="view-app" hidden>
+
   <div id="library" hidden></div>
-  <div id="graph-workspace">
+  <div id="graph-workspace"><h1 class="graph-heading">Граф связей</h1>
   <div class="bar">
-    <div class="search">
-      <input id="q" type="search" placeholder="Поиск по названиям — «веер», «дыхание»…" aria-label="Поиск узла" aria-controls="results" aria-expanded="false" autocomplete="off" enterkeyhint="search">
+    <div class="search"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>
+      <input id="q" type="search" placeholder="Найти узел" aria-label="Поиск узла" aria-controls="results" aria-expanded="false" autocomplete="off" enterkeyhint="search">
       <ul id="results"></ul>
     </div>
-    <div class="seg" role="group" aria-label="Режим">
-      <button data-mode="global">Общий граф</button>
-      <button data-mode="local">Локальный</button>
-    </div>
-    <div class="seg" role="group" aria-label="Глубина" id="depth">
-      <button data-depth="1">1 шаг</button>
-      <button data-depth="2">2 шага</button>
+    <div class="seg" role="group" aria-label="Что показать" id="depth">
+      <button data-depth="1">Рядом</button><button data-depth="2">2 шага</button><button data-mode="global">Все</button><button data-mode="local" hidden>Локальный</button>
     </div>
     <button id="filters-toggle" class="filters-toggle" aria-expanded="false" aria-controls="filters">Фильтры</button>
   </div>
@@ -61,27 +60,27 @@
     <div class="toggles">
       <label><input type="checkbox" id="t-structure"> Разделы и подтемы</label>
       <label><input type="checkbox" id="t-series"> Серии</label>
+      <label><input type="checkbox" id="t-semantic"> Темы и понятия по цитатам</label>
       <label><input type="checkbox" id="t-orphans"> Узлы без связей</label>
     </div>
     <div id="sections" aria-label="Разделы: клик — только этот раздел, Shift или ⌘ + клик — добавить к выбранным"></div>
   </div>
   <main>
     <div class="stage">
-      <div id="graph" aria-label="Граф связей. Колесо — масштаб, перетаскивание — сдвиг или перемещение узла, плюс и минус — масштаб, 0 — вписать, Esc — снять выбор."></div>
-      <div class="zoom">
-        <button id="zin" aria-label="Приблизить">+</button>
-        <button id="zout" aria-label="Отдалить">−</button>
-        <button id="zfit" aria-label="Вписать граф" class="fit">⤢</button>
-      </div>
+      <p id="graph-layout-status" class="graph-layout-status" role="status" hidden>Располагаем узлы…</p>
+      <div id="graph" tabindex="0" aria-label="Граф связей. Колесо — масштаб, перетаскивание — сдвиг или перемещение узла, плюс и минус — масштаб, 0 — вписать, Esc — снять выбор."></div>
+      <ul id="graph-list" aria-label="Узлы списком" hidden></ul><div class="zoom"><div class="zoom-scale" role="group" aria-label="Масштаб">
+        <button id="zout" aria-label="Отдалить">−</button><button id="zin" aria-label="Приблизить">+</button><button id="zfit" aria-label="Вписать граф" class="fit">Вписать</button>
+      </div><button id="graph-list-toggle" aria-pressed="false">Показать списком</button></div>
       <div id="counter" role="status"></div>
     </div>
     <aside id="panel" aria-label="Просмотр узла"></aside>
   </main>
   <footer>
-    Связи строятся только из структуры каталога и номеров серий в названиях — без смысловых догадок.
-    Проверенные описания и термины появятся после редакторской проверки.
+    Граф показывает структуру каталога и номера серий. Смысловые связи с темами и понятиями добавляются после проверки цитат.
   </footer>
 </div>
+  <button id="logout" class="wiki-logout" hidden>Выйти</button>
 </div>
 </body>
 </html>

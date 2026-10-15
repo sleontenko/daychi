@@ -1,0 +1,64 @@
+appId: ${APP_ID}
+name: Wiki reader to graph and return
+tags:
+  - wiki
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    text: "Вики"
+    retryTapIfNoChange: true
+- assertVisible: "Библиотека"
+- tapOn: "Учебная серия 1"
+- assertVisible: "Конспект по расшифровке · черновик"
+- tapOn: "Содержание.*"
+- tapOn: "Связанные материалы"
+- assertVisible: "Показать на графе"
+- tapOn: "Показать на графе"
+- assertVisible: "Граф связей"
+- tapOn: "2 шага"
+- takeScreenshot: wiki-graph-controls
+- scrollUntilVisible:
+    element: "Показать списком"
+    direction: DOWN
+    centerElement: true
+- tapOn: "Показать списком"
+- assertVisible: "Учебная серия 1"
+- takeScreenshot: wiki-graph-node-list
+- scrollUntilVisible:
+    element: "Читать материал →"
+    direction: DOWN
+    centerElement: true
+- tapOn: "Читать материал →"
+# Reopening the reader preserves its earlier position at Related materials.
+- scrollUntilVisible:
+    element: "Конспект по расшифровке · черновик"
+    direction: UP
+- assertVisible: "Конспект по расшифровке · черновик"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn: "← Назад"
+# Back restores the graph's earlier scroll position at the selected node.
+- assertVisible: "Читать материал →"
+- scrollUntilVisible:
+    element: "Граф связей"
+    direction: UP
+- assertVisible: "Граф связей"
+- assertVisible: "2 шага"
+- tapOn: "Мои занятия"
+- assertVisible: "Пока ничего не выбрано"
+- tapOn:
+    text: "Вики"
+    retryTapIfNoChange: true
+- assertVisible: "Граф связей"
+- takeScreenshot: wiki-graph-after-native-tab
+- tapOn: "Все"
+- assertVisible: "Показано 66 из 66 узлов.*"
+- takeScreenshot: wiki-global-graph

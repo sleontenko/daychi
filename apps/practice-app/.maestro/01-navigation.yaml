@@ -1,0 +1,40 @@
+appId: ${APP_ID}
+name: Native tabs and nested settings returns
+tags:
+  - smoke
+---
+# Only the isolated synthetic app; never clear a shared iOS keychain.
+- launchApp:
+    clearState: true
+- assertVisible: "Настройки"
+- tapOn: "Мои занятия"
+- assertVisible: "Пока ничего не выбрано"
+- takeScreenshot: mine-empty
+- tapOn: "Настройки"
+- assertVisible: "Вид расписания"
+- tapOn:
+    text: ".*О приложении.*"
+- assertVisible: "Версия"
+- tapOn:
+    text: ".*Политика приватности.*"
+- assertVisible: "Политика приватности"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn: "Назад"
+- assertVisible: "Версия"
+- tapOn: "Назад"
+- assertVisible: "Вид расписания"
+- tapOn: "Назад: Мои занятия"
+- assertVisible: "Пока ничего не выбрано"
+- tapOn: "Перейти к расписанию"
+- assertVisible: "Все"
+- tapOn: "Вики"
+- assertVisible: "Библиотека"
+- takeScreenshot: wiki-library

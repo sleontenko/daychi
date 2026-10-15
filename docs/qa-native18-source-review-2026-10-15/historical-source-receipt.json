@@ -1,0 +1,16 @@
+{
+  "source_base": "5f9ba442e04cd5dfa70527b9e670b491c491888c",
+  "source_kind": "Uncommitted combined frozen candidate; build number changed only in snapshot",
+  "files": 390,
+  "manifest_sha256": "d22dbcf357e12622c2f47a15131906311be970ad9cae1adf256b75dd68a0fa8b",
+  "ipad_sha256": {
+    "apps/practice-app/src/features/schedule/schedule-screen.tsx": "45a98dfd5a8d10192b59727789fcbbdbe33c3ecd86ffae907dcfc09be0ad4d66",
+    "apps/practice-app/src/features/schedule/my-classes.tsx": "fbe482426b9305fd5e1d1f82c74a560ec5fdccd1cd20f26342402fff709ef260",
+    "apps/practice-app/src/features/settings/settings-screen.tsx": "8e8020d95b7211a799af2eb908b021fe78c797a68edad6102bb65eb5e0ec4eda",
+    "apps/practice-app/src/features/wiki/wiki-screen.tsx": "613a9e4c86e42c496e4be8002436ec252e7c37d8f82041bae66603883a0e4598",
+    "apps/practice-app/src/features/wiki/native-html.ts": "c32cd6ff6ff88ebf8cf391347ae64192accdb1ba3cb247313e976fed365ce854",
+    "apps/wiki-graph/build-native.mjs": "2e29d048e983890f1b7e99271b8d1654ed19eab319bf8212cd959b4b09c6ef59"
+  },
+  "build": "1.0.0 (18)",
+  "cabinet": "staging native account and separate read-only schedule; content adapter inactive"
+}

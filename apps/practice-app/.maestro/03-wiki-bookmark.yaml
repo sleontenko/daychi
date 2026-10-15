@@ -1,0 +1,25 @@
+appId: ${APP_ID}
+name: Wiki bookmark survives app restart
+tags:
+  - smoke
+  - wiki
+---
+- launchApp:
+    clearState: true
+- tapOn: "Вики"
+- assertVisible: "Библиотека"
+- tapOn: "Учебная серия 1"
+- assertVisible: "Конспект по расшифровке · черновик"
+- tapOn: "Сохранить"
+- assertVisible: "Сохранено"
+- takeScreenshot: wiki-bookmark-saved
+# Restart without clearing state: this is the persistence assertion.
+- stopApp
+- launchApp
+- tapOn: "Вики"
+- assertVisible: "Библиотека"
+- tapOn: "Закладки"
+- assertVisible: "Сохранённые страницы"
+- tapOn: "Учебная серия 1"
+- assertVisible: "Сохранено"
+- takeScreenshot: wiki-bookmark-after-restart

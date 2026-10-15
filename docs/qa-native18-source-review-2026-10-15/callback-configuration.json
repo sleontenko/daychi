@@ -1,0 +1,17 @@
+{
+  "ios_url_schemes": [
+    "quietpractice",
+    "su.xuanxue.daychi",
+    "ai.mypraxis.quietpractice"
+  ],
+  "android_schemes": [
+    "https",
+    "quietpractice",
+    "su.xuanxue.daychi"
+  ],
+  "generated_config_inputs_sha256": {
+    "apps/practice-app/ios/Dejchi/Info.plist": "e494ad8bd47fbf47f03a1c789d44bf04ddc676e225e1a27edaf49672c8f33727",
+    "apps/practice-app/android/app/src/main/AndroidManifest.xml": "6e508d65c5551dc347664e1d40aba07387c628d7485465e8fea27bd313f8ffae"
+  },
+  "scope": "Static extracted configuration only; no Android device/runtime proof"
+}

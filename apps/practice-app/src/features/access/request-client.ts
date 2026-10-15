@@ -3,12 +3,14 @@ import * as SecureStore from 'expo-secure-store';
 import { useSyncExternalStore } from 'react';
 import { Platform } from 'react-native';
 import { acceptApprovedSession } from './session';
+import { rememberDeletionCredential, withAccessMutation } from './deletion-client';
 
 const KEY = 'daychee.access.request.v1';
 const endpoint = process.env.EXPO_PUBLIC_DAYCHEE_API_URL ?? '';
 export type Profile = { first_name: string; last_name: string; telegram: string };
 type Status = 'draft' | 'pending' | 'approved' | 'active' | 'rejected' | 'revoked' | 'signed_out';
-type Record = { profile: Profile; secret?: string; session?: string; submitted?: boolean; status: Status };
+type RequestStatus = { status: Status; id?: string; created_at?: number; decided_at?: number | null };
+type Record = { profile: Profile; secret?: string; session?: string; submitted?: boolean; status: Status; id?: string; created_at?: number; decided_at?: number | null };
 type Snapshot = { record: Record; ready: boolean; busy: boolean; error: string; checked?: number };
 let state: Snapshot = { record: { profile: { first_name: '', last_name: '', telegram: '' }, status: 'draft' }, ready: false, busy: false, error: '' };
 const listeners = new Set<() => void>();
@@ -16,10 +18,14 @@ const subscribe = (fn: () => void) => { listeners.add(fn); return () => { listen
 const publish = (patch: Partial<Snapshot>) => { state = { ...state, ...patch }; listeners.forEach(fn => fn()); };
 let load: Promise<void> | undefined;
 let writes = Promise.resolve();
+let deleting = false;
 export const useAccessRequest = () => useSyncExternalStore(subscribe, () => state, () => state);
 function save(record: Record) {
   const raw = JSON.stringify(record);
-  const next = writes.then(() => SecureStore.setItemAsync(KEY, raw, { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY })).catch(() => {
+  const next = writes.then(async () => {
+    if (record.secret) await rememberDeletionCredential(record.secret);
+    await SecureStore.setItemAsync(KEY, raw, { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY });
+  }).catch(() => {
     throw new Error('Не удалось сохранить заявку на телефоне. Повторите попытку.');
   });
   writes = next.catch(() => { publish({ error: 'Не удалось сохранить заявку на телефоне. Повторите попытку.' }); });
@@ -36,6 +42,7 @@ export function loadAccessRequest() {
         if (!value.profile || !['first_name', 'last_name', 'telegram'].every(key => typeof value.profile[key as keyof Profile] === 'string') ||
             !['draft','pending','approved','active','rejected','revoked','signed_out'].includes(value.status) ||
             (value.submitted && (!/^[\w-]{43,128}$/.test(value.secret ?? '') || !/^[\w-]{43,128}$/.test(value.session ?? '')))) throw new Error();
+        if (value.secret) await rememberDeletionCredential(value.secret);
         publish({ record: value });
       }
       publish({ ready: true, error: '' });
@@ -44,7 +51,7 @@ export function loadAccessRequest() {
   return load;
 }
 export function changeApplicant(key: keyof Profile, value: string) {
-  if (!state.ready || state.busy || state.record.submitted) return;
+  if (!state.ready || state.busy || state.record.submitted || deleting) return;
   const record = { ...state.record, profile: { ...state.record.profile, [key]: value } };
   publish({ record, error: '' });
   void save(record).catch(() => {});
@@ -64,21 +71,27 @@ async function api(secret: string, path = '', body?: unknown) {
     const value = await response.json().catch(() => null);
     if (!response.ok) throw new Error(response.status === 404 ? 'Сервис пока не подтвердил заявку. Повторите отправку.' : typeof value?.detail === 'string' ? value.detail : 'Не удалось проверить заявку.');
     if (!['pending','approved','active','rejected','revoked','signed_out'].includes(value?.status)) throw new Error('Не удалось проверить ответ сервера.');
-    return value.status as Status;
+    return { status: value.status as Status,
+      ...(typeof value.id === 'string' && /^[a-zA-Z0-9_-]{1,80}$/.test(value.id) ? { id: value.id } : {}),
+      ...(typeof value.created_at === 'number' && Number.isFinite(value.created_at) && value.created_at > 0 ? { created_at: value.created_at } : {}),
+      ...(value.decided_at === null || (typeof value.decided_at === 'number' && Number.isFinite(value.decided_at) && value.decided_at > 0) ? { decided_at: value.decided_at } : {}),
+    } satisfies RequestStatus;
   } finally { clearTimeout(timer); }
 }
 async function operation(action: () => Promise<void>) {
-  if (state.busy || !state.ready || Platform.OS === 'web') return;
+  if (state.busy || !state.ready || deleting || Platform.OS === 'web') return;
   publish({ busy: true, error: '' });
-  try { await action(); }
+  try { await withAccessMutation(action); }
   catch (error) { publish({ error: error instanceof Error ? error.message : 'Не удалось проверить заявку.' }); }
   finally { publish({ busy: false }); }
 }
-async function applyStatus(status: Status) {
-  let record = { ...state.record, status };
+async function applyStatus(result: RequestStatus) {
+  let status = result.status;
+  let record = { ...state.record, ...result };
   if (status === 'approved' || (status === 'active' && state.record.status !== 'active')) {
-    status = await api(record.secret!, '/claim', { session_token: record.session });
-    record = { ...record, status };
+    const claimed = await api(record.secret!, '/claim', { session_token: record.session });
+    status = claimed.status;
+    record = { ...record, ...claimed };
     if (status === 'active') await acceptApprovedSession(record.session!);
   }
   await save(record);
@@ -110,4 +123,16 @@ export async function newAccessRequest() {
     const record: Record = { profile: state.record.profile, status: 'draft' };
     await save(record); publish({ record, checked: undefined });
   });
+}
+export async function prepareRequestDeletion() {
+  await loadAccessRequest();
+  if (!state.ready) throw new Error('Сначала восстановите сохранённую заявку.');
+  deleting = true;
+  await writes;
+}
+export function finishRequestDeletion() { deleting = false; }
+export async function clearRequestAfterDeletion() {
+  await writes;
+  await SecureStore.deleteItemAsync(KEY);
+  publish({ record: { profile: { first_name: '', last_name: '', telegram: '' }, status: 'draft' }, checked: undefined, error: '', ready: true });
 }

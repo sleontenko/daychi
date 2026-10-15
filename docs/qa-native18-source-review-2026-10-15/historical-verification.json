@@ -1,0 +1,57 @@
+{
+  "ipa_bytes": 22081066,
+  "ipa_sha256": "17eeefcfbab82fc75286755609ad8177291396445ee282a19b04cbacd3ef3f98",
+  "bundle": {
+    "CFBundleIdentifier": "ai.mypraxis.quietpractice",
+    "CFBundleShortVersionString": "1.0.0",
+    "CFBundleVersion": "18",
+    "UIDeviceFamily": [
+      1,
+      2
+    ],
+    "UIRequiresFullScreen": false,
+    "UISupportedInterfaceOrientations~ipad": [
+      "UIInterfaceOrientationPortrait",
+      "UIInterfaceOrientationPortraitUpsideDown",
+      "UIInterfaceOrientationLandscapeLeft",
+      "UIInterfaceOrientationLandscapeRight"
+    ],
+    "CFBundleURLTypes": [
+      {
+        "CFBundleURLSchemes": [
+          "quietpractice",
+          "su.xuanxue.daychi",
+          "ai.mypraxis.quietpractice"
+        ]
+      }
+    ]
+  },
+  "signature_strict_passed": true,
+  "profile_get_task_allow": false,
+  "profile_has_devices": false,
+  "privacy_manifests": 13,
+  "hermes_markers": {
+    "https://staging.xuanxue.su": true,
+    "https://daychee-api-production.up.railway.app": true,
+    "/api/auth/native": true,
+    "su.xuanxue.daychi:/oauth/cabinet": true,
+    "example.invalid": false,
+    "DAYCHI_IPAD_QA_NETWORK_GUARD": false,
+    "DAYCHI_IOS_PUBLIC_QA": false
+  },
+  "source_mismatch": [],
+  "device_hermes_sha256": "aba2e25eeab863c25c93eca402ed86d365a9b43c29f6b7e87619c86508719502",
+  "simulator_hermes_sha256": "9fb44372c234ac226f8c494b91d4af7000a351909b0955b8c1b168171e4aef7f",
+  "tests": {
+    "app": 125,
+    "wiki": 19,
+    "typecheck": "passed",
+    "lint": "passed"
+  },
+  "runtime": {
+    "phone": "Release Cabinet browser entry, provider return signed-out, Back to settings and schedule; School scroll retained after wiki tab switch",
+    "ipad": "Release portrait/landscape, two-column Cabinet, School list/detail, account native sheet/system auth cancellation/Back, wiki library and final graph controls, empty My Classes"
+  },
+  "apple_upload": false,
+  "workshop_issue": "https://github.com/dveyarangi/xuanxue-workshop/issues/11"
+}

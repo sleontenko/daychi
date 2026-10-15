@@ -13,6 +13,7 @@ function client({storage=new Map(),fetch,accept=async()=>{},write=async(key,valu
   'expo-secure-store':{getItemAsync:async key=>storage.get(key),setItemAsync:write,WHEN_UNLOCKED_THIS_DEVICE_ONLY:1},
   react:{useSyncExternalStore:(_subscribe,snapshot)=>snapshot()},'react-native':{Platform:{OS:'ios'}},
   './session':{acceptApprovedSession:accept},
+  './deletion-client':{rememberDeletionCredential:async()=>{},withAccessMutation:async action=>action()},
  }[name]),process:{env:{EXPO_PUBLIC_DAYCHEE_API_URL:'https://example.test'}},fetch,AbortController,setTimeout,clearTimeout,console,TypeError});
  return {api:exports,storage,state:()=>exports.useAccessRequest()};
 }
@@ -47,4 +48,15 @@ test('native Expo network errors do not leak implementation details and remain r
  const calls=[];let offline=true;const c=client({fetch:async(_url,options)=>{calls.push(options);if(offline)throw Error('UnexpectedException: Could not connect (ExpoModulesCore/Promise.swift:56)');return response('pending');}});
  await fill(c);await c.api.submitAccessRequest();assert.match(c.state().error,/Нет ответа сервера/);assert.doesNotMatch(c.state().error,/UnexpectedException|swift/);
  offline=false;await c.api.submitAccessRequest();assert.equal(c.state().record.status,'pending');assert.equal(c.state().error,'');assert.equal(calls[0].headers.Authorization,calls[1].headers.Authorization);
+});
+
+test('own request dates survive claim and restart; unknown DTO fields cannot overwrite credentials',async()=>{
+ const storage=new Map();let status='pending';
+ const fetch=async url=>({ok:true,json:async()=>url.endsWith('/claim')?{status:'active'}:{status,id:'request123',created_at:1790899200,decided_at:status==='approved'?1790985600:null,secret:'attacker',session:'attacker',profile:{first_name:'attacker'}}});
+ let c=client({storage,fetch});await fill(c);await c.api.submitAccessRequest();
+ const original=c.state().record.secret;assert.equal(c.state().record.id,'request123');
+ status='approved';await c.api.checkAccessRequest();assert.equal(c.state().record.status,'active');
+ assert.equal(c.state().record.secret,original);assert.equal(c.state().record.profile.first_name,'Ирина');
+ c=client({storage,fetch});await c.api.loadAccessRequest();
+ assert.equal(c.state().record.created_at,1790899200);assert.equal(c.state().record.decided_at,1790985600);
 });

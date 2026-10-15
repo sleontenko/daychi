@@ -1,0 +1,11 @@
+{
+  "scope": "Strict allowlist extraction from frozen local env; public origins and flags only",
+  "public_flags": {
+    "EXPO_PUBLIC_DAYCHEE_API_URL": "https://daychee-api-production.up.railway.app",
+    "EXPO_PUBLIC_CABINET_SCHEDULE_PILOT": "1",
+    "EXPO_PUBLIC_CABINET_API_ORIGIN": "https://staging.xuanxue.su",
+    "EXPO_PUBLIC_CABINET_ACCOUNT_ENABLED": "1",
+    "EXPO_PUBLIC_CABINET_ACCOUNT_PILOT": "0",
+    "EXPO_PUBLIC_CABINET_ACCOUNT_ORIGIN": "https://staging.xuanxue.su"
+  }
+}

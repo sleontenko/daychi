@@ -1,0 +1,40 @@
+{
+  "confirmed_at": "2026-10-12T15:43:50.015713+03:00",
+  "app_id": "6813117483",
+  "build_id": "86943171-6185-4410-b2e3-c98da669512a",
+  "version": "1.0.0",
+  "build_number": "18",
+  "uploaded_at_moscow": "2026-10-12T15:38:59+03:00",
+  "processing_state": "VALID",
+  "internal_build_state": "IN_BETA_TESTING",
+  "external_build_state": "READY_FOR_BETA_SUBMISSION",
+  "group": {
+    "id": "ed8a05aa-a6db-41e9-93e6-299c8f36c7c2",
+    "name": "Личное тестирование",
+    "internal": true,
+    "testers": 4,
+    "all_preexisting_members_verified": true
+  },
+  "ru_what_to_test_verified": true,
+  "external_group_assigned": false,
+  "source_commit": "5f9ba442e04cd5dfa70527b9e670b491c491888c",
+  "source_has_uncommitted_changes": true,
+  "source_manifest_files": 390,
+  "source_manifest_sha256": "d22dbcf357e12622c2f47a15131906311be970ad9cae1adf256b75dd68a0fa8b",
+  "local_prepared_ipa_sha256": "17eeefcfbab82fc75286755609ad8177291396445ee282a19b04cbacd3ef3f98",
+  "upload_method": "Xcode signed archive export destination upload",
+  "upload_exit_code": 0,
+  "missing_third_party_dsym": [
+    "ExpoImage.framework",
+    "React.framework",
+    "ReactNativeDependencies.framework",
+    "SDWebImage.framework",
+    "SDWebImageAVIFCoder.framework",
+    "SDWebImageSVGCoder.framework",
+    "SDWebImageWebPCoder.framework",
+    "hermesvm.framework"
+  ],
+  "evidence": "App Store Connect API; browser session expired before fresh screenshot",
+  "common_cabinet_content_access_enabled": false,
+  "actual_successful_cabinet_login_verified": false
+}

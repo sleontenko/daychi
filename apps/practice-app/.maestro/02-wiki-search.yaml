@@ -1,0 +1,28 @@
+appId: ${APP_ID}
+name: Wiki search and reader return
+tags:
+  - smoke
+  - wiki
+---
+- launchApp:
+    clearState: true
+- tapOn: "Вики"
+- assertVisible: "Библиотека"
+- tapOn: "Найти занятие"
+# ASCII query avoids platform-specific Unicode keyboard input.
+- inputText: "1"
+# Re-render through an actual filter button to dismiss the iOS keyboard.
+# hideKeyboard's fallback tap can accidentally open the first result in WKWebView.
+- tapOn: "Все"
+- assertVisible: "Результаты поиска"
+- tapOn: "Учебная серия 1"
+- assertVisible: "Конспект по расшифровке · черновик"
+- takeScreenshot: wiki-reader
+- tapOn: "← Назад"
+- assertVisible: "Результаты поиска"
+- assertVisible: "1"
+- tapOn: "Мои занятия"
+- assertVisible: "Пока ничего не выбрано"
+- tapOn: "Вики"
+- assertVisible: "Результаты поиска"
+- assertVisible: "1"

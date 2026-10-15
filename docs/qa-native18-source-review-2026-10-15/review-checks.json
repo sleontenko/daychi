@@ -1,0 +1,40 @@
+{
+  "checked_at": "2026-10-15T03:17:27.948978+00:00",
+  "purpose": "Historical source publication preparation only; not release or runtime activation",
+  "dependency_install": "Frozen package-lock.json; npm ci --ignore-scripts --no-audit --fund=false in isolated worktree; no lock changes",
+  "targeted_native": {
+    "command": "node --test scripts/cabinet-account.test.mjs scripts/cabinet-http.test.mjs scripts/cabinet-content-preparation.test.mjs scripts/cabinet-pilot.test.mjs scripts/cabinet-presentation.test.mjs",
+    "passed": 66,
+    "failed": 0,
+    "provider": "Synthetic loopback HTTP; no Cabinet account or fixture mutations"
+  },
+  "shared_wiki": {
+    "command": "npm test",
+    "passed": 19,
+    "failed": 0
+  },
+  "export_mapping": {
+    "files": 176,
+    "hash_mismatch": []
+  },
+  "static_callback_check": "Frozen iOS URL schemes and Android intent schemes extracted; not actual native OS callback proof",
+  "not_executed": [
+    "New iOS/Android build or runtime",
+    "Real Cabinet account login, N01/N11/N15/N16/N17 joint native proof",
+    "Renewal/block/logout provider fixtures",
+    "IPA byte-equivalent reproduction",
+    "New TestFlight/production release"
+  ],
+  "full_app": {
+    "command": "npm test",
+    "passed": 125,
+    "failed": 0,
+    "private_generated_data_present": false
+  },
+  "privacy_review": {
+    "recognized_credential_guard": "PASS: 502 indexed Git files checked; no recognized private artifacts or credentials; includes public configuration receipt",
+    "youtube_literal_audit": "Export contains only synthetic abcdefghijk YouTube literals in tests; visual content fixture omitted",
+    "email_review": "Production UI contacts already present in public base; remaining new apparent emails occur in synthetic tests/URL userinfo rejection cases",
+    "binary_assets": "Only byte-identical assets from base included"
+  }
+}
