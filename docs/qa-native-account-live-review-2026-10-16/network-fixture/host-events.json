@@ -1,0 +1,55 @@
+[
+  {
+    "utc": "2026-10-16T16:35:13.364059+00:00",
+    "event": "connect",
+    "host": "staging.xuanxue.su",
+    "port": 443,
+    "mode": "online"
+  },
+  {
+    "utc": "2026-10-16T16:35:13.488345+00:00",
+    "event": "connect",
+    "host": "existing-school-or-daychi-source",
+    "port": 443,
+    "mode": "online"
+  },
+  {
+    "utc": "2026-10-16T16:35:13.488407+00:00",
+    "event": "connect",
+    "host": "existing-school-or-daychi-source",
+    "port": 443,
+    "mode": "online"
+  },
+  {
+    "utc": "2026-10-16T16:37:16.486674+00:00",
+    "event": "cut-existing-connection",
+    "host": "existing-school-or-daychi-source",
+    "port": 443
+  },
+  {
+    "utc": "2026-10-16T16:37:16.587199+00:00",
+    "event": "cut-existing-connection",
+    "host": "existing-school-or-daychi-source",
+    "port": 443
+  },
+  {
+    "utc": "2026-10-16T16:37:16.588483+00:00",
+    "event": "cut-existing-connection",
+    "host": "staging.xuanxue.su",
+    "port": 443
+  },
+  {
+    "utc": "2026-10-16T16:37:17.216789+00:00",
+    "event": "connect",
+    "host": "staging.xuanxue.su",
+    "port": 443,
+    "mode": "offline"
+  },
+  {
+    "utc": "2026-10-16T16:37:29.930005+00:00",
+    "event": "connect",
+    "host": "staging.xuanxue.su",
+    "port": 443,
+    "mode": "offline"
+  }
+]

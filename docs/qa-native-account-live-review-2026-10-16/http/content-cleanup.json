@@ -1,0 +1,14 @@
+{
+  "utc": "2026-10-16T17:25:17.205538+00:00",
+  "onlyNewTestInvitationRevoked": true,
+  "revokeStatus": 200,
+  "ownAdminSessionLogoutStatus": 200,
+  "utcVerified": "2026-10-16T17:26:20.646048+00:00",
+  "privateCredentialFilesRemoved": 7,
+  "testNativeCredentialFinalMe": 401,
+  "testLegacyCredentialFinalMe": 401,
+  "testProtectedMaterialFinalRead": 401,
+  "UIAfterRestart": "wiki access gate",
+  "browserSessionRetainedForRemainingN01Diagnosis": true,
+  "simulatorNotErasedDuringOngoingDiagnosis": true
+}

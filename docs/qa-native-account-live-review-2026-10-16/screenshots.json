@@ -1,0 +1,262 @@
+[
+  {
+    "file": "screenshots/N01-A-first-sign-in.png",
+    "originalFilename": "A-signed-in.png",
+    "capturedUTC": "2026-10-16T12:41:05.786051+00:00",
+    "sha256": "cac82efa596a9aae3a4e545c97766779972bccd902628968c066440fd9677a60",
+    "simulator": "A / iPhone18Pro / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N01-A-restored.png",
+    "originalFilename": "A-after-restart.png",
+    "capturedUTC": "2026-10-16T12:43:29.518660+00:00",
+    "sha256": "b94e6a5ef45a78345f810b8663203eb3aa26e00047faad256984a45936d02fa8",
+    "simulator": "A / iPhone18Pro / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N01-B-system-login.png",
+    "originalFilename": "B-system-login-success.png",
+    "capturedUTC": "2026-10-16T17:01:23.156772+00:00",
+    "sha256": "580f95a3679abdaa8a99ccdb8db990f24ec912fc896c6f833000edeba1698630",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N01-B-system-reuse.png",
+    "originalFilename": "B-system-session-reused.png",
+    "capturedUTC": "2026-10-16T17:02:38.289215+00:00",
+    "sha256": "fd3396aeb193b919e29d9f38ded6f628a3c4cb555e59c882786cfa6fa08fc126",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N11-A-revoked.png",
+    "originalFilename": "A-after-revoke.png",
+    "capturedUTC": "2026-10-16T12:59:38.144048+00:00",
+    "sha256": "b65aea9b179e6a3075ff1a9859796066b9f8314c0d20b06b7b73e5f8f0ded580",
+    "simulator": "A / iPhone18Pro / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N11-B-survives.png",
+    "originalFilename": "B-restarted-after-A-revoke.png",
+    "capturedUTC": "2026-10-16T13:00:58.123566+00:00",
+    "sha256": "13915fd93c352fcb51e2cfa95d60665deb2177d5a5e0351b7baad5ec0b6b40e3",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N11-browser-survives.png",
+    "originalFilename": "B-browser-after-A-revoke.png",
+    "capturedUTC": "2026-10-16T13:00:09.524934+00:00",
+    "sha256": "896e794753a25442ac4816278c7b9be328602f4fe8d039be8146dd3a04f813f7",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N15-request-unavailable.png",
+    "originalFilename": "B-network-unavailable.png",
+    "capturedUTC": "2026-10-16T16:37:29.138128+00:00",
+    "sha256": "1ce1ba89a4ff417ac53518d689be1f768cfb469dd3d45e40b07266634decdd64",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N15-local-logout.png",
+    "originalFilename": "B-offline-logged-out.png",
+    "capturedUTC": "2026-10-16T16:37:34.188189+00:00",
+    "sha256": "f53e33488883e5c0cb4623df66015bf1cc91204b2ffc8611d2dddc3087f8ebf6",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N15-no-restoration.png",
+    "originalFilename": "B-offline-logout-after-online-restart.png",
+    "capturedUTC": "2026-10-16T16:38:08.278005+00:00",
+    "sha256": "e5873cbeff988717c61a41ee813478584150ec384b2b19775e410d796bc9ae0c",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N15-late-callback.png",
+    "originalFilename": "B-late-callback-stays-signed-out.png",
+    "capturedUTC": "2026-10-16T16:39:12.961932+00:00",
+    "sha256": "18126c8824978bb44c5b0c08d4ad932a96c4de9706122d954bafb0f00e7dbb77",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N16-cold-callback.png",
+    "originalFilename": "B-cold-callback-success.png",
+    "capturedUTC": "2026-10-16T16:40:47.788950+00:00",
+    "sha256": "84ac2a8ed4a48c9a97de8df239037fe32fcfd22a10aa37eab5028d86a9dff8b7",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N17-browser-logout.png",
+    "originalFilename": "B-browser-logout-native-retained.png",
+    "capturedUTC": "2026-10-16T16:41:24.965869+00:00",
+    "sha256": "27608ebcfa402a6bc041c692b06183a674dcca2dd02ab8bd14ad1a36dc670f71",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N17-native-survives-web-logout.png",
+    "originalFilename": "B-native-active-after-web-logout.png",
+    "capturedUTC": "2026-10-16T16:41:37.136152+00:00",
+    "sha256": "98fa5466d61b3a5ccdedee49cc690a2e6dee6370f2af3d5a3c4639157a80b3c9",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N17-cabinet-schedule-before.png",
+    "originalFilename": "B-active-cabinet-schedule.png",
+    "capturedUTC": "2026-10-16T13:05:15.313740+00:00",
+    "sha256": "c68272c71256b27b11d6e45b1cf2729b4137d8de189dfa4455da7e7344c45d22",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N17-cabinet-schedule-after.png",
+    "originalFilename": "B-after-logout-cabinet-schedule.png",
+    "capturedUTC": "2026-10-16T13:11:07.215116+00:00",
+    "sha256": "e55184ae67182a65f5509dd0dd8deb582b44fbb2b6e0783640afeeba6cdfc331",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N17-school-schedule-before.png",
+    "originalFilename": "B-active-school-schedule.png",
+    "capturedUTC": "2026-10-16T13:05:31.338227+00:00",
+    "sha256": "01857b53093b6a36201c3908a00a6f71ae735fd81ead5b1e32524d80c2536814",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N17-school-schedule-after.png",
+    "originalFilename": "B-after-logout-school-schedule.png",
+    "capturedUTC": "2026-10-16T13:11:13.294347+00:00",
+    "sha256": "f5eabdc50e77bd5b738514cd848fad2705b2af08a44909b3382ca33d0846c79f",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N17-my-lessons-before.png",
+    "originalFilename": "B-baseline-my-lessons.png",
+    "capturedUTC": "2026-10-16T16:21:57.379854+00:00",
+    "sha256": "a41322f393065ff3c3a1096f28c25989652121537f6c8bfb760ab2afb8de00ff",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N17-my-lessons-after.png",
+    "originalFilename": "B-final-my-lessons.png",
+    "capturedUTC": "2026-10-16T16:42:55.506000+00:00",
+    "sha256": "c02ecfe024e9d269b2b2e9ee642210bafc654560fde97b68344b727d85a69eed",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N17-reminders-before.png",
+    "originalFilename": "B-baseline-reminders-two.png",
+    "capturedUTC": "2026-10-16T16:22:17.176777+00:00",
+    "sha256": "02d0e399687fead9a58916c23e1b1accd92890ec72e6c9f2c91e8ae08fa27f0c",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N17-reminders-active.png",
+    "originalFilename": "B-active-reminders-two.png",
+    "capturedUTC": "2026-10-16T16:36:22.351886+00:00",
+    "sha256": "18c353b8b2ba8412a1cf70b700c9b56d7db57204cf05aa3bea1834064d5e9166",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N17-reminders-after.png",
+    "originalFilename": "B-final-reminders-two.png",
+    "capturedUTC": "2026-10-16T16:43:01.782528+00:00",
+    "sha256": "253c0a57c5ea61b068f77d96bcfffe9b557032b8842b5cf28068590418b43618",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N17-notification-delivered.png",
+    "originalFilename": "B-final-notification-delivered.png",
+    "capturedUTC": "2026-10-16T16:44:24.703555+00:00",
+    "sha256": "5065baaaf4c4d99fa99d1cf0ffa29c77ec555da269e78b017b788c87c8f83eb9",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N16-legacy-invitation-activated.png",
+    "originalFilename": "B-legacy-access-activated.png",
+    "capturedUTC": "2026-10-16T17:20:38.665713+00:00",
+    "sha256": "49c98c469b170302993ac0f8da178be22e408a4828f113ee950bb53d705a5424",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  },
+  {
+    "file": "screenshots/N17-test-access-revoked.png",
+    "originalFilename": "B-after-test-revoke-gated.png",
+    "capturedUTC": "2026-10-16T17:26:20.574550+00:00",
+    "sha256": "4f49a7c7e9fda48d4517f1ca779b7bab51c599e6c904444e9abff1d31db8a581",
+    "simulator": "B / iPhone18ProMax / iOS27.0",
+    "daychiSource": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+    "cabinetRevision": "5ea9a8b",
+    "pixels": "original, unedited; byte-identical to captured frame"
+  }
+]

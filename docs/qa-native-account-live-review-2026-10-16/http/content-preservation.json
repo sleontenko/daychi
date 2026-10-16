@@ -1,0 +1,77 @@
+[
+  {
+    "utc": "2026-10-16T17:21:38.479065+00:00",
+    "phase": "activated-before-baseline",
+    "legacySession": 200,
+    "protectedMaterial": 200,
+    "anonymousSameMaterial": 401,
+    "legacyTokenSha256": "25f197aa",
+    "sameMaterialSha256": "28f5f1cf35d4f4d87ebfd29e8317c808a7dfbb147c01cb56b92536011fc9acb3",
+    "nonemptyDescription": true,
+    "hasProtectedRecordingLink": true,
+    "cabinetNativeMe": 200,
+    "cabinetTokenSha256": "75a1539a"
+  },
+  {
+    "utc": "2026-10-16T17:22:15.491354+00:00",
+    "phase": "baseline-cabinet-signed-out",
+    "legacySession": 200,
+    "protectedMaterial": 200,
+    "anonymousSameMaterial": 401,
+    "legacyTokenSha256": "25f197aa",
+    "sameMaterialSha256": "28f5f1cf35d4f4d87ebfd29e8317c808a7dfbb147c01cb56b92536011fc9acb3",
+    "nonemptyDescription": true,
+    "hasProtectedRecordingLink": true,
+    "cabinetNativeMe": 401,
+    "cabinetTokenSha256": "75a1539a"
+  },
+  {
+    "utc": "2026-10-16T17:23:14.039865+00:00",
+    "phase": "cabinet-signed-in",
+    "legacySession": 200,
+    "protectedMaterial": 200,
+    "anonymousSameMaterial": 401,
+    "legacyTokenSha256": "25f197aa",
+    "sameMaterialSha256": "28f5f1cf35d4f4d87ebfd29e8317c808a7dfbb147c01cb56b92536011fc9acb3",
+    "nonemptyDescription": true,
+    "hasProtectedRecordingLink": true,
+    "cabinetNativeMe": 200,
+    "cabinetTokenSha256": "bb040fc1"
+  },
+  {
+    "utc": "2026-10-16T17:23:51.495453+00:00",
+    "phase": "cabinet-signed-out-after-cycle",
+    "legacySession": 200,
+    "protectedMaterial": 200,
+    "anonymousSameMaterial": 401,
+    "legacyTokenSha256": "25f197aa",
+    "sameMaterialSha256": "28f5f1cf35d4f4d87ebfd29e8317c808a7dfbb147c01cb56b92536011fc9acb3",
+    "nonemptyDescription": true,
+    "hasProtectedRecordingLink": true,
+    "cabinetNativeMe": 401,
+    "cabinetTokenSha256": "bb040fc1"
+  },
+  {
+    "utc": "2026-10-16T17:24:22.024189+00:00",
+    "phase": "after-full-restart-cabinet-signed-out",
+    "legacySession": 200,
+    "protectedMaterial": 200,
+    "anonymousSameMaterial": 401,
+    "legacyTokenSha256": "25f197aa",
+    "sameMaterialSha256": "28f5f1cf35d4f4d87ebfd29e8317c808a7dfbb147c01cb56b92536011fc9acb3",
+    "nonemptyDescription": true,
+    "hasProtectedRecordingLink": true,
+    "cabinetNativeMe": 401,
+    "cabinetTokenSha256": "bb040fc1"
+  },
+  {
+    "utc": "2026-10-16T17:25:18.531766+00:00",
+    "phase": "after-test-invitation-revoked",
+    "legacySession": 401,
+    "protectedMaterial": 401,
+    "anonymousSameMaterial": 401,
+    "legacyTokenSha256": "25f197aa",
+    "cabinetNativeMe": 401,
+    "cabinetTokenSha256": "bb040fc1"
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "authorization": "Operator explicitly requested publishing missing sanitized screenshots/evidence in this task.",
+  "frames": 26,
+  "review": "All selected original frames visually inspected; no authentication forms with phone, invitation links/codes, callback query values, recording URLs/IDs or private material text selected.",
+  "originalPixelsPreserved": true,
+  "privateContentFramesExcluded": true,
+  "noLiveChecksRepeated": true,
+  "sourceCiReused": "https://github.com/sleontenko/daychi/actions/runs/38885024945",
+  "appSourceUnchanged": true
+}

@@ -1,0 +1,52 @@
+# Daychi native account — live evidence for Workshop #8
+
+Sanitized, inspectable evidence from the already executed 16 October 2026 runs. **26 original screenshots**, UTC/source/hash manifest, nonsecret HTTP outcomes, build metadata and the existing 63-test log. No live scenario, build or test was rerun to publish this package. The screenshots below open as actual pixels, not merely hash references.
+
+- Tested source: [Daychi d1a85fe](https://github.com/sleontenko/daychi/tree/d1a85fe28e86b60ca6271a2e75871d6360b9f25a), PR15; native Debug dev build1.0.0(18), **not Expo Go**. A iPhone18Pro / B iPhone18ProMax, iOS27.0; Xcode27.
+- Cabinet: staging.xuanxue.su, deployed revision5ea9a8b. Account is the operator's own staging Telegram account; the operator personally confirmed Telegram.
+- Governing [full profile18cfe41](https://github.com/dveyarangi/xuanxue-workshop/blob/18cfe41db0203fa6fc72d429caa584960d0c2522/docs/contracts/native-account-session.md) and [N01/N17 scope decision](https://github.com/dveyarangi/xuanxue-workshop/issues/8#issuecomment-6221393997). N11 retains its current-credential two-grant amendment. Ordinary-Safari sharing is not required; age-dependent live browser renewal is deferred to12/13, not marked passed. Automated browser-renewal proof remains provider-owned and required.
+
+## Live-case evidence
+
+| Case | Observed result and decisive evidence |
+|---|---|
+| N01 | Actual fresh sign-in and automatic return; same persistent system-context reuse; account restored after restart; same-state native/web profile parity. [A signed in](screenshots/N01-A-first-sign-in.png), [A restarted](screenshots/N01-A-restored.png), [B actual system login](screenshots/N01-B-system-login.png), [B automatic system-session reuse](screenshots/N01-B-system-reuse.png). [Profile comparison](profile-parity.json), [system-context HTTP/metadata](http/system-browser-context.json). Populated/normalized profile variants use existing automated evidence. |
+| N11 | Two distinct native grants, same account, browser active. Current A token prefix01c8604e: revoke200, A me401, B me200, browser me200 at12:59:07–08UTC. [A rejected](screenshots/N11-A-revoked.png), [B survives restart](screenshots/N11-B-survives.png), [browser profile](screenshots/N11-browser-survives.png), [HTTP outcomes](http/N11.json). No live aging, renewal or predecessor step. |
+| N15 | Actual remote-request failure, immediate local logout, no restoration after network recovery/restart. System-cancelled original authorization completed later; real callback installed no session. [Request unavailable](screenshots/N15-request-unavailable.png), [local logout](screenshots/N15-local-logout.png), [restart](screenshots/N15-no-restoration.png), [late callback](screenshots/N15-late-callback.png), [HTTP outcomes](http/network-logout-and-callback.json). Instrumentation and variant limits below. |
+| N16 | Warm callbacks completed actual system login. [Cold callback](screenshots/N16-cold-callback.png) launched terminated app using the original pending request manually continued in ordinary Safari. [Real legacy invitation activated](screenshots/N16-legacy-invitation-activated.png), without recording/redeeming any unrelated invitation. Both schemes/configuration and ios/android client wrappers are in the existing tests. [Sampled host events](network-fixture/host-events.json) contain staging Cabinet and no production Cabinet connection. |
+| N17 | Browser UI Logout left native me200: [browser signed out](screenshots/N17-browser-logout.png), [native still active](screenshots/N17-native-survives-web-logout.png). Both schedule sources, selection, two reminders and local notification preserved; protected legacy material/link survived Cabinet sign-in/logout/restart. See paired frames and [content HTTP results](http/content-preservation.json) below. |
+
+## Ordinary behavior and legacy content
+
+| Observation | Before / active | After Cabinet logout/restart |
+|---|---|---|
+| Cabinet schedule | [before](screenshots/N17-cabinet-schedule-before.png) | [after](screenshots/N17-cabinet-schedule-after.png) |
+| School schedule/selection | [before](screenshots/N17-school-schedule-before.png) | [after](screenshots/N17-school-schedule-after.png) |
+| My lessons | [before](screenshots/N17-my-lessons-before.png) | [after](screenshots/N17-my-lessons-after.png) |
+| Two scheduled reminders | [before](screenshots/N17-reminders-before.png), [authenticated](screenshots/N17-reminders-active.png) | [after](screenshots/N17-reminders-after.png) |
+
+[Actual delivered local notification](screenshots/N17-notification-delivered.png) was captured in Notification Center at16:44:24UTC. This is Simulator local-notification proof, not physical-phone or remote-push proof. The earlier reminder-zero/error baseline stopped reproducing after permission was granted and a future weekly series selected; no Cabinet causality is asserted.
+
+For legacy content, the operator authorized one temporary ordinary Daychi invitation on the existing production content server. The normal app invitation flow redeemed it. The existing public Daychi API origin was added to the four Cabinet environment flags; no source/native binary changed. The same material returned200 before/during/after Cabinet sign-in/logout and after full restart; its response hash and legacy token prefix25f197aa stayed unchanged. Its protected recording link remained present. Anonymous reads401. Native UI opened that same material and recording action in every phase. No external YouTube playback claim.
+
+Material text, material IDs and recording URLs/IDs are not published. Private material frames remain outside this public package. The nonsecret [HTTP evidence](http/content-preservation.json), [activation frame](screenshots/N16-legacy-invitation-activated.png) and [post-revocation access gate](screenshots/N17-test-access-revoked.png) are supplied instead. This limits independent pixel review of the private material itself; it does not grant the recipient access to the unpublished frames.
+
+Only that test invitation was revoked200; its session/material then returned401 and the app closed access after restart. Our own temporary admin session was logged out200. [Cleanup](http/content-cleanup.json). Cabinet and legacy grants remain separate; Cabinet account:read was never substituted as a credential to the legacy backend. No teacher/admin operations or new content admission were enabled by native account sign-in.
+
+## Methods and retained limits
+
+- N15 used an external test-only NSURLSession configuration helper plus localhost HTTP CONNECT proxy. Existing remote tunnels were cut/new CONNECTs rejected at16:37:16UTC; native Refresh failed. [Helper source](network-fixture/QATunnel.m), [proxy source](network-fixture/tunnel-proxy.py), [host-only journal](network-fixture/host-events.json). TLS stayed encrypted and validation remained enabled. Source, installed app binaries and storage were unchanged; local Metro excluded; host network unchanged. This is app-request unavailability, not OS airplane mode/reachability. Later app launches omitted the helper.
+- Logout's full touch-plus-snapshot roundtrip was1683ms, an observation upper bound, not app-only latency. Offline revoke could not reach Cabinet: old me200; explicit later cleanup revoke200/old me401. This is consistent with the accepted local-only offline logout policy.
+- Late callback used iOS authentication-consent Cancel, then completed the exact original authorize request through authenticated Safari. UI stayed signed out; stored session/pending were null. Exact in-app Cancel and secure-delete failure use client tests. No callback was fabricated.
+- Cold callback used a manual handoff of the original PKCE request; it is not presented as evidence for automatic browser reuse. Actual system-browser reuse was separately observed at17:02 and again during the later content-preservation run. Ordinary-Safari separation is retained as an observation, not an acceptance defect under18cfe41.
+- Issuer evidence combines fixed configuration/issuer-bound storage and existing client tests with a sampled native encrypted CONNECT trace. It is not a full-lifetime decrypted-header trace. No token value was captured in the proxy journal.
+- Native credentials/pending parameters were read locally from the existing test-app SecureStore using LLDB; values stayed local and captures were removed. Web/native parity used deployed /api/auth/me because the scenario's /api/me returned404. No account/profile values other than visible operator display name are included.
+- Google is unlinked and was not linked or exercised live. Existing provider login/browser-renewal automation remains reusable provider evidence, not a fresh live claim here. No additional platform or role matrix is claimed. Android native runtime was not run; both-platform configuration/client checks are included in the existing log.
+
+## Source, automation and artifact integrity
+
+[Build/configuration metadata](build.json), [26-frame UTC/source/SHA256 manifest](screenshots.json), [existing 63/63 targeted client-test log](client-tests.txt), [publication review](publication-review.json), [file manifest](files.json). The client log includes iOS/Android HTTP wrapper, scheme/package preservation, issuer separation, cancellation, storage failure and renewal/predecessor tests. [Exact-source CI38885024945](https://github.com/sleontenko/daychi/actions/runs/38885024945) already passed backend/app/wiki; it is reused. Prior [Workshop source review](https://github.com/dveyarangi/xuanxue-workshop/issues/8#issuecomment-6189041756) is separate retained evidence. This documentation-only publication intentionally skips automatic CI; app/build/test results are the recorded earlier runs.
+
+All published PNGs preserve the original captured pixels and hashes. Names differ only to group them by case; source filenames and capture UTC are indexed. No authentication secrets, phone, cookie values, invite/code-bearing links or private corpus frames are included. No duplicate app source archive, new release, merge or deployment is part of this evidence delivery. The native account module/+native-intent files match archive da55703; the complete tested branch is a selective port with iPad configuration differences, not an identical full archive.
+
+Acceptance belongs to Workshop in [issue8](https://github.com/dveyarangi/xuanxue-workshop/issues/8). This package supplies review access; it does not self-declare complete acceptance or waive the retained limits.

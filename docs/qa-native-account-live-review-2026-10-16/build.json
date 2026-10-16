@@ -1,0 +1,41 @@
+{
+  "utc": "2026-10-16T12:33:03.159356+00:00",
+  "source": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+  "bundle": "ai.mypraxis.quietpractice",
+  "version": "1.0.0",
+  "build": "18",
+  "schemes": [
+    {
+      "CFBundleURLSchemes": [
+        "quietpractice",
+        "su.xuanxue.daychi",
+        "ai.mypraxis.quietpractice"
+      ]
+    }
+  ],
+  "nativeDebugDylibSha256": "cfb837ddbc91cec175d631b5af7ffdf1c4f1fd852b229a7b7d83c94b5df972a2",
+  "note": "Original preparation.json called this binary_sha256; actual hashed file is Dejchi.debug.dylib.",
+  "buildType": "native iOS Simulator Debug dev build; not Expo Go",
+  "xcode": "27",
+  "platforms": {
+    "A": "iPhone18Pro / iOS27.0",
+    "B": "iPhone18ProMax / iOS27.0"
+  },
+  "contract": "18cfe41db0203fa6fc72d429caa584960d0c2522",
+  "cabinetOrigin": "https://staging.xuanxue.su",
+  "cabinetRevision": "5ea9a8b",
+  "callback": "su.xuanxue.daychi:/oauth/cabinet",
+  "clientId": "daychi-native",
+  "androidConfiguration": {
+    "package": "ai.mypraxis.quietpractice",
+    "schemes": [
+      "quietpractice",
+      "su.xuanxue.daychi"
+    ],
+    "proof": "existing shared configuration + ios/android wrapper/client tests in client-tests.txt; no Android native build/runtime claim"
+  },
+  "networkFixtureDylibSha256": "ec1b819dac2be3d01f8a27754d22d5aab48e9cc85028d8b476cc7aad1ddd5000",
+  "contentPreservationConfiguration": "Existing public Daychi API origin was added to the four Cabinet flags for the authorized legacy-content run; no secret client configuration or app source change.",
+  "productionContentDeployment": "5990879b-1ec8-4feb-922b-12533f05129d",
+  "archiveMapping": "Native account modules/+native-intent match da55703; complete source is a selective port, with iPad config differences. Not an identical full archive."
+}

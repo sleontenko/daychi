@@ -1,0 +1,26 @@
+{
+  "source": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+  "cabinetRevision": "5ea9a8b",
+  "nativeEndpoint": "/api/auth/native/me",
+  "webEndpoint": "/api/auth/me",
+  "scenarioWebEndpointApiMe": 404,
+  "fieldsCompared": [
+    "botChatActive",
+    "canUseStudentMode",
+    "googleLinked",
+    "hasEmail",
+    "homeHiddenTiles",
+    "id",
+    "name",
+    "needsProfile",
+    "noTelegram",
+    "roles",
+    "status",
+    "studentMode",
+    "telegramLinked"
+  ],
+  "allFieldsAndValuesMatched": true,
+  "email": "absent in both",
+  "homeHiddenTiles": "empty in both; populated/normalized shapes use existing automated checks",
+  "rawProfileValuesExcluded": true
+}

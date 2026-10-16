@@ -1,0 +1,29 @@
+{
+  "utc": "2026-10-16T17:04:05.367361+00:00",
+  "simulator": "B / iPhone18ProMax / iOS27.0",
+  "source": "d1a85fe28e86b60ca6271a2e75871d6360b9f25a",
+  "cabinetRevision": "5ea9a8b",
+  "cookieStore": "SafariViewService binarycookies inside Safari data container",
+  "stagingCookieMetadata": [
+    {
+      "name": "session_staging",
+      "domain": ".staging.xuanxue.su",
+      "path": "/",
+      "secure": true,
+      "httpOnly": true,
+      "expiresUTC": "2027-01-14T17:01:05+00:00"
+    },
+    {
+      "name": "native_authz",
+      "domain": "staging.xuanxue.su",
+      "path": "/",
+      "secure": true,
+      "httpOnly": true,
+      "expiresUTC": "2026-10-16T17:17:20+00:00"
+    }
+  ],
+  "webMeUsingSystemBrowserCookie": 200,
+  "nativeMe": 200,
+  "ordinarySafariUI": "login form after system-authentication success",
+  "systemAuthenticationReuse": "automatic success after app-only Logout and new Sign In; no Telegram entry or manual Safari handoff"
+}

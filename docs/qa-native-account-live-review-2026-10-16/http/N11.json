@@ -1,0 +1,58 @@
+{
+  "beforeRevoke": [
+    {
+      "utc": "2026-10-16T12:58:47.004850+00:00",
+      "simulator": "A",
+      "nativeMe": 200,
+      "tokenSha256": "01c8604e"
+    },
+    {
+      "utc": "2026-10-16T12:58:47.576457+00:00",
+      "simulator": "B",
+      "nativeMe": 200,
+      "tokenSha256": "e9be352a"
+    }
+  ],
+  "separateGrants": true,
+  "sameAccount": true,
+  "N11": [
+    {
+      "utc": "2026-10-16T12:59:07.019508+00:00",
+      "step": "revoke-current-A",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-16T12:59:07.434414+00:00",
+      "step": "A-native-me-after-revoke",
+      "status": 401
+    },
+    {
+      "utc": "2026-10-16T12:59:07.829487+00:00",
+      "step": "B-native-me-after-A-revoke",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-16T12:59:08.406140+00:00",
+      "step": "B-web-me-after-A-revoke",
+      "status": 200
+    }
+  ],
+  "cleanupCredentials": [
+    {
+      "utc": "2026-10-16T13:09:49.293310+00:00",
+      "simulator": "A",
+      "finalOldTokenMe": 401
+    },
+    {
+      "utc": "2026-10-16T13:09:49.706766+00:00",
+      "simulator": "B",
+      "finalOldTokenMe": 401
+    }
+  ],
+  "N17actualBrowserLogout": {
+    "utc": "2026-10-16T13:04:33.034516+00:00",
+    "method": "Safari /logout button",
+    "browserResult": "login form displayed",
+    "nativeBMe": 200
+  }
+}

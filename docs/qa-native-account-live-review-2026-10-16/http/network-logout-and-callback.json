@@ -1,0 +1,37 @@
+{
+  "beforeOffline": {
+    "utc": "2026-10-16T16:36:02.795403+00:00",
+    "stage": "B-before-network-failure",
+    "nativeMe": 200,
+    "tokenSha256": "025da88b"
+  },
+  "networkCut": {
+    "utc": "2026-10-16T16:37:16.450704+00:00",
+    "mechanism": "B-only NSURLSession CONNECT proxy; all remote tunnels rejected/cut; host network unchanged"
+  },
+  "offlineLogoutCleanup": {
+    "utc": "2026-10-16T16:38:08.366335+00:00",
+    "oldTokenAfterOfflineLocalLogout": 200,
+    "cleanupRevoke": 200,
+    "oldTokenAfterCleanup": 401
+  },
+  "lateCallback": {
+    "utc": "2026-10-16T16:39:20.521680+00:00",
+    "cancellation": "iOS authentication consent Cancel",
+    "originalAuthorizeCompletedLaterInSafari": true,
+    "UI": "signed out",
+    "secureStoreSession": null,
+    "secureStorePending": null
+  },
+  "browserLogout": {
+    "utc": "2026-10-16T16:41:21.543558+00:00",
+    "step": "B-me-after-actual-Safari-logout",
+    "status": 200,
+    "tokenSha256": "190f6b18"
+  },
+  "finalBTokenAfterAppLogout": {
+    "utc": "2026-10-16T16:42:19.849984+00:00",
+    "status": 401,
+    "tokenSha256": "190f6b18"
+  }
+}
