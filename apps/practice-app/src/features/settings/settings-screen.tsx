@@ -1,6 +1,8 @@
 import { feedbackOperationId, sendFeedback, type FeedbackDraft } from './feedback-client';
 import BackButton from '../../components/back-button';
 import AccessScreen from '../access/access-screen';
+import CabinetAccountScreen from '../cabinet-account/account-screen';
+import { cabinetAccountEnabled } from '../cabinet-account/session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
@@ -8,7 +10,7 @@ import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleShee
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Organic as C } from '../prototype/theme';
 
-export type SettingsPage = 'settings' | 'reminders' | 'feedback' | 'about' | 'access';
+export type SettingsPage = 'settings' | 'reminders' | 'feedback' | 'about' | 'access' | 'cabinet-account';
 const DRAFT = 'daychee.feedback.draft.v1';
 const kinds = ['Ошибка', 'Идея', 'Вопрос'] as const;
 export default function SettingsScreen({ page, onPage, onBack, backLabel, bottomTabs, reminders, view, onView, accessManual, accessReturnLabel, onAccessDone }: {
@@ -79,8 +81,9 @@ export default function SettingsScreen({ page, onPage, onBack, backLabel, bottom
       <BackButton label={nestedAccess && page === 'access' && !accessManual ? 'Заявка на доступ' : backLabel} onPress={back} />
       <ScrollView key={page} ref={pageScroll} keyboardShouldPersistTaps="handled" contentContainerStyle={s.page}
         onScroll={event => { if (page) offsets.current[page] = event.nativeEvent.contentOffset.y; }} scrollEventThrottle={16}>
-        {page !== 'access' && <Text accessibilityRole="header" style={s.title}>{page === 'settings' ? 'Настройки' : page === 'reminders' ? 'Напоминания' : page === 'feedback' ? 'Обратная связь' : page === 'about' ? 'О приложении' : 'Доступ'}</Text>}
+        {page !== 'access' && page !== 'cabinet-account' && <Text accessibilityRole="header" style={s.title}>{page === 'settings' ? 'Настройки' : page === 'reminders' ? 'Напоминания' : page === 'feedback' ? 'Обратная связь' : page === 'about' ? 'О приложении' : 'Доступ'}</Text>}
         {page === 'settings' && <>
+          {cabinetAccountEnabled && <View style={s.group}><Pressable accessibilityRole="button" onPress={() => onPage('cabinet-account')} style={s.row}><Text style={s.body}>Аккаунт школы</Text><Text style={s.link}>›</Text></Pressable></View>}
           <View style={s.group}>{([['reminders', 'Напоминания'], ['feedback', 'Обратная связь'], ['access', 'Доступ'], ['about', 'О приложении']] as const).map(([key, label]) =>
             <Pressable key={key} accessibilityRole="button" onPress={() => onPage(key)} style={s.row}><Text style={s.body}>{label}</Text><Text style={s.link}>›</Text></Pressable>)}</View>
           <Text style={s.caption}>Вид расписания</Text>
@@ -89,6 +92,7 @@ export default function SettingsScreen({ page, onPage, onBack, backLabel, bottom
           <Text style={s.caption}>Дейчи · версия {version} · закрытая бета</Text>
         </>}
         {page === 'reminders' && reminders}
+        {page === 'cabinet-account' && cabinetAccountEnabled && <CabinetAccountScreen />}
         {page === 'about' && <>
           <Text style={s.brand}>Дейчи</Text><Text style={s.body}>Расписание школы, выбранные занятия и материалы для практики.</Text>
           <View style={s.panel}><Text style={s.heading}>Станислав Лео</Text><Text style={s.caption}>Автор и развитие приложения</Text></View>

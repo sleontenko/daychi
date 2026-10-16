@@ -5,12 +5,15 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/daychi-icon.png",
-    "scheme": "quietpractice",
+    "scheme": [
+      "quietpractice",
+      "su.xuanxue.daychi"
+    ],
     "userInterfaceStyle": "light",
     "ios": {
       "icon": "./assets/images/daychi-icon.png",
       "bundleIdentifier": "ai.mypraxis.quietpractice",
-      "buildNumber": "13",
+      "buildNumber": "18",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCalendarsUsageDescription": "Добавлять выбранные занятия в ваш календарь."

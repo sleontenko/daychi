@@ -1,6 +1,6 @@
 import { classInfo } from './class-info';
 import { SymbolView } from 'expo-symbols';
-import { Modal, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Organic as C } from '../prototype/theme';
 import { type Attendance, isChosen, seriesId, subscribed } from './attendance';
@@ -18,24 +18,29 @@ export default function MyClasses({ all, prefs, now, disabled, cancelSeries, onC
   onOpen: (id: string) => void; onRestore: (id: string) => void; onSchedule: () => void;
 }) {
   const { fontScale } = useWindowDimensions();
+  const tablet = Platform.OS === 'ios' && Platform.isPad;
   const today = dayKey(now);
   const tomorrow = dayKey(Date.parse(`${today}T12:00:00Z`) + 86400000);
   const relative = (start: string, long = false) => dayKey(start) === today ? 'Сегодня' : dayKey(start) === tomorrow ? 'Завтра' : format(start, long ? { weekday: 'long', day: 'numeric', month: 'long' } : { weekday: 'short' });
   const subscriptions = Object.entries(prefs.subscriptions ?? {});
   const upcoming = all.filter(e => Date.parse(e.ends_at) > now).sort((a, b) => Date.parse(a.starts_at) - Date.parse(b.starts_at));
   const picked = upcoming.filter(e => isChosen(e, prefs));
+  const confirmationBody = <>
+    <Text style={s.caption}>Регулярный выбор и будущие напоминания для этого занятия будут убраны.</Text>
+    <Pressable accessibilityRole="button" disabled={disabled} style={s.primary} onPress={() => { if (cancelSeries) onCancel(cancelSeries); }}><Text style={s.primaryLabel}>Да, убрать регулярный выбор</Text></Pressable>
+    <Pressable accessibilityRole="button" onPress={() => onCancelPrompt(null)} style={s.restore}><Text style={s.link}>Оставить</Text></Pressable>
+  </>;
   return <View style={s.page}>
     <Modal visible={!!cancelSeries} transparent animationType="slide" onRequestClose={() => onCancelPrompt(null)}>
-      <SafeAreaProvider><View style={s.overlay}>
+      <SafeAreaProvider><View style={[s.overlay, tablet && s.tabletOverlay]}>
         <Pressable accessibilityRole="button" accessibilityLabel="Закрыть подтверждение" style={StyleSheet.absoluteFill} onPress={() => onCancelPrompt(null)} />
-        <SafeAreaView edges={['bottom']} style={s.sheet}>
-          <View style={s.row}><Text accessibilityRole="header" style={[s.title, s.flex]}>Больше не ходить каждую неделю?</Text>
+        <SafeAreaView edges={['bottom']} style={[s.sheet, tablet && s.tabletSheet]}>
+          {!tablet && <View style={s.row}><Text accessibilityRole="header" style={[s.title, s.flex]}>Больше не ходить каждую неделю?</Text>
             <Pressable accessibilityRole="button" accessibilityLabel="Закрыть" onPress={() => onCancelPrompt(null)} style={s.close}>
               <SymbolView name={{ ios: 'xmark', android: 'close', web: 'close' }} size={20} tintColor={C.accentDark} />
-            </Pressable></View>
-          <Text style={s.caption}>Регулярный выбор и будущие напоминания для этого занятия будут убраны.</Text>
-          <Pressable accessibilityRole="button" disabled={disabled} style={s.primary} onPress={() => { if (cancelSeries) onCancel(cancelSeries); }}><Text style={s.primaryLabel}>Да, убрать регулярный выбор</Text></Pressable>
-          <Pressable accessibilityRole="button" onPress={() => onCancelPrompt(null)} style={s.restore}><Text style={s.link}>Оставить</Text></Pressable>
+            </Pressable></View>}
+          {tablet && <Pressable accessibilityRole="button" accessibilityLabel="Закрыть" onPress={() => onCancelPrompt(null)} style={[s.close, s.tabletClose]}><SymbolView name={{ ios: 'xmark', android: 'close', web: 'close' }} size={20} tintColor={C.accentDark} /></Pressable>}
+          {tablet ? <ScrollView style={s.sheetScroll} contentContainerStyle={s.sheetBody}><Text accessibilityRole="header" style={[s.title, { paddingRight: 40 }]}>Больше не ходить каждую неделю?</Text>{confirmationBody}</ScrollView> : confirmationBody}
         </SafeAreaView>
       </View></SafeAreaProvider>
     </Modal>
@@ -87,6 +92,9 @@ export default function MyClasses({ all, prefs, now, disabled, cancelSeries, onC
   </View>;
 }
 const s = StyleSheet.create({
+  tabletOverlay: { justifyContent: 'center', padding: 24 }, tabletSheet: { width: '100%', maxWidth: 520, maxHeight: '100%', alignSelf: 'center', borderRadius: 28 },
+  sheetScroll: { flexGrow: 0, flexShrink: 1 }, sheetBody: { gap: 16 },
+  tabletClose: { position: 'absolute', top: 10, right: 10, zIndex: 1 },
   overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(32,30,29,0.3)' }, sheet: { backgroundColor: C.background, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 20, gap: 16 }, close: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   page: { gap: 22 }, section: { gap: 10 }, label: { fontSize: 13, fontWeight: '600', letterSpacing: 0.39, color: '#645C50', paddingHorizontal: 4 },
   card: { backgroundColor: C.neutral100, borderRadius: 20, padding: 16, gap: 10 }, row: { flexDirection: 'row', gap: 10, alignItems: 'center' }, flex: { flex: 1 }, content: { flex: 1, gap: 3 },
