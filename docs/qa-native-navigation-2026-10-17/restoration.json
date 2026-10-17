@@ -1,0 +1,63 @@
+{
+  "camera-fixed-phone-tab": {
+    "before": {
+      "x": 0.07407209743671878,
+      "y": 0.6233885822011462,
+      "angle": 0,
+      "ratio": 1
+    },
+    "after": {
+      "x": 0.07407209743671878,
+      "y": 0.6233885822011462,
+      "angle": 0,
+      "ratio": 1
+    },
+    "equal": true
+  },
+  "camera-fixed-ipad-tab": {
+    "before": {
+      "x": 0.03738040115797159,
+      "y": 0.5823365256899878,
+      "angle": 0,
+      "ratio": 1
+    },
+    "after": {
+      "x": 0.03738040115797159,
+      "y": 0.5823365256899878,
+      "angle": 0,
+      "ratio": 1
+    },
+    "equal": true
+  },
+  "camera-fixed-android-final": {
+    "before": {
+      "x": 0.10376078655128607,
+      "y": 0.6174042292422722,
+      "angle": 0,
+      "ratio": 1
+    },
+    "after": {
+      "x": 0.10376078655128607,
+      "y": 0.6174042292422722,
+      "angle": 0,
+      "ratio": 1
+    },
+    "equal": true
+  },
+  "scroll-fixed-ipad-tab": {
+    "before": 1988,
+    "after": 1988,
+    "equal": true
+  },
+  "scroll-phone-tab": {
+    "before": 377,
+    "after": 377,
+    "equal": true,
+    "note": "Observed epoch12 before the subsequent intentional scroll-to-top."
+  },
+  "scroll-android-tab": {
+    "before": 443.4285583496094,
+    "after": 443.4285583496094,
+    "equal": true
+  }
+}

@@ -56,37 +56,33 @@ Simulator не подтверждает установку или доставк
 
 ## Workshop collaboration
 
-Existing boundaries: native Daychi (`apps/practice-app`) and shared wiki reader
-(`apps/wiki-graph`) ↔ Daychi content backend (`practice_api`). Native schedule
-also retains its school-HTML and Telegram-correction path. Native/private reader,
-Zoom and owner/import access remain Daychi-owned; Cabinet web authentication does
-not replace them. [Current scope/evidence](https://github.com/dveyarangi/xuanxue-workshop/blob/d689c24af9e848cae8db81e4cc5701f9cb7a610c/docs/current-system.md#daychi).
+Existing boundaries: Daychi native app (apps/practice-app) and web wiki
+(apps/wiki-graph) ↔ Daychi backend (practice_api); Knowledge supplies reviewed
+editorial/import inputs. Daychi owns content and its client/API transport;
+Cabinet owns account/session validity. Existing native/owner/import/meeting access
+and content v1 remain fulfilled until their independently coordinated transition.
 
-Knowledge→Daychi editorial/owner import and shared reader→Daychi article/concept/
-graph projections remain existing content boundaries. [Original article issue 9](https://github.com/dveyarangi/xuanxue-workshop/issues/9)
-and Daychi's provider-owned content definitions govern active v1, projection,
-identity/redaction and source consistency. Authentication work does not retire v1
-or change editorial authority.
+Accepted schedule/native-account targets remain governed by the
+[target contracts](https://github.com/dveyarangi/xuanxue-workshop/blob/a07f08747aa7d97e4d3496e87e1d8319db413698/docs/boundaries.md#target-connections) and
+[native account profile](https://github.com/dveyarangi/xuanxue-workshop/blob/a07f08747aa7d97e4d3496e87e1d8319db413698/docs/contracts/native-account-session.md). Native sign-in,
+renewal, secure storage and installation-scoped sign-out remain their own scope.
 
-Accepted target boundaries, joint integration not established: Daychi clients ↔
-Cabinet backend for schedule/account capabilities; Daychi backend ↔ Cabinet backend
-for authoritative access checks. [Target contracts](https://github.com/dveyarangi/xuanxue-workshop/blob/d689c24af9e848cae8db81e4cc5701f9cb7a610c/docs/boundaries.md#target-connections)
-and [native account-session profile](https://github.com/dveyarangi/xuanxue-workshop/blob/3c98d4a5201710f8f777183dd7b61caefe47e2d5/docs/contracts/native-account-session.md) own
-their distinct scopes.
+Accepted native content connection: each protected Cabinet-authenticated native
+read forwards the presented bearer to the fixed matching Cabinet GET me. Its
+current native grant/account decision is sufficient; no additional reader role,
+invitation, account replica or positive cache is used. Daychi owns explicit
+coexistence with legacy native transport, downstream protected delivery and
+failure/recovery. Cabinet isolates validated GET me capacity per native grant.
+The [native content contract](https://github.com/dveyarangi/xuanxue-workshop/blob/a07f08747aa7d97e4d3496e87e1d8319db413698/docs/contracts/native-content-session.md) owns exact
+wire, capacity, compatibility and common cases; activation and joint proof remain work.
 
-Accepted web-wiki target: Cabinet owns the shared browser session and current-account
-validation; Daychi owns protected web delivery and calls Cabinet for each protected
-read. All and only valid Cabinet-authenticated web readers receive the same content,
-without extra wiki eligibility or persisted reader credentials/accounts.
-[Web-wiki session contract](https://github.com/dveyarangi/xuanxue-workshop/blob/d689c24af9e848cae8db81e4cc5701f9cb7a610c/docs/contracts/web-wiki-session.md) owns common cookie,
-entry/return, renewal/logout, environment separation and failure guarantees.
-Daychi's homepage may expose only the contract's separate limited public graph
-overview without a Cabinet session. Existing reader APIs remain protected;
-entering the reader reuses a valid session or signs in with original-page return.
-Daychi owns preview data/projection and exposure controls. This exception changes
-no Cabinet wire, account authority, native/private or editorial/import scope.
-Coordinated anonymous-access
-cutover, recipient implementation and deployed proof are separate from acceptance.
+Accepted browser-wiki target remains separate under the
+[web-wiki contract](https://github.com/dveyarangi/xuanxue-workshop/blob/a07f08747aa7d97e4d3496e87e1d8319db413698/docs/contracts/web-wiki-session.md): shared Cabinet browser cookie,
+per-request authoritative check, fixed matching environment, renewal/return/logout,
+protected reader delivery and coordinated origin/path/cache transition. The
+limited public homepage graph overview remains its canonical exception. Native
+bearers do not replace this browser policy. Knowledge's editorial/import ownership
+and structured-article compatibility remain unchanged.
 
 Use the [/collaborate skill](.agents/skills/collaborate/SKILL.md) at the start of every session,
 before work affecting any boundary described above, and whenever coordinating
@@ -208,3 +204,45 @@ source trees match; original local authoring commits are preserved on
 codex/sync-cabinet-local-before-connector-20261017. Earlier access-denial statements
 are historical. No main merge/deployment/new release. Use the source-sync receipt
 for current CI and preserve the separate native-content WIP and root historical WIP.
+
+
+Cabinet completion follow-up (2026-10-17): source reconciliation PR16 and native
+bootstrap PR17 are merged; main c146326. Native-account Workshop8 is explicitly
+accepted/closed at baaf00ed (profile18cfe41, tested d1a85fe); do not repeat passed
+account evidence. Existing TestFlight1.0.0(18) is now operator-authorized for
+external testing: Apple APPROVED / IN_BETA_TESTING, public group assignment and
+unchanged join/GW9GB7mS link verified. See docs/qa-external-testflight18-2026-10-17.
+Current native content preparation is draft Daychi PR18, source cdd11a55, isolated
+at data/worktrees/cabinet-content-current-20261017. 292 backend/134 app tests,
+typecheck/lint pass; default-off server/session/transport only, current WebView
+mount/lifecycle/UI proof remains Daychi work. Provider15 capacity/deployment and
+joint proof remain dependencies; browser13 temporary-origin and shared sync17
+wire/clock/migration are requested in the original assignments. No new native
+binary, protected-content activation or production deployment. Old occupied
+native-content36 files and root WIP remain preserved.
+
+Native reader mounting continuation (2026-10-17): PR18 now connects the current
+shared native wiki through a separate default-off Cabinet host. Private WebView
+generations are destroyed on account/lifecycle/failure changes; same-account
+navigation metadata and existing saved-ID keys survive revalidation. Source URLs
+are freshly rechecked; Zoom remains independently legacy-authorized. 292 backend /
+141 app /31 wiki tests, typecheck/lint and normal iOS/Hermes exports with content
+off/on pass. Actual synthetic WKWebView phone/iPad checks and their limits are in
+docs/qa-native-content-ui-2026-10-17/README.md. Provider15 deployed capacity and
+real joint16 proof remain pending. Full-parent/Android QA remains before a new
+binary; no production activation, new release or design-reference promotion.
+QA overrides/services were removed/stopped, normal Expo entry restored. Historical
+root520 and occupied old native-content36 inventories remain hash-identical
+apart from intentional root handoff updates.
+
+
+Native navigation preparation (2026-10-17): PR18 full-parent follow-up is documented
+in docs/qa-native-navigation-2026-10-17/README.md. Installed synthetic iPhone/iPad
+portrait+landscape/Android Back checks cover actual Router/ScheduleScreen/Settings.
+Fixed async initial-fit camera overwrite and WKWebView history.state scroll loss;
+Cabinet-enabled native privacy introduction corrected. Exact camera equality on
+three devices and article offsets377/1988/443.4285583496094 recorded. 292backend/
+141app/31wiki, typecheck/lint and normal off/on iOS Hermes exports pass; QA overrides
+restored. Workshop16 mounted-source review6238564666 supports source progress;
+provider15 deployed capacity and authorized joint proof remain. No activation,
+PR merge, production change or new native upload. Existing external18 unchanged.

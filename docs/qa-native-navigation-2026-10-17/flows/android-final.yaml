@@ -1,0 +1,46 @@
+appId: ai.mypraxis.quietpractice
+---
+- launchApp:
+    stopApp: false
+- assertVisible: Статьи и конспекты занятий, связанные с ними понятия.
+- tapOn:
+    text: Урок Раздел · Дата
+    index: 0
+- assertVisible: ← Назад
+- tapOn: понятие
+- assertVisible: Материалы и подтверждения
+- back
+- assertVisible: ← Назад
+- swipe:
+    start: 50%,72%
+    end: 50%,30%
+    duration: 700
+- tapOn: Мои занятия
+- tapOn: Вики
+- assertVisible: ← Назад
+- takeScreenshot: /Users/mac-mini-server/projects/quiet-practice/data/navigation-qa-20261017/android-final-scroll
+- back
+- tapOn:
+    id: nav-saved
+- assertVisible: Закладки
+- tapOn:
+    id: nav-graph
+- assertVisible: Назад в вики
+- swipe:
+    start: 30%,41%
+    end: 60%,45%
+    duration: 700
+- tapOn: Мои занятия
+- tapOn: Вики
+- assertVisible: Назад в вики
+- takeScreenshot: /Users/mac-mini-server/projects/quiet-practice/data/navigation-qa-20261017/android-final-camera
+- back
+- tapOn:
+    id: nav-home
+- assertVisible: Статьи и конспекты занятий, связанные с ними понятия.
+- tapOn: Настройки
+- tapOn: .*Политика приватности, Открывается без входа.*
+- assertVisible: .*Для материалов и записей вики нужен вход через Кабинет школы.*
+- takeScreenshot: /Users/mac-mini-server/projects/quiet-practice/data/navigation-qa-20261017/android-final-privacy
+- back
+- back

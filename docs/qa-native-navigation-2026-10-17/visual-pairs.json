@@ -1,0 +1,23 @@
+[
+  {
+    "reference": "data/wiki-design/2026-10-09/qa/reference-reader-360.jpg",
+    "reference_sha256": "01af37b491c944a84c85f3759eed33c161f75be488451dd6677bd2250dda63ff",
+    "runtime": "phone-final-scroll.png",
+    "runtime_sha256": "e0fb9f0f1c2b586735e2717e1026aeca500fd961acfd1ce23702fd72538b75ac",
+    "scope": "Reader typography/links and bottom wiki rail retained; synthetic text, structured headings, scrolled position and native parent surround differ. Decorative flourish remains intentionally omitted per owner decision."
+  },
+  {
+    "reference": "data/wiki-design/2026-10-09/qa/reference-graph-360.jpg",
+    "reference_sha256": "56d586e484bf45dea959232b1208a18be0c7282846b669409144a0ddbb4cd0ff",
+    "runtime": "android-final-camera.png",
+    "runtime_sha256": "a1cba68084b86345b999bb6e9b6d1b9be1ee7ec35bbc01879f444c9f9cf1dbec",
+    "scope": "Composition/styles retained; synthetic text/data and full native parent surround differ. Private reference pixels remain local."
+  },
+  {
+    "reference": "design/approved/schedule-option1.png",
+    "reference_sha256": "a72e3b366bb675e7bde4dc2da2adff8880b522eacbb7b5833b2a9fa6e16d43e1",
+    "runtime": "phone-filter-restored.png",
+    "runtime_sha256": "3fa537ef777961864f7d04a722c8f1d9fc40eb400576a42a7989407c0be7ed18",
+    "scope": "Composition/styles retained; synthetic text/data and full native parent surround differ. Private reference pixels remain local."
+  }
+]

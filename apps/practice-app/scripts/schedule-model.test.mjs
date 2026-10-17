@@ -31,6 +31,18 @@ test('Israel date handles midnight and winter time', () => {
   assert.equal(dayKey('2026-10-25T21:30:00Z'), '2026-10-25');
   assert.equal(dayKey('2026-10-25T22:30:00Z'), '2026-10-26');
 });
+test('school date keys do not parse locale-formatted display text', t => {
+  const NativeDateTimeFormat = Intl.DateTimeFormat;
+  t.mock.method(Intl, 'DateTimeFormat', function (locale, options) {
+    const formatter = new NativeDateTimeFormat(locale, options);
+    // ICU display patterns can differ between OS versions for the same locale.
+    Object.defineProperty(formatter, 'format', { value: () => '10/17/2026' });
+    return formatter;
+  });
+  assert.equal(dayKey('2026-10-17T12:00:00Z'), '2026-10-17');
+  assert.equal(dayKey('2026-10-25T21:30:00Z'), '2026-10-25');
+  assert.equal(dayKey('2026-10-25T22:30:00Z'), '2026-10-26');
+});
 test('preferences accept only explicit true values', () => {
   assert.deepEqual(decodeChoices({ a: true, b: false, c: 'true' }), { a: true });
   assert.deepEqual(decodeChoices(null), {});

@@ -14,3 +14,11 @@ test('reader, graph selection, filters and nested article return to their actual
   assert.equal(history.previous(),'#view=home');assert.equal(history.canBack,false);
   assert.equal(history.previous(),'#view=home');
 });
+
+
+test('native resume restores independent bounded history without mutating its checkpoint',()=>{
+ const saved=['#view=home','#view=catalog&q=abc','#view=article&id=one'];
+ const h=nativeHistory(saved.at(-1),saved);
+ assert.equal(h.canBack,true);assert.equal(h.previous(),'#view=catalog&q=abc');
+ assert.equal(saved.length,3);assert.deepEqual(h.snapshot(),saved.slice(0,2));
+});

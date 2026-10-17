@@ -74,6 +74,7 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host, beforeR
   async function route() {
     if (disposed) return;
     clearTimeout(timer); const own = ++ticket;
+    if (host?.protectedReader) articleCache.clear();
     if (beforeRoute) {
       root.hidden = true; workspace.hidden = true;
       try { await beforeRoute(); } catch { return; }
@@ -228,9 +229,9 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host, beforeR
         if(d.annotation.points.length) {root.querySelector('#article-about').hidden=false;root.querySelector('#article-detail').innerHTML=renderFragments(d.annotation,esc);}
       }
       if(!body && !d.annotation?.points.length)root.querySelector('#article-connections .section-number').textContent='01';
-      if(host && d.restricted_links) {
+      if(host && (d.restricted_links || host.protectedReader)) {
         const online=root.querySelector('#article-online'); online.hidden=false;
-        online.innerHTML='<h2>Онлайн-занятие</h2><p class="muted">Ссылка доступна участникам закрытой группы.</p><button class="btn" data-online>Проверить доступ</button>';
+        online.innerHTML='<h2>Онлайн-занятие</h2><p class="muted">'+(host.protectedReader?'Для подключения к занятию нужен отдельный доступ школы.':'Ссылка доступна участникам закрытой группы.')+'</p><button class="btn" data-online>Проверить доступ</button>';
         online.querySelector('[data-online]').onclick=()=>host.online(id);
       }
       const links=(d.links||[]).filter(l=>l.type!=='zoom' && /^https?:\/\//i.test(l.url));

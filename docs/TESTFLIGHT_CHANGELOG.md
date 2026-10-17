@@ -266,3 +266,59 @@ their separate outstanding work. [Source/checks/current limits](qa-git-sync-2026
 No Apple query/upload/group change, source-main merge, production activation or
 new release occurred in this source task. The preceding internal TestFlight18 receipt
 remains the latest Apple evidence; new consolidated native visual/release QA remains.
+
+
+## iOS 1.0.0(18) — external TestFlight, 2026-10-17
+
+По явному разрешению оператора существующая сборка18 назначена существующей
+внешней публичной группе и отправлена на Beta App Review. Apple API после записи:
+**APPROVED / external IN_BETA_TESTING**, autoNotifyEnabled=true; внутренняя
+группа по-прежнему содержит18. Ссылка TestFlight не менялась,15 оставлена в группе.
+What to Test и review notes уточнены: staging-вход Cabinet, локальные занятия/
+напоминания, прежний отдельный закрытый доступ. Нового бинарника или source tag нет;
+использован исходный архив12October с manifest d22dbcf и описанными WIP.
+Сегодня проверены metadata/status/group write/readback; исходные build/UI тесты
+остаются в release evidence12October. Новая установка/доставка уведомлений на
+физическом телефоне не подтверждены. [Apple receipt и ограничения](qa-external-testflight18-2026-10-17/README.md).
+
+## 2026-10-17 · native Cabinet reader source candidate, no release
+
+PR18 connects its protected transport to a separate opt-in current shared native
+wiki host. Materials, recordings, structured concepts, graph and saved IDs retain
+the current reader; failures destroy private content and permit explicit recovery.
+Zoom remains independently authorized. 141 app /31 wiki tests, TypeScript/lint and
+normal iOS/Hermes export passed. Installed synthetic iPhone/iPad checks cover
+material/concept/graph, background/tab return, bookmark retention, 401/403/rate/
+offline recovery and the separate Zoom sheet. [Evidence and remaining checks](qa-native-content-ui-2026-10-17/README.md).
+Real provider/joint conformance and full-parent/Android native QA remain separate.
+No new archive/upload/tag or Apple query/group change in this source continuation;
+the preceding external18 status is unchanged.
+
+
+## Unreleased navigation preparation — 17 October 2026
+
+PR18 follow-up, parent85c1812: full Expo Router/parent navigation on installed
+iPhone/iPad/Android synthetic Debug containers. Fix initial-layout graph camera
+overwrite, read WKWebView scroll directly from native resume metadata, and correct
+the native Cabinet-enabled privacy introduction. Keep accepted schedule build5,
+reader design, storage keys, native identity and default-off activation.
+
+292 backend/141 app/31 wiki tests, typecheck/lint and normal off/on iOS Hermes
+exports passed. Exact camera and article scroll restoration, full-parent returns,
+Android Back and iPad portrait/landscape were observed. See
+[QA/source mapping and limitations](qa-native-navigation-2026-10-17/README.md).
+No physical-device notification-delivery claim. Apple status unchanged: this work
+is not uploaded; existing external1.0.0(18) remains the earlier build. Cabinet15
+capacity/authorized joint proof remains a separate activation gate.
+
+
+## Cabinet schedule follow-up —2026-10-17, source only
+
+Fixed a reproducible school-date parsing dependency on the OS en-CA display
+pattern: ISO date keys now use explicit Gregorian/Latin date parts.143 app tests,
+typecheck/lint and installed iPad/Hermes real-staging checks pass. Original archived
+build18 Release Simulator also loads the live schedule; the operator still reports
+physical iPhone/iPad failure across mobile/Wi-Fi/VPN. The actual device cause is
+unconfirmed; this fix must not be represented as a confirmed incident resolution.
+No new binary/upload/Apple status change or deployment.
+[Evidence and remaining diagnosis](qa-cabinet-schedule-incident-2026-10-17/README.md).

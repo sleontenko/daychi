@@ -1,0 +1,62 @@
+[
+  {
+    "file": "phone-final-scroll.png",
+    "sha256": "e0fb9f0f1c2b586735e2717e1026aeca500fd961acfd1ce23702fd72538b75ac",
+    "bytes": 259997
+  },
+  {
+    "file": "phone-final-privacy.png",
+    "sha256": "7c6decd92fbcbdf39dc7a22f0fd164a065c61c39604cb56026373a5ad18ac9ae",
+    "bytes": 327407
+  },
+  {
+    "file": "phone-camera-fixed-after.png",
+    "sha256": "282cd3432024e72bc201105fa525372fb4ad5bdfb754c40817ebc3099b62dad8",
+    "bytes": 182561
+  },
+  {
+    "file": "ipad-scroll-fixed.png",
+    "sha256": "428c4bae59a7848f94090908aa53632a1f4bd233623aa333eb48d0c5c2ca29d7",
+    "bytes": 320785
+  },
+  {
+    "file": "ipad-camera-fixed.png",
+    "sha256": "0677ca8e6bbaa8e39ded863cf8ed8f8138787615ab6bac538e2f8a70ad129e9e",
+    "bytes": 321282
+  },
+  {
+    "file": "ipad-portrait-graph.png",
+    "sha256": "59c3f3a4a27ff95f3b5936442956ae74db6c2f7e3853e119b1de87d913745ffd",
+    "bytes": 328988
+  },
+  {
+    "file": "ipad-parent-blocked.png",
+    "sha256": "8f8a356a5b142eb8cd3b2db66ef0a5a1667ce95fde77f1db765947a4023211fd",
+    "bytes": 188405
+  },
+  {
+    "file": "ipad-series-outside-window.png",
+    "sha256": "3aef03c102f7e0afa892ea8b30989cefe01522628ae88bf44adc5786f4c011c7",
+    "bytes": 295839
+  },
+  {
+    "file": "android-final-camera.png",
+    "sha256": "a1cba68084b86345b999bb6e9b6d1b9be1ee7ec35bbc01879f444c9f9cf1dbec",
+    "bytes": 117962
+  },
+  {
+    "file": "android-final-scroll.png",
+    "sha256": "8c2d0f76d5e04bbbedd21fa83aed89f554910109a754052d9cd7b3e45e91d10b",
+    "bytes": 250077
+  },
+  {
+    "file": "android-final-privacy.png",
+    "sha256": "e41fd0c23018f3fe60afb65c8e8714d6efd0a1f76a883ef7c0a6e41916d33391",
+    "bytes": 263655
+  },
+  {
+    "file": "android-draft-restored.png",
+    "sha256": "781a2566a7508bd3856df4c4347aeec233f3b484f4af1cdd69735a868a8d863b",
+    "bytes": 149889
+  }
+]

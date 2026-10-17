@@ -1,0 +1,24 @@
+{
+  "verified_at_utc": "2026-10-17T16:33:10.175965+00:00",
+  "app_id": "6813117483",
+  "build_id": "86943171-6185-4410-b2e3-c98da669512a",
+  "version": "1.0.0",
+  "build_number": "18",
+  "beta_detail": {
+    "autoNotifyEnabled": true,
+    "internalBuildState": "IN_BETA_TESTING",
+    "externalBuildState": "IN_BETA_TESTING"
+  },
+  "review": {
+    "betaReviewState": "APPROVED",
+    "submittedDate": null
+  },
+  "external_group_id": "cfd6b93e-ea26-45e5-9950-10c453c5c26c",
+  "public_link": "https://testflight.apple.com/join/GW9GB7mS",
+  "external_build_numbers": [
+    "18",
+    "15"
+  ],
+  "internal_group_still_contains_18": true,
+  "new_binary_uploaded": false
+}

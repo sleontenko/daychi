@@ -39,6 +39,26 @@ test('request uses encoded offsets and only the agreed window operation', async 
   assert.equal(pilot.getState().result.lessons[0].id, 'opaque-occurrence');
 });
 
+test('non-ISO locale display dates still reach the provider with the school window', async t => {
+  const NativeDateTimeFormat = Intl.DateTimeFormat;
+  t.mock.method(Intl, 'DateTimeFormat', function (locale, options) {
+    const formatter = new NativeDateTimeFormat(locale, options);
+    if (locale === 'en-CA')
+      Object.defineProperty(formatter, 'format', { value: () => '10/17/2026' });
+    return formatter;
+  });
+  let request;
+  const pilot = createCabinetPilot({ origin: 'https://cabinet.example',
+    now: () => Date.parse('2026-10-17T12:00:00Z'),
+    fetch: async url => { request = new URL(url); return response([]); } });
+  const state = await pilot.refresh();
+  assert.equal(state.error, null);
+  assert.deepEqual(Object.fromEntries(request.searchParams), {
+    from: '2026-10-17T00:00:00+03:00', to: '2026-10-31T00:00:00+02:00',
+  });
+  assert.deepEqual(state.result.lessons, []);
+});
+
 test('reject bad origin configuration before any network read; allow disposable HTTP origin', async () => {
   let calls = 0;
   for (const origin of ['', 'file:///tmp', 'https://cabinet.example/api', 'https://u:p@cabinet.example', 'https://cabinet.example/?token=x']) {

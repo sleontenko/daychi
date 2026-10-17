@@ -1,0 +1,18 @@
+# Continue from the restored long article after the main-app tab-return check.
+appId: ai.mypraxis.quietpractice
+---
+- launchApp:
+    stopApp: false
+- assertVisible: Синтетический абзац 1.*
+- takeScreenshot: /Users/mac-mini-server/projects/quiet-practice/data/navigation-qa-20261017/phone-final-scroll
+- scrollUntilVisible:
+    element:
+      text: ← Назад
+    direction: UP
+- tapOn: ← Назад
+- tapOn: Настройки
+- tapOn: Shield, Политика приватности, Открывается без входа, ›
+- assertVisible: .*Для материалов и записей вики нужен вход через Кабинет школы.*
+- takeScreenshot: /Users/mac-mini-server/projects/quiet-practice/data/navigation-qa-20261017/phone-final-privacy
+- tapOn: Назад
+- tapOn: Назад.*
