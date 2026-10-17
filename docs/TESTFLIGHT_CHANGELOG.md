@@ -310,3 +310,15 @@ Android Back and iPad portrait/landscape were observed. See
 No physical-device notification-delivery claim. Apple status unchanged: this work
 is not uploaded; existing external1.0.0(18) remains the earlier build. Cabinet15
 capacity/authorized joint proof remains a separate activation gate.
+
+
+## Cabinet schedule follow-up —2026-10-17, source only
+
+Fixed a reproducible school-date parsing dependency on the OS en-CA display
+pattern: ISO date keys now use explicit Gregorian/Latin date parts.143 app tests,
+typecheck/lint and installed iPad/Hermes real-staging checks pass. Original archived
+build18 Release Simulator also loads the live schedule; the operator still reports
+physical iPhone/iPad failure across mobile/Wi-Fi/VPN. The actual device cause is
+unconfirmed; this fix must not be represented as a confirmed incident resolution.
+No new binary/upload/Apple status change or deployment.
+[Evidence and remaining diagnosis](qa-cabinet-schedule-incident-2026-10-17/README.md).
