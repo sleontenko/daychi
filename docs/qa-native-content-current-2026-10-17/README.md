@@ -70,3 +70,14 @@ Browser13's alternate-origin request and selections/reminders17 remain independe
 [complete sync contract request](https://github.com/dveyarangi/xuanxue-workshop/issues/17#issuecomment-6236662637).
 The existing cookie contract cannot be replaced with a Railway/native-token browser
 workaround locally, and selections/reminders wire/clock/migration is not invented.
+
+## Published source
+
+[Draft Daychi PR18](https://github.com/sleontenko/daychi/pull/18), tested source
+cdd11a55d0b0bd69d5cb756be1782fc9f60f0d3c. GitHub
+[Checks39050106884](https://github.com/sleontenko/daychi/actions/runs/39050106884)
+passed backend/app/wiki from clean Linux installs (292/134/30 tests plus typecheck,
+lint and generated-web-bundle consistency). A subsequent documentation-only update
+installs the complete exact Workshop16 BOUNDARY_SUMMARY and current handoff.
+Root520 historical WIP files are preserved (only the intentional AGENTS handoff
+changed); the occupied old native-content36-file inventory is hash-identical.
