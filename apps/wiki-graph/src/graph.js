@@ -110,7 +110,7 @@ async function api(path) {
 async function boot() {
   if (!token && !host && !cabinetWeb) return showLogin();
   showView("loading");
-  try { start(await api(host ? "/api/wiki/graph?articles=1" : "/api/wiki/graph?semantics=1&articles=1")); }
+  try { start(await api(host ? "/api/wiki/graph" : "/api/wiki/graph?semantics=1&articles=1")); }
   catch (e) { if (cabinetWeb) { if (!e.handled && !e.stale) { webReader.invalidate(); showView("error"); } return; } e.auth ? showLogin("Доступ закончился или был отозван. Введите новый код.") : showView("error"); }
 }
 
