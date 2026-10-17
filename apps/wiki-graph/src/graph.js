@@ -110,7 +110,7 @@ async function api(path) {
 async function boot() {
   if (!token && !host && !cabinetWeb) return showLogin();
   showView("loading");
-  try { start(await api(host ? "/api/wiki/graph" : "/api/wiki/graph?semantics=1&articles=1")); }
+  try { start(await api(host && !host.protectedReader ? "/api/wiki/graph" : "/api/wiki/graph?semantics=1&articles=1")); }
   catch (e) { if (cabinetWeb) { if (!e.handled && !e.stale) { webReader.invalidate(); showView("error"); } return; } e.auth ? showLogin("Доступ закончился или был отозван. Введите новый код.") : showView("error"); }
 }
 
@@ -585,7 +585,8 @@ function start(DATA) {
 
     graphViews.set(hash,{camera:renderer.getCamera().getState(),bbox:renderer.getCustomBBox(),positions:new Map(simNodes.map(n=>[n.id,{x:n.x,y:n.y}]))});
   }
-  const library = mountLibrary({ DATA, api, esc, showLogin, host, initialScroll: resumeScroll, beforeRoute: webReader ? () => webReader.read("/api/wiki/session") : null, onGraph: (params, restored, action) => {
+  let cameraResumed = false;
+  const library = mountLibrary({ DATA, api, esc, showLogin, host, initialScroll: resumeScroll, beforeRoute: webReader ? () => webReader.read("/api/wiki/session") : host?.protectedReader ? () => api("/api/wiki/categories") : null, onGraph: (params, restored, action) => {
     if(action==='leave') { saveGraphView(params.hash); return; }
     renderer.resize();
     const savedView = graphViews.get(location.hash);
@@ -596,9 +597,11 @@ function start(DATA) {
       syncPositions(); renderer.setCustomBBox(savedView.bbox); renderer.refresh(); renderer.getCamera().setState(savedView.camera);
     } else if (!restored && state.selected && state.mode !== "local") centerOn(state.selected);
     else renderer.refresh();
+    if (!cameraResumed && host?.resume?.camera && location.hash === host.resume.hash) { renderer.getCamera().setState(host.resume.camera); cameraResumed = true; }
   }});
-  const cameraState = () => { $("#graph").dataset.camera=JSON.stringify(renderer.getCamera().getState()); };
-  renderer.getCamera().on("updated",cameraState);cameraState();
+  const cameraState = () => { $("#graph").dataset.camera=JSON.stringify(renderer.getCamera().getState()); if (host?.protectedReader) window.dispatchEvent(new Event("wiki-camera")); };
+  renderer.getCamera().on("updated",cameraState);
+  cameraState();
   const layoutState = () => {
     let checksum=2166136261;
     for (const {id,x,y} of simNodes) for (const char of `${id}:${x}:${y};`) checksum=Math.imul(checksum ^ char.charCodeAt(0),16777619) >>> 0;

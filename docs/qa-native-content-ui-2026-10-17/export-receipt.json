@@ -1,0 +1,16 @@
+{
+  "temporary_overrides_restored": true,
+  "expo_router_entry": true,
+  "ios_exports": {
+    "reader-production-check": {
+      "sha256": "af3de8888a31153c30fdf827c61f134d45e6be4157f1825e74ae6e74e9f97bbe",
+      "bytes": 3897055,
+      "qa_markers": false
+    },
+    "reader-enabled-check": {
+      "sha256": "0c17a7e60f1e54ea8bf7e1ef0fdffb86fd60bd52e655a5b8990454a88e19bd0c",
+      "bytes": 3897054,
+      "qa_markers": false
+    }
+  }
+}

@@ -12,13 +12,15 @@ import { type Material, wikiRequest } from './api';
 import { externalSource, materialId, protectedSource, publicSource, publicWikiPath, replyScript } from './bridge';
 import { wikiHtml } from './native-html';
 import LegacyWikiScreen from './legacy-wiki-screen';
+import CabinetWikiScreen from './cabinet-wiki-screen';
+import { cabinetContentEnabled } from './cabinet-api';
 
 const BOOKMARKS = 'quietpractice.wiki.bookmarks.v1';
 const OPENED = 'quietpractice.wiki.recent.v1';
 const source = { html: Platform.OS === 'ios' && Platform.isPad ? wikiHtml.replace('<body', '<body data-native-tablet') : wikiHtml, baseUrl: 'https://daychee.local/wiki' };
 type Props = { active?: boolean; onDetailChange?: (open: boolean) => void; onOpenAccess: (invitation?: boolean) => void };
 export default function WikiScreen(props: Props) {
-  return Platform.OS === 'web' ? <LegacyWikiScreen {...props} /> : <NativeWiki {...props} />;
+  return Platform.OS === 'web' ? <LegacyWikiScreen {...props} /> : cabinetContentEnabled ? <CabinetWikiScreen {...props} /> : <NativeWiki {...props} />;
 }
 function NativeWiki({ active = true, onDetailChange, onOpenAccess }: Props) {
   const web = useRef<WebView>(null);

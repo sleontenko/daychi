@@ -1,3 +1,4 @@
+import { cabinetContentEnabled } from '../wiki/cabinet-api';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Organic as C } from '../prototype/theme';
@@ -39,7 +40,7 @@ export default function CabinetAccountScreen() {
       {(state.hasSession || localError) && !incomplete && button(blocked ? 'Проверить снова' : 'Обновить', () => cabinetSession().restore(), false, busy || delayed)}
       {(state.hasSession || incomplete || localError) && button(incomplete ? 'Повторить выход' : 'Выйти', signOutCabinet)}
     </>}
-    <Text style={s.caption}>Вход в кабинет пока не открывает закрытые записи и онлайн-ссылки. Тексты вики доступны без входа.</Text>
+    <Text style={s.caption}>{cabinetContentEnabled ? 'Материалы и записи вики открываются через кабинет. Для подключения к онлайн-занятию сохраняется отдельный доступ школы.' : 'Вход в кабинет пока не открывает закрытые записи и онлайн-ссылки. Тексты вики доступны без входа.'}</Text>
   </View>;
 }
 const s = StyleSheet.create({

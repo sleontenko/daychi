@@ -133,3 +133,13 @@ test('C15 explicit Cabinet adapter has no public or legacy fallback; disabled ca
     assert.equal(publicOrLegacy,0);assert.equal(native,enabled?1:0);
   }
 });
+
+
+test('missing optional content404 stays outside account failure handling',async()=>{
+ const missing=load('wiki/cabinet-content-client').CONTENT_MISSING;
+ const h=harness();await h.session.restore();
+ const read=createCabinetContentClient('https://backend.test',async()=>new Response('{}',{status:404,headers:{'Content-Type':'application/json'}}));
+ assert.equal(await h.session.readContent(token=>read('/articles/materials/absent',token)),missing);
+ assert.equal(h.session.getState().status,'active');
+ assert.equal(JSON.parse(h.map.get(KEY)).session.token,TOKEN);
+});

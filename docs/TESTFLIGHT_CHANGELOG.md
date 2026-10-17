@@ -280,3 +280,16 @@ What to Test и review notes уточнены: staging-вход Cabinet, лок�
 Сегодня проверены metadata/status/group write/readback; исходные build/UI тесты
 остаются в release evidence12October. Новая установка/доставка уведомлений на
 физическом телефоне не подтверждены. [Apple receipt и ограничения](qa-external-testflight18-2026-10-17/README.md).
+
+## 2026-10-17 · native Cabinet reader source candidate, no release
+
+PR18 connects its protected transport to a separate opt-in current shared native
+wiki host. Materials, recordings, structured concepts, graph and saved IDs retain
+the current reader; failures destroy private content and permit explicit recovery.
+Zoom remains independently authorized. 141 app /31 wiki tests, TypeScript/lint and
+normal iOS/Hermes export passed. Installed synthetic iPhone/iPad checks cover
+material/concept/graph, background/tab return, bookmark retention, 401/403/rate/
+offline recovery and the separate Zoom sheet. [Evidence and remaining checks](qa-native-content-ui-2026-10-17/README.md).
+Real provider/joint conformance and full-parent/Android native QA remain separate.
+No new archive/upload/tag or Apple query/group change in this source continuation;
+the preceding external18 status is unchanged.

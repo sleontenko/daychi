@@ -220,3 +220,17 @@ joint proof remain dependencies; browser13 temporary-origin and shared sync17
 wire/clock/migration are requested in the original assignments. No new native
 binary, protected-content activation or production deployment. Old occupied
 native-content36 files and root WIP remain preserved.
+
+Native reader mounting continuation (2026-10-17): PR18 now connects the current
+shared native wiki through a separate default-off Cabinet host. Private WebView
+generations are destroyed on account/lifecycle/failure changes; same-account
+navigation metadata and existing saved-ID keys survive revalidation. Source URLs
+are freshly rechecked; Zoom remains independently legacy-authorized. 292 backend /
+141 app /31 wiki tests, typecheck/lint and normal iOS/Hermes exports with content
+off/on pass. Actual synthetic WKWebView phone/iPad checks and their limits are in
+docs/qa-native-content-ui-2026-10-17/README.md. Provider15 deployed capacity and
+real joint16 proof remain pending. Full-parent/Android QA remains before a new
+binary; no production activation, new release or design-reference promotion.
+QA overrides/services were removed/stopped, normal Expo entry restored. Historical
+root520 and occupied old native-content36 inventories remain hash-identical
+apart from intentional root handoff updates.

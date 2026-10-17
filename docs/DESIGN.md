@@ -94,3 +94,12 @@ articles, browser safeguards and archive labels. The consolidated candidate stil
 needs fresh affected-state phone/iPad/Android navigation and reference/runtime pairs
 before binary acceptance; source parity and automation do not replace those checks.
 Do not publish private corpus frames to fill that evidence gap.
+
+## Native Cabinet reader · кандидат 17 октября
+
+[Состояния и переходы](../design/candidates/native-cabinet-reader-2026-10-17/README.md)
+сохраняют текущую библиотеку/статьи/понятия/Sigma и добавляют отдельные состояния
+входа, отказа и восстановления. [Установленный synthetic iPhone/iPad QA](qa-native-content-ui-2026-10-17/README.md)
+содержит снимки только тестовых данных; парные принятые референсы с корпусом
+остаются локальными. Новый референс не принят автоматически. Полная навигация
+родительского экрана и Android Back остаются проверками перед новым бинарником.

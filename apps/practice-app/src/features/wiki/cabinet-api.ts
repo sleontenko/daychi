@@ -1,13 +1,14 @@
 import { CabinetError } from '../cabinet-account/protocol';
 import { cabinetAccountEnabled, cabinetSession } from '../cabinet-account/session';
-import { createCabinetContentClient } from './cabinet-content-client';
+import { CONTENT_MISSING, createCabinetContentClient } from './cabinet-content-client';
 
-// Explicit private transport. Never selected by the existing public WebView bridge.
-// Mounting a protected reader is a separate UX/activation change.
-const enabled = process.env.EXPO_PUBLIC_CABINET_CONTENT_ENABLED === '1';
+// Explicit private transport, selected only by the separate protected host.
+export const cabinetContentEnabled = process.env.EXPO_PUBLIC_CABINET_CONTENT_ENABLED === '1';
 const endpoint = process.env.EXPO_PUBLIC_DAYCHEE_API_URL ?? '';
 export async function cabinetWikiRequest<T>(path: string): Promise<T> {
-  if (!enabled || !cabinetAccountEnabled) throw new CabinetError('configuration');
+  if (!cabinetContentEnabled || !cabinetAccountEnabled) throw new CabinetError('configuration');
   const read = createCabinetContentClient(endpoint);
-  return cabinetSession().readContent(token => read<T>(path, token));
+  const value = await cabinetSession().readContent(token => read<T>(path, token));
+  if (value === CONTENT_MISSING) throw new Error('404');
+  return value;
 }

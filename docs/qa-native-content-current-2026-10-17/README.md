@@ -1,5 +1,11 @@
 # Native Cabinet content — current-source preparation, 17 October 2026
 
+**Later same-day continuation:** the operator subsequently requested mounting.
+The distinct protected native host is now connected in PR18; its installed
+synthetic iPhone/iPad checks and remaining live-provider/release limits are in
+[the mounting report](../qa-native-content-ui-2026-10-17/README.md).
+The unmounted statements below retain their original preparation scope.
+
 Base: consolidated main c146326c7ea552772d8c804b3a08ad5637ca5eb0.
 Authority: [Workshop16](https://github.com/dveyarangi/xuanxue-workshop/issues/16),
 [native-content-session@a07f087](https://github.com/dveyarangi/xuanxue-workshop/blob/a07f08747aa7d97e4d3496e87e1d8319db413698/docs/contracts/native-content-session.md).

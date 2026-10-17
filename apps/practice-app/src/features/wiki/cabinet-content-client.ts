@@ -1,11 +1,13 @@
 import { CabinetError } from '../cabinet-account/protocol';
 
+export const CONTENT_MISSING = Symbol('content-missing');
+
 export function createCabinetContentClient(endpoint: string, request: typeof fetch = fetch, deadlineMs = 10000) {
   const base = new URL(endpoint);
   if (base.protocol !== 'https:' || base.username || base.password || base.pathname !== '/' ||
       base.search || base.hash || ['wiki.xuanxue.su', 'wiki.staging.xuanxue.su'].includes(base.hostname.replace(/\.$/, '')) ||
       !Number.isFinite(deadlineMs) || deadlineMs <= 0 || deadlineMs > 10000) throw new CabinetError('configuration');
-  return async function read<T>(path: string, bearer: string): Promise<T> {
+  return async function read<T>(path: string, bearer: string): Promise<T | typeof CONTENT_MISSING> {
     const url = new URL(base.origin + '/api/native/wiki' + path);
     if (!path.startsWith('/') || path.startsWith('//') || path.includes('\\') || url.hash ||
         url.origin !== base.origin || !url.pathname.startsWith('/api/native/wiki/')) throw new CabinetError('configuration');
@@ -21,6 +23,7 @@ export function createCabinetContentClient(endpoint: string, request: typeof fet
           headers: { Authorization: 'Bearer ' + bearer, Accept: 'application/json' },
         });
         if (response.url && response.url !== url.href) throw new CabinetError('temporarily_unavailable');
+        if (response.status === 404) return CONTENT_MISSING;
         if (response.status === 401) throw new CabinetError('invalid_token');
         if (response.status === 403) throw new CabinetError('account_blocked');
         if (response.status === 429 || (response.status === 503 && response.headers.has('Retry-After'))) {

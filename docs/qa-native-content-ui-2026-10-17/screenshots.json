@@ -1,0 +1,61 @@
+{
+  "fixture": "synthetic-only; real WKWebView and mounted Daychi backend; no live Cabinet account",
+  "captures": [
+    {
+      "path": "screenshots/01-signed-out.jpg",
+      "sha256": "f577271c4f956bd05c0afc9256e8d5a17d69c90b5f9f5e18b57b0160d0f7c1a6"
+    },
+    {
+      "path": "screenshots/04-tab-restored.jpg",
+      "sha256": "b916036c7728bc9a2379b73fd099c5bd249a5dc246051bb699f72d85f151577f"
+    },
+    {
+      "path": "screenshots/05-offline.jpg",
+      "sha256": "b6a8acf6d24a28ef4542d037eff3c079343b964384bf68934f2a04849e90a4af"
+    },
+    {
+      "path": "screenshots/06-recovered.jpg",
+      "sha256": "b916036c7728bc9a2379b73fd099c5bd249a5dc246051bb699f72d85f151577f"
+    },
+    {
+      "path": "screenshots/07-blocked.jpg",
+      "sha256": "37c624bde45b50113967409f6c1b65a320e95bf297afff9e671fd0a79e34edd5"
+    },
+    {
+      "path": "screenshots/08-rate-delay.jpg",
+      "sha256": "aebf8932156e38f41cdf14dacec8f0b93bcff15b26afaf8e660ebd9124a71d7b"
+    },
+    {
+      "path": "screenshots/09-graph.jpg",
+      "sha256": "a49f0e23e43ae5e412deca8dd81920c62e4385a260346b2c93cf1bc39c40f179"
+    },
+    {
+      "path": "screenshots/14-invalid-token.jpg",
+      "sha256": "adbeff542bc50974781efc5aba342a52093201ae15a96023e00e4578378b195d"
+    },
+    {
+      "path": "screenshots/15-zoom-independent-locked.jpg",
+      "sha256": "9fcd6eef11e327ed5b0f3ebc47a3621880b8ad9d0f3d93c776a9bae695d90d7f"
+    },
+    {
+      "path": "screenshots/19-ipad-library.jpg",
+      "sha256": "c208e53a45ef854a881db7ffadb6fe416c2d5d0e9e1822c8bc754a5285602f64"
+    },
+    {
+      "path": "screenshots/20-ipad-article.jpg",
+      "sha256": "508d60c3a6d14f4095f7e6dc26e631ab4357c569199448006f88dcd08000bbdd"
+    },
+    {
+      "path": "screenshots/21-ipad-concept.jpg",
+      "sha256": "c23f5bc0befba82d5893d28bdf40e8782de93ac800c87427b0ed86ea85415586"
+    },
+    {
+      "path": "screenshots/22-ipad-landscape.jpg",
+      "sha256": "f8d7b40d7a035a5d8c4da0b81004fa00d39f7c18e8ad891eef49d45887d92c7e"
+    },
+    {
+      "path": "screenshots/23-ipad-final-gate.jpg",
+      "sha256": "3801920a2a836de42ba570766b8b629778d7c3b4e446b820c10b035c16b64d48"
+    }
+  ]
+}
