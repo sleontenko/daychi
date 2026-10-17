@@ -2,7 +2,8 @@
 
 The operator requested an audit and Git synchronization before the next app/design version.
 This isolated candidate combines existing published branches and recovers omitted release
-source. It does not deploy, activate SSO/content access, merge main or upload a new app.
+source. [Published draft PR16](https://github.com/sleontenko/daychi/pull/16), source commit
+883f5d6cc1b69cbc8da8dbc9c18ba0a6c97aa8a3. The initial permission blocker is resolved. It does not deploy, activate SSO/content access, merge main or upload a new app.
 
 ## Current functionality and unfinished work
 
@@ -47,7 +48,7 @@ Old editorial scripts in root are historical remnants; new editorial work belong
 Daychi Knowledge and is not being republished into the app repository.
 
 Use codex/sync-cabinet-baseline-20261017 for the next source review/design task.
-Remote publication/equality remains blocked as detailed below. This does not claim
+Source publication and local/remote tree equality are confirmed below. This does not claim
 that main or every local historical QA file has been synchronized/cleaned. Original
 PR12/13/15 remain open; this candidate contains their exact published heads for review.
 
@@ -78,7 +79,7 @@ source parity and browser-sized screenshots do not establish a native install,
 physical notification delivery, production SSO or a new TestFlight release.
 
 
-## Publication status — blocked after local completion
+## Historical publication blocker — resolved after operator reauthorization
 
 Source reconciliation is committed locally at4ad34ed and this clean isolated branch
 is ready for publication. `git push` could not obtain HTTPS credentials; the saved
@@ -99,5 +100,29 @@ must not be claimed until publication succeeds. Original PR12/13/15 remain open.
 After operator repository reauthorization, the same Git blob write succeeded.
 The preceding403/push report remains historical. Publication now proceeds through
 the GitHub connector; no terminal credentials are extracted or copied. The source
-and previously executed checks are unchanged. Final branch/tree/CI evidence follows
-publication; main merge, deployment and binary release remain separate.
+and previously executed checks are unchanged. Published branch and tree equality are confirmed in the current receipt;
+main merge, deployment and binary release remain separate.
+
+
+## Published source and local synchronization
+
+The operator reauthorized repository access. GitHub connector publication created
+[PR16](https://github.com/sleontenko/daychi/pull/16) at source883f5d6, with main plus the
+published PR12/13/15 heads as ordered parents. Its complete tree f31b643b2ced4f9c4e7206043f450e333e49218f
+matches the verified local candidate byte-for-byte. Local branch was aligned only
+after clean-status/tree equality checks; the prior local authoring history remains
+on codex/sync-cabinet-local-before-connector-20261017. No force push or root reset.
+
+The [publication receipt](publication-status.json) tracks CI for this exact source.
+[Image provenance](image-provenance.json) records the synthetic fixture and byte hashes,
+including the resolved automatic-review hold. Original successful native account
+runs and local app/backend/browser tests were not repeated for Git publication.
+Original PR12/13/15 remain open; source publication does not establish merged main,
+authenticated web SSO, protected native Cabinet content or a new app release.
+
+
+Exact source883f5d6 CI [39048278308](https://github.com/sleontenko/daychi/actions/runs/39048278308)
+passed all three jobs: backend, app and wiki. This includes clean Python/npm installs,
+repository guard, TypeScript, lint, tests and deterministic web bundle rebuild. GitHub
+reports the draft mergeable against main. This follow-up changes documentation only;
+source, configuration, bundles and previously verified runtime behavior are unchanged.

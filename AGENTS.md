@@ -200,3 +200,11 @@ access before publishing; do not bypass the connector permission denial. Track t
 the previously denied connector Git-blob write succeeds. The preceding block is a
 historical receipt, not a current permission denial. Continue this branch's prepared
 publication through the connector; verify final source-tree identity and CI.
+
+
+Consolidated source published after reauthorization: [draft PR16](https://github.com/sleontenko/daychi/pull/16),
+source883f5d6 and complete tree f31b643b2ced4f9c4e7206043f450e333e49218f. Local/remote
+source trees match; original local authoring commits are preserved on
+codex/sync-cabinet-local-before-connector-20261017. Earlier access-denial statements
+are historical. No main merge/deployment/new release. Use the source-sync receipt
+for current CI and preserve the separate native-content WIP and root historical WIP.
