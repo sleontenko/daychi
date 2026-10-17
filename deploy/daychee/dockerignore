@@ -42,3 +42,12 @@
 !practice_api/access_requests.py
 !practice_api/access_request_api.py
 !practice_api/access_request_notifications.py
+!practice_api/public_wiki.py
+!practice_api/access_deletion.py
+!practice_api/access_restore.py
+!practice_api/retention.py
+!practice_api/public_pages.py
+!practice_api/public_pages/
+!practice_api/public_pages/**
+!scripts/daychee-restore-access.py
+!practice_api/web_wiki_session.py

@@ -21,7 +21,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from .wiki_graph import mount_wiki_graph
-from .public_wiki import mount_public_wiki, public_article
+from .public_wiki import mount_public_wiki, public_article, public_material
 from .wiki_content import ContentStore
 from .wiki_semantics import SemanticStore, mount_semantic_reads
 from .wiki_articles import ArticleStore, mount_article_reads
@@ -213,9 +213,13 @@ def create_wiki_app(settings=None, access_authorizer=None):
         return {'total': len(rows), 'missing_ids': missing, 'items': [{k: r[k] for k in fields} for r in rows[offset:offset + limit]]}
 
     @app.get('/api/wiki/materials/{material_id}', dependencies=[Depends(authorize)])
-    def material(material_id: str):
+    def material(material_id: str, request: Request):
         for row in load():
             if row['id'] == material_id:
+                if getattr(request.state, 'cabinet_web_authorized', False):
+                    # Authenticated recordings are allowed; Zoom remains its own
+                    # invitation capability. Public projection defaults stay closed.
+                    return public_material(row, content, include_recordings=True)
                 annotation = content.get(material_id, row['links'])
                 return {**row, 'annotation': annotation} if annotation else row
         raise HTTPException(404, 'Материал больше не доступен')

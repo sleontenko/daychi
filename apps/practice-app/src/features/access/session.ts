@@ -3,6 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import { useSyncExternalStore } from 'react';
 import { Platform } from 'react-native';
 import { isInvitationCode } from './invitation-code';
+import { rememberDeletionCredential, withAccessMutation } from './deletion-client';
 
 const KEY = 'daychee.access.session.v1';
 const endpoint = process.env.EXPO_PUBLIC_DAYCHEE_API_URL ?? '';
@@ -20,8 +21,12 @@ export function useAccess() { return useSyncExternalStore(subscribe, () => statu
 function persistSession(value: string | null, intent: number, expectedToken?: string) {
   const write = storageWrites.then(async () => {
     if (intent !== authIntent || (expectedToken !== undefined && token !== expectedToken)) return;
-    if (value) await SecureStore.setItemAsync(KEY, value, { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY });
-    else await SecureStore.deleteItemAsync(KEY);
+    if (value) {
+      await rememberDeletionCredential(value);
+      await SecureStore.setItemAsync(KEY, value, { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY });
+    } else {
+      await SecureStore.deleteItemAsync(KEY);
+    }
     if (intent === authIntent) { generation++; token = value; publish(value ? 'active' : 'locked'); }
   });
   storageWrites = write.catch(() => {});
@@ -57,7 +62,7 @@ async function request<T>(path: string, body?: unknown, credential?: string): Pr
     return await result.json();
   } finally { clearTimeout(timer); }
 }
-export async function restoreAccess() {
+async function restore() {
   const id = ++generation;
   if (Platform.OS === 'web') { publish('locked'); return; }
   publish('loading');
@@ -65,12 +70,15 @@ export async function restoreAccess() {
     await storageWrites;
     const saved = await SecureStore.getItemAsync(KEY);
     if (id !== generation) return;
-    token = saved;
     if (!saved) { publish('locked'); return; }
+    await rememberDeletionCredential(saved);
+    if (id !== generation) return;
+    token = saved;
     await request('/api/access/session', undefined, saved);
     if (id === generation) publish('active');
   } catch { if (id === generation) publish(token ? 'offline' : 'locked'); }
 }
+export function restoreAccess() { return withAccessMutation(restore).catch(() => { publish(token ? 'offline' : 'locked'); }); }
 export function suspendAccess() { generation++; publish(token ? 'offline' : 'locked'); }
 export async function acceptApprovedSession(approvedToken: string) {
   if (Platform.OS === 'web' || !/^[\w-]{43,128}$/.test(approvedToken)) throw new Error('Не удалось сохранить доступ.');
@@ -82,7 +90,7 @@ export async function acceptApprovedSession(approvedToken: string) {
   if (id !== generation || intent !== authIntent) throw new Error('Доступ изменился. Повторите проверку заявки.');
   await persistSession(approvedToken, intent);
 }
-export async function redeemInvitation(invitation: string) {
+async function redeem(invitation: string) {
   if (Platform.OS === 'web') throw new Error('Откройте приглашение в приложении на телефоне.');
   const intent = ++authIntent;
   const code = isInvitationCode(invitation);
@@ -91,10 +99,18 @@ export async function redeemInvitation(invitation: string) {
   if (intent !== authIntent) throw new Error('Доступ изменился. Проверьте состояние входа.');
   await persistSession(result.token, intent);
 }
-export async function logoutAccess() {
+export function redeemInvitation(invitation: string) { return withAccessMutation(() => redeem(invitation)); }
+async function logout() {
   const intent = ++authIntent;
   if (token) await request('/api/access/logout', {}, token);
   await persistSession(null, intent);
+}
+export function logoutAccess() { return withAccessMutation(logout); }
+export async function clearSessionAfterDeletion() {
+  authIntent++; generation++;
+  await storageWrites;
+  await SecureStore.deleteItemAsync(KEY);
+  token = null; publish('locked');
 }
 export async function privateRequest<T>(path: string): Promise<T> {
   if (!token || status !== 'active') throw new Error('Для закрытых материалов нужен доступ по приглашению и интернет.');

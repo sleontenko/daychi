@@ -1,0 +1,37 @@
+{
+  "parent": "4e9f68e2ce18c3c79c5add477f47258f6a1f765f",
+  "files": [
+    {
+      "path": "practice_api/daychee_app.py",
+      "sha256": "fab183fb398951b8252c8d18ff7e9fc6fb2c3b9629e7773daae0edfc4b757dbf"
+    },
+    {
+      "path": "practice_api/public_wiki.py",
+      "sha256": "820725600f5eb603a175d5aad24d6c35141416b4bd4ff8e34feb0da04e880450"
+    },
+    {
+      "path": "practice_api/website/index.html",
+      "sha256": "639c34e219999eb8eab0c8645f566ac5587d6ef908aeaacd3717998931fbacac"
+    },
+    {
+      "path": "practice_api/website/site.js",
+      "sha256": "6eff27d18706dcf93aa3467714d16ab55bffe806951f4f61b679dfc332b0f793"
+    },
+    {
+      "path": "practice_api/website/site.css",
+      "sha256": "93ab071ec9215c6c03044e73c9165ec8dc5330551cb95e72547c91ea47ab9713"
+    },
+    {
+      "path": "practice_api/website/graph-layout.mjs",
+      "sha256": "97b46aff277cf1d543dd1d0baefe3f3d65a5c85b958219933d24dc2990814616"
+    },
+    {
+      "path": "tests/test_web_wiki_session.py",
+      "sha256": "f2274353f0d1388c40676b98af995031bd535170d5a6ed34488f7f14c9152d8a"
+    },
+    {
+      "path": "apps/wiki-graph/qa/site-cabinet.py",
+      "sha256": "3bb8fd2501b114daa0943b07adc1916d4a2bd88ee34591806cc1e2e56dc23aac"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 export type Summary = { id: string; title: string; date: string; category_name: string; subtopic: string };
-export type Material = Summary & { description: string; links: { url: string; label: string; type: string }[]; zoom_password: string | null };
+export type Material = Summary & { description: string; links: { url: string; label: string; type: string }[]; zoom_password?: string | null; restricted_links?: boolean };
 export type CatalogMaterial = Material & { category: string; subtopic_key: string; timestamp: number };
 export type Category = { id: string; name: string; count: number; subtopics: { id: string; name: string; count: number }[] };
 export type Results = { total: number; items: Summary[]; missing_ids: string[] };

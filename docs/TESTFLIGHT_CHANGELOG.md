@@ -1,5 +1,13 @@
 # История мобильных выпусков
 
+Подготовка сайта 14 октября, без выпуска: по уточнению оператора вернули публичный
+граф на главной; клик предлагает вход через кабинет. Отдельное минимальное превью
+не раскрывает YouTube URL/ID, тексты и названия материалов. 201 backend / 21 web
+tests, Chrome 390/1440 и состояния загрузки/ошибки/повтора/пустого графа проверены.
+59-file stage подготовлен локально. Source branch codex/cabinet-web-wiki после
+4e9f68e; без push/deployment/Apple upload/status change.
+[QA и оставшаяся совместная проверка](qa-site-public-graph-2026-10-14/README.md).
+
 Версия приложения — `1.0.0`; номер сборки указан в скобках.
 Записи фиксируют состояние на указанную дату. Уточнения добавляются отдельно;
 source tag не заменяет архив, статус Apple или проверку на устройстве.
@@ -213,3 +221,48 @@ APNs-доставка не подтверждена. Исправление ос
 устройства и ограничения. Новые результаты добавлять с датой.
 dSYM warnings ограничивают символикацию сторонних библиотек;
 успешный upload не подтверждает работу на телефоне.
+
+## Подготовка веб-вики с Cabinet — 2026-10-13, без выпуска
+
+Локальный кандидат: серверная проверка каждой сессии, Cabinet entry/logout,
+защита ссылок на записи, очистка состояния при отказе и независимые staging/production
+профили по контракту 25def59e. 180 backend / 21 web tests, web build и синтетический
+Chrome QA; парные reference/runtime кадры сохранены. Source base
+`d2cde6b93ef79734e4de0438ddc2e138698214af`, branch `codex/cabinet-web-wiki`.
+Оба реальных session-check endpoint отвечают 404; staging wiki HTTPS не подтверждён.
+Нет deployment, DNS/cache изменений, нового Apple upload, release tag или изменения
+Apple status; предыдущие мобильные факты этой записью не подтверждаются заново.
+[Проверки, исходники и оставшаяся совместная проверка](qa-web-wiki-cabinet-2026-10-13/README.md).
+
+Уточнение веб-кандидата 13 октября: ссылки сайта и alias app/wiki подготовлены
+на основе последнего опубликованного c964041f пакета, сохраняя Android4, native
+session-details, retention/restore и текущие public pages. Главная не читает корпус
+анонимно; вход ведёт к закреплённому wiki origin с исходным hash/query.
+198 backend tests, public-pages recheck, Chrome 360/390/768/1440 и 59-file stage.
+Оба endpoint кабинета снова вернули 404 в 11:08 UTC. Deployment и Apple status
+не менялись. [Новая проверка сайта](qa-site-cabinet-links-2026-10-13/README.md).
+
+Уточнение 14 октября вечером, без выпуска: Workshop принял публичный обзор графа
+в контракте d689c24. В локальный Cabinet-кандидат перенесён опубликованный main
+c7af6f6, сохраняя архив и private/public redaction. 237 backend / 23 web tests,
+61-file stage. Реальный совместный вход и публикация не подтверждены; регулярная
+проверка подготовлена, но расписание ещё не создано. [Проверка](qa-cabinet-followup-2026-10-14/README.md).
+
+Уточнение ревью 14 октября, без выпуска: Workshop проверил опубликованный PR13 и
+не нашёл дефекта общего контракта в исследованном объёме. Локальную ошибку Windows
+cp1252 исправили явным UTF-8 при чтении HTML; четыре регрессионных случая сначала
+воспроизвели отказ, затем прошли. 43 boundary / 241 backend tests; native Windows
+запуск не выполнялся. HTML, frontend bundle, дизайн и Apple status неизменны.
+[Проверка и ограничения](qa-cabinet-followup-2026-10-14/README.md).
+
+
+## 2026-10-17 · consolidated source only, no new release
+
+Operator-requested Git synchronization combines PR12/13/15 and restores omitted
+historical build18 privacy/settings/native-reader/iPad source. Native account #8 is
+accepted; web SSO, native Cabinet content and shared selection/reminder sync retain
+their separate outstanding work. [Source/checks/current limits](qa-git-sync-2026-10-17/README.md).
+241 backend /125 app /30 wiki tests, TypeScript/lint and iOS JS/Hermes export passed.
+No Apple query/upload/group change, source-main merge, production activation or
+new release occurred in this source task. The preceding internal TestFlight18 receipt
+remains the latest Apple evidence; new consolidated native visual/release QA remains.

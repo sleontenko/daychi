@@ -1,0 +1,6 @@
+{
+  "python_files": 25,
+  "syntax_valid": true,
+  "forbidden_payload_paths": [],
+  "full_docker_build": false
+}

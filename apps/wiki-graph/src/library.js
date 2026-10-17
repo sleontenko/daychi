@@ -3,7 +3,9 @@ import { renderSummary, renderFragments } from './content.js';
 import { publications, relationReason, rememberOpened, BOOKMARKS_KEY, OPENED_KEY, readIds } from './ui-model.js';
 import { mountSemanticViews } from './semantics.js';
 import { articleBody, articleContents, relatedArticles, mountArticleConcepts } from './articles.js';
-export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host }) {
+export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host, beforeRoute = null, initialScroll = 0 }) {
+  const lifecycle = new AbortController(); let disposed = false;
+  const listen = (target, event, callback) => target.addEventListener(event, callback, { signal: lifecycle.signal });
   const root = document.querySelector('#library');
   const workspace = document.querySelector('#graph-workspace');
   const nodes = new Map(DATA.nodes.map(n => [n.id, n]));
@@ -20,6 +22,7 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host }) {
     if (el) inputState.set(current,{value:el.value,start:el.selectionStart,end:el.selectionEnd});
   }
   let current = location.hash, graphHash = '#view=graph', catalogHash = '#view=catalog', libraryHash = '#view=home', recentHash = '#view=recent', ticket = 0;
+  scroll.set(current, initialScroll);
   let articleTab = 'home';
   const tabRoutes = new Map(), readerOrigins = new Map();
   const tabFor = route => ['home','catalog','concepts','concept'].includes(route) ? 'home' : route;
@@ -35,14 +38,15 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host }) {
   const href = (values) => '#' + new URLSearchParams(values).toString();
   const semantic = mountSemanticViews({root,api,esc,shell,href,ticket:()=>ticket,onAuth:()=>showLogin('Доступ закончился или был отозван.'),restoreScroll});
   const structured = mountArticleConcepts({root,api,esc,shell,href,concepts,ticket:()=>ticket,onAuth:()=>showLogin('Доступ закончился или был отозван.'),restoreScroll});
+  const archiveLabel = n => n.sec === 'archive:archive-neidan' ? 'Архивный Нэйдань' : '';
   const articleLink = (n, updated = false, reason = '') => {
     if (n.concept_id) return conceptCard(n);
     const changed = Number(n.updated_ts) > 0;
     const date = updated && (changed || Number(n.ts) > 0)
       ? new Intl.DateTimeFormat('ru-RU', {day:'numeric',month:'short',timeZone:'Asia/Jerusalem'}).format(new Date(changed ? Number(n.updated_ts) : Number(n.ts)))
       : n.date;
-    const caption = updated ? (changed ? 'Материал обновлён' : 'Дата исходной публикации')
-      : reason || (n.sub || sections.get(n.sec)?.name || '') + (date && !reason ? ' · '+date : '');
+    const caption = [archiveLabel(n), updated ? (changed ? 'Материал обновлён' : 'Дата исходной публикации')
+      : reason || (n.sub || sections.get(n.sec)?.name || '') + (date && !reason ? ' · '+date : '')].filter(Boolean).join(' · ');
     return `<a class="material-card ${updated?'publication-card':''}" data-route href="${href({view:'article',id:n.id})}"><span><span class="material-title"><strong>${esc(n.label)}</strong>${updated?`<time class="publication-date ${changed?'changed':''}">${esc(date||'')}</time>`:''}</span><small>${esc(caption)}</small></span></a>`;
   };
   function conceptCard(n) {
@@ -50,6 +54,7 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host }) {
     return `<a class="material-card" data-route href="${href({view:'concept',id:n.concept_id})}"><span><strong>${esc(n.label)}</strong><small>${esc(date)}</small></span></a>`;
   }
   function go(hash, replace = false, targetTab) {
+    if (disposed) return;
     tabRoutes.set(view==='article'?articleTab:tabFor(view),current);
     rememberInput();
     scroll.set(current, window.scrollY);
@@ -65,9 +70,15 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host }) {
     history[replace ? 'replaceState' : 'pushState']({wiki:true,from}, '', hash);
     route();
   }
-  function restoreScroll() { requestAnimationFrame(() => window.scrollTo(0, scroll.get(location.hash) || 0)); }
-  function route() {
-    clearTimeout(timer); ++ticket;
+  function restoreScroll() { requestAnimationFrame(() => { if (!disposed) window.scrollTo(0, scroll.get(location.hash) || 0); }); }
+  async function route() {
+    if (disposed) return;
+    clearTimeout(timer); const own = ++ticket;
+    if (beforeRoute) {
+      root.hidden = true; workspace.hidden = true;
+      try { await beforeRoute(); } catch { return; }
+      if (disposed || own !== ticket) return;
+    }
     const p = params();
     view = p.get('view') || (host || location.pathname === '/wiki' ? 'home' : 'graph');
     if (!['home','recent','catalog','article','concepts','concept','graph','saved'].includes(view)) view = 'home';
@@ -93,6 +104,7 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host }) {
     restoreScroll();
   }
   function renderCatalog(p, { resultsOnly = false } = {}) {
+    if (disposed) return;
     const category = sections.has(p.get('category')) ? p.get('category') : '';
     const prior = !resultsOnly && inputState.get(current);
     const query = prior ? prior.value : p.get('q') || '';
@@ -164,6 +176,7 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host }) {
     root.querySelector('[data-more]')?.addEventListener('click',()=>{ const y=window.scrollY; filters({page:page+1},true); scroll.set(current,y); restoreScroll(); });
   }
   async function renderArticle(id) {
+    if (disposed) return;
     const n = nodes.get(id), request = ticket;
     if(n?.type==='material') {
       opened=rememberOpened(opened,id);
@@ -172,7 +185,7 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host }) {
     const back = `<button class="link-inline library-back" data-back>← Назад</button>`;
     if (!n || n.type !== 'material') { root.innerHTML=shell('catalog',back+'<h1>Материал не найден</h1><a href="#view=catalog" data-route>Вернуться в каталог</a>'); return; }
     root.innerHTML = shell('article', `<div class="reader-toolbar">${back}<button class="reader-bookmark" data-bookmark="${esc(id)}" aria-pressed="${saved.has(id)}">${saved.has(id)?'Сохранено':'Сохранить'}</button></div>
-      <div class="reader-layout"><article><header class="reader-header"><span class="reader-kicker">Занятие</span><h1 tabindex="-1">${esc(n.label)}</h1><p class="muted reader-date">${esc(n.date)}${n.sub?' · '+esc(n.sub):''}</p><p class="muted small" id="article-status" hidden></p><div id="article-links"></div></header>
+      <div class="reader-layout"><article><header class="reader-header"><span class="reader-kicker">${esc(archiveLabel(n)||'Занятие')}</span><h1 tabindex="-1">${esc(n.label)}</h1><p class="muted reader-date">${esc(n.date)}${n.sub?' · '+esc(n.sub):''}</p><p class="muted small" id="article-status" hidden></p><div id="article-links"></div></header>
       <details class="reader-toc" ${window.matchMedia('(min-width:1000px)').matches?'open':''}><summary>Содержание</summary><nav aria-label="Содержание"><button data-anchor="article-summary">Конспект</button><button data-anchor="article-connections">Связанные материалы</button></nav></details>
       <div id="article-summary" role="status">Загружаем описание…</div><section id="article-about" hidden><h2><span class="section-number" aria-hidden="true">01</span>Фрагменты записи</h2><div id="article-detail"></div></section>
       <section id="article-online" hidden></section><section id="article-semantic" hidden></section><section id="article-connections"><h2><span class="section-number" aria-hidden="true">02</span>Связанные материалы</h2><div id="article-related"></div><div class="reader-actions"><a class="btn" data-route href="${href({view:'graph',sel:id,mode:'local',depth:'1'})}">Показать на графе</a></div></section></article></div>`);
@@ -235,12 +248,12 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host }) {
   document.querySelector('#nav-catalog').onclick=()=>go(catalogHash);
   document.querySelector('#nav-graph').onclick=()=>go(tabRoutes.get('graph')||graphHash,false,'graph');
   document.querySelector('#nav-saved').onclick=()=>go(tabRoutes.get('saved')||'#view=saved',false,'saved');
-  document.addEventListener('click',e=>{
+  listen(document, 'click',e=>{
     const a=e.target.closest('a[data-route],a[data-article]');
     if(a && !e.metaKey && !e.ctrlKey && !e.shiftKey && e.button===0) { e.preventDefault(); go(a.getAttribute('href')); }
     const bookmark=e.target.closest('[data-bookmark]');
     if(bookmark) { bookmark.disabled=true;
-      (host ? host.bookmark(bookmark.dataset.bookmark) : Promise.resolve().then(()=>{const id=bookmark.dataset.bookmark;const next=saved.has(id)?[...saved].filter(x=>x!==id):[...saved,id]; if(webStorage) webStorage.setItem(BOOKMARKS_KEY,JSON.stringify(next)); return next;})).then(ids=>{saved.clear();ids.forEach(id=>saved.add(id));bookmark.textContent=saved.has(bookmark.dataset.bookmark)?'Сохранено':'Сохранить';bookmark.setAttribute('aria-pressed',String(saved.has(bookmark.dataset.bookmark)));if(view==='saved')renderCatalog(params());})
+      (host ? host.bookmark(bookmark.dataset.bookmark) : Promise.resolve().then(()=>{const id=bookmark.dataset.bookmark;const next=saved.has(id)?[...saved].filter(x=>x!==id):[...saved,id]; if(webStorage) webStorage.setItem(BOOKMARKS_KEY,JSON.stringify(next)); return next;})).then(ids=>{if(disposed)return;saved.clear();ids.forEach(id=>saved.add(id));bookmark.textContent=saved.has(bookmark.dataset.bookmark)?'Сохранено':'Сохранить';bookmark.setAttribute('aria-pressed',String(saved.has(bookmark.dataset.bookmark)));if(view==='saved')renderCatalog(params());})
       .catch(()=>{bookmark.textContent='Не удалось сохранить · Повторить';}).finally(()=>{bookmark.disabled=false;});
     }
     const back=e.target.closest('[data-back]');
@@ -258,8 +271,12 @@ export function mountLibrary({ DATA, api, esc, showLogin, onGraph, host }) {
     };
     document.querySelector('#native-back').onclick=()=>host.back();
   }
-  window.addEventListener('wiki-graph-navigation',()=>{ graphHash=location.hash; current=location.hash; host?.route({view:'graph',canBack:host?.history.canBack}); });
-  window.addEventListener('popstate',()=>{ rememberInput(); scroll.set(current,window.scrollY); if(view==='graph') onGraph({hash:current},false,'leave'); route(); });
-  window.addEventListener('hashchange',()=>{ if(current!==location.hash) route(); });
+  listen(window, 'wiki-graph-navigation',()=>{ graphHash=location.hash; current=location.hash; host?.route({view:'graph',canBack:host?.history.canBack}); });
+  listen(window, 'popstate',()=>{ rememberInput(); scroll.set(current,window.scrollY); if(view==='graph') onGraph({hash:current},false,'leave'); route(); });
+  listen(window, 'hashchange',()=>{ if(current!==location.hash) route(); });
   route();
+  return { dispose() { disposed = true; ++ticket; clearTimeout(timer); lifecycle.abort();
+    for (const key of ['home','recent','catalog','graph','saved']) document.querySelector('#nav-'+key).onclick = null;
+    articleCache.clear(); nodes.clear(); sections.clear(); scroll.clear(); inputState.clear(); root.innerHTML = "";
+  } };
 }

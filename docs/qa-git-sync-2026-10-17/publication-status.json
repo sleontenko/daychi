@@ -1,0 +1,27 @@
+{
+  "status": "published_source_ci_passed",
+  "localSourceCommit": "4ad34ed55405bde969e81ca7ded5a50a2b4d6e07",
+  "localBranch": "codex/sync-cabinet-baseline-20261017",
+  "remoteBranchPublished": true,
+  "newPullRequestCreated": true,
+  "terminalPush": "Failed: HTTPS credentials unavailable; gh reports invalid saved authentication.",
+  "githubConnectorWrite": "Original403 resolved after operator reauthorization; source/branch/draft PR publication succeeded through the same connector.",
+  "requiredAction": "Source review and affected native visual/navigation QA before any separately authorized main merge/runtime activation/release.",
+  "rootAndOccupiedContentWip": "Preserved; root AGENTS received only compact append-only handoffs.",
+  "previousStatus": "blocked",
+  "connectorWriteRecheckedAt": "2026-10-17T16:05:16.810515+00:00",
+  "connectorWriteRecheck": "Git blob creation succeeded after operator reauthorization.",
+  "sourceCommit": "883f5d6cc1b69cbc8da8dbc9c18ba0a6c97aa8a3",
+  "pullRequest": "https://github.com/sleontenko/daychi/pull/16",
+  "sourceTree": "f31b643b2ced4f9c4e7206043f450e333e49218f",
+  "localAndRemoteSourceTreesEqual": true,
+  "sourceCI": {
+    "runId": 39048278308,
+    "url": "https://github.com/sleontenko/daychi/actions/runs/39048278308",
+    "backend": "success",
+    "app": "success",
+    "wiki": "success",
+    "freshInstalls": true
+  },
+  "verifiedAt": "2026-10-17T16:11:58.793723+00:00"
+}

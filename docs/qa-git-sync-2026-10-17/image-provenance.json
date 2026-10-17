@@ -1,0 +1,54 @@
+{
+  "scope": "These exact bytes were captured in this task from local synthetic DTOs/provider, not from real accounts or corpus. Legacy .png filenames are retained to preserve existing links; actual image encoding is JPEG.",
+  "automaticReview": "One opaque-byte upload was initially rejected because safe provenance was not established. Direct local visual inspection and hashes established the synthetic content; the identical blob write was then accepted. No rejected image was renamed, re-encoded or routed through an alternative publication path.",
+  "images": [
+    {
+      "path": "docs/qa-git-sync-2026-10-17/screenshots/reference-article-390.png",
+      "actualFormat": "JPEG",
+      "bytes": 28936,
+      "sha256": "57fcb8837334893b62b80a22cd04b8aedec9bf11390f8ebefb5c1c1f2441bdd2",
+      "source": "Chrome connector screenshot of local synthetic web-session fixture on17October",
+      "review": "Visually inspected synthetic lesson/library or Cabinet-entry UI; no private corpus/account/credentials."
+    },
+    {
+      "path": "docs/qa-git-sync-2026-10-17/screenshots/reference-library-390.png",
+      "actualFormat": "JPEG",
+      "bytes": 23381,
+      "sha256": "fdd83c79b9776938b363fb071b9f1b7d255f4d3309d2e0916b77dd2736652c5b",
+      "source": "Chrome connector screenshot of local synthetic web-session fixture on17October",
+      "review": "Visually inspected synthetic lesson/library or Cabinet-entry UI; no private corpus/account/credentials."
+    },
+    {
+      "path": "docs/qa-git-sync-2026-10-17/screenshots/runtime-article-390.png",
+      "actualFormat": "JPEG",
+      "bytes": 28936,
+      "sha256": "57fcb8837334893b62b80a22cd04b8aedec9bf11390f8ebefb5c1c1f2441bdd2",
+      "source": "Chrome connector screenshot of local synthetic web-session fixture on17October",
+      "review": "Visually inspected synthetic lesson/library or Cabinet-entry UI; no private corpus/account/credentials."
+    },
+    {
+      "path": "docs/qa-git-sync-2026-10-17/screenshots/runtime-library-390.png",
+      "actualFormat": "JPEG",
+      "bytes": 24187,
+      "sha256": "ea13bca7a40599e9484e4d356d4d2b3d08aa115ff47bbe86862255385040f4fe",
+      "source": "Chrome connector screenshot of local synthetic web-session fixture on17October",
+      "review": "Visually inspected synthetic lesson/library or Cabinet-entry UI; no private corpus/account/credentials."
+    },
+    {
+      "path": "docs/qa-git-sync-2026-10-17/screenshots/runtime-recovered-390.png",
+      "actualFormat": "JPEG",
+      "bytes": 28325,
+      "sha256": "4466b44af65a970f5bf26a4aa6380bd9ff087573e903404528cf4fd2a12e720c",
+      "source": "Chrome connector screenshot of local synthetic web-session fixture on17October",
+      "review": "Visually inspected synthetic lesson/library or Cabinet-entry UI; no private corpus/account/credentials."
+    },
+    {
+      "path": "docs/qa-git-sync-2026-10-17/screenshots/runtime-refused-390.png",
+      "actualFormat": "JPEG",
+      "bytes": 19837,
+      "sha256": "0f74dc32cfa38c31056e18d72cedaad663618a6b1aa04d7b4fae4096c8919c0a",
+      "source": "Chrome connector screenshot of local synthetic web-session fixture on17October",
+      "review": "Visually inspected synthetic lesson/library or Cabinet-entry UI; no private corpus/account/credentials."
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "checked_on": "2026-10-13",
+  "operation": "GET /zones?name=xuanxue.su",
+  "success": true,
+  "status": 200,
+  "zones": [],
+  "total_count": 0,
+  "limitation": "Connected credentials expose no matching zone; DNS/rules/cache contents and purge not verified; no mutation performed."
+}

@@ -1,0 +1,166 @@
+{
+  "reader_routes": [
+    {
+      "path": "/api/wiki/login",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/wiki/logout",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/wiki/categories",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/wiki/materials",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/wiki/materials/{material_id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/wiki/concepts",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/wiki/concepts/{concept_id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/wiki/materials/{material_id}/concepts",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/public/wiki/concepts",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/public/wiki/concepts/{concept_id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/public/wiki/materials/{material_id}/concepts",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/wiki/articles/materials/{material_id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/wiki/articles/concepts/{concept_id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/public/wiki/articles/materials/{material_id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/public/wiki/articles/concepts/{concept_id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/public/wiki/recent",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/public/wiki/categories",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/public/wiki/materials",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/public/wiki/materials/{material_id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/public/wiki/graph",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/wiki/graph",
+      "methods": [
+        "GET"
+      ]
+    }
+  ],
+  "other_routes": [
+    "/wiki/graph",
+    "/wiki",
+    "/wiki-graph-assets/{name}",
+    "/privacy",
+    "/support",
+    "/public-page-assets/pages.css",
+    "/admin",
+    "/admin-assets/{name}",
+    "/api/admin/login",
+    "/api/admin/session",
+    "/api/admin/logout",
+    "/api/admin/invitations",
+    "/api/admin/invitations",
+    "/api/admin/invitations/{identity}/revoke",
+    "/api/admin/wiki/semantic-content",
+    "/api/admin/wiki/semantic-content",
+    "/api/admin/wiki/articles/sources",
+    "/api/admin/wiki/articles",
+    "/api/admin/wiki/articles",
+    "/api/admin/wiki/content",
+    "/api/admin/wiki/content",
+    "/api/feedback",
+    "/api/access/redeem",
+    "/api/access/redeem-code",
+    "/",
+    "/downloads/daychee-android.apk",
+    "/website-assets/{name}",
+    "/invite",
+    "/invitation-assets/{name}",
+    "/health",
+    "/api/v1/schedule",
+    "/api/access/session",
+    "/api/access/logout",
+    "/api/access/zoom"
+  ]
+}

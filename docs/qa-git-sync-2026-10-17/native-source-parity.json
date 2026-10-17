@@ -1,0 +1,14 @@
+{
+  "archive": "da5570347d7b23de7cf3e56a472859cba33b3d1b",
+  "publicPathsCompared": 82,
+  "differences": [
+    {
+      "path": "apps/practice-app/src/features/wiki/native-html.ts",
+      "archiveSha256": "c32cd6ff6ff88ebf8cf391347ae64192accdb1ba3cb247313e976fed365ce854",
+      "currentSha256": "59afce9461889bb079df4bd7dc7cf87f6af28d632fcb45f3706f2d9eb5efd60a",
+      "archiveMatches": false
+    }
+  ],
+  "exactMatches": 81,
+  "intentionalDifference": "native-html.ts regenerated from newer shared reader including structured articles, Cabinet web guard and archive label; no corpus/catalog/Zoom data copied."
+}

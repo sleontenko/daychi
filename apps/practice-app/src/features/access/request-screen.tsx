@@ -23,7 +23,7 @@ export default function RequestScreen({ onInvitation, onDone, onBack, returnLabe
   return <View style={s.page}>
     {!draft && <View style={s.icon}><SymbolView name={{ ios: active ? 'checkmark.circle' : terminal ? 'exclamationmark.circle' : 'clock', android: active ? 'check_circle' : terminal ? 'error_outline' : 'schedule', web: active ? 'check_circle' : terminal ? 'error_outline' : 'schedule' }} tintColor={C.sageDark} size={30} /></View>}
     <View style={[s.intro, !draft && { gap: 16 }]}><Text accessibilityRole="header" style={s.title}>{title}</Text>
-    <Text style={draft ? s.formBody : s.body}>{draft ? 'К вики и Zoom. Организатор рассмотрит заявку и откроет доступ этому телефону.' : active ? 'Закрытые материалы и Zoom доступны на этом телефоне.' : record.status === 'rejected' ? 'Если это ошибка, напишите организатору. Можно подать новую заявку.' : terminal ? 'Вы можете отправить новую заявку организатору. Расписание по-прежнему доступно.' : 'Уведомления не будет. Статус проверяется, когда вы открываете приложение и пока открыт этот экран. Расписание доступно.'}</Text></View>
+    <Text style={draft ? s.formBody : s.body}>{draft ? 'К онлайн-ссылкам участников группы. Организатор рассмотрит заявку и откроет доступ этому телефону. Вики бесплатна и доступна без заявки.' : active ? 'Онлайн-ссылки доступны на этом телефоне. Вики открыта без заявки.' : record.status === 'rejected' ? 'Если это ошибка, напишите организатору. Можно подать новую заявку.' : terminal ? 'Вы можете отправить новую заявку организатору. Вики и расписание по-прежнему доступны.' : 'Уведомления не будет. Статус проверяется, когда вы открываете приложение и пока открыт этот экран. Вики и расписание доступны.'}</Text></View>
     {!ready && <><ActivityIndicator color={C.accentDark} /><Pressable accessibilityRole="button" onPress={() => void loadAccessRequest()} style={s.secondary}><Text style={s.link}>Повторить проверку</Text></Pressable></>}
     {ready && draft && <>
       {([['first_name','Имя'], ['last_name','Фамилия'], ['telegram','Telegram — необязательно']] as [keyof Profile,string][]).map(([key,label]) => <View key={key} style={s.field}>
@@ -44,7 +44,7 @@ export default function RequestScreen({ onInvitation, onDone, onBack, returnLabe
       : button(busy ? 'Проверяем…' : 'Проверить сейчас', () => void checkAccessRequest()))}
     {draft && button('У меня есть персональное приглашение', onInvitation, true)}
     {!draft && !active && onBack && button(returnLabel, onBack, true)}
-    {draft && <Text style={[s.caption, s.center]}>Расписание доступно и без заявки.</Text>}
+    {draft && <Text style={[s.caption, s.center]}>Вики и расписание доступны и без заявки.</Text>}
   </View>;
 }
 const s = StyleSheet.create({

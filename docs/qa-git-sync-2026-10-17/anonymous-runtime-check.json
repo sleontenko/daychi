@@ -1,0 +1,68 @@
+{
+  "checkedAt": "2026-10-17T15:50:22.722199+00:00",
+  "anonymousOnly": true,
+  "dns": {
+    "wiki.staging.xuanxue.su": {
+      "error": "gaierror"
+    },
+    "wiki.xuanxue.su": [
+      "69.46.46.38"
+    ]
+  },
+  "http": [
+    {
+      "url": "https://staging.xuanxue.su/api/health",
+      "status": 200,
+      "cacheControl": null,
+      "location": null,
+      "health": {
+        "status": "ok",
+        "version": "0.1.0",
+        "commit": "5ea9a8b",
+        "mongo": "up"
+      }
+    },
+    {
+      "url": "https://staging.xuanxue.su/api/auth/session",
+      "status": 401,
+      "cacheControl": "no-store",
+      "location": null
+    },
+    {
+      "url": "https://xuanxue.su/api/auth/session",
+      "status": 404,
+      "cacheControl": null,
+      "location": null
+    },
+    {
+      "url": "https://wiki.staging.xuanxue.su/health",
+      "error": "URLError"
+    },
+    {
+      "url": "https://wiki.xuanxue.su/wiki",
+      "status": 200,
+      "cacheControl": "no-store",
+      "location": null
+    },
+    {
+      "url": "https://daychi-wiki-staging.up.railway.app/health",
+      "status": 200,
+      "cacheControl": "no-store",
+      "location": null,
+      "health": {}
+    },
+    {
+      "url": "https://daychi-wiki-staging.up.railway.app/api/site/wiki-graph",
+      "status": 200,
+      "cacheControl": "no-store",
+      "location": null
+    },
+    {
+      "url": "https://staging.xuanxue.su/api/public/lessons?from=2026-10-17T00%3A00%3A00%2B03%3A00&to=2026-10-31T00%3A00%3A00%2B02%3A00",
+      "status": 200,
+      "cacheControl": null,
+      "location": null,
+      "rowCount": 64
+    }
+  ]
+}

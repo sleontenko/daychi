@@ -6,6 +6,13 @@
 и персональный доступ к материалам и Zoom. Веб-вики поддерживает поиск,
 чтение, недавние публикации и граф связей.
 
+## Текущая синхронизация · 17 октября 2026
+
+[Проверенная общая база и незавершённые работы](docs/qa-git-sync-2026-10-17/README.md):
+Cabinet account и отдельный источник расписания, подготовленная web SSO ветка,
+восстановленные исходники privacy/native reader/iPad сборки18. Это исходники
+кандидата; они не означают включённый production SSO или новую сборку TestFlight.
+
 ## Структура
 
 | Путь | Назначение |
@@ -72,3 +79,12 @@ CI запускает тесты без production-данных и секрет�
 Agents start with [AGENTS.md](AGENTS.md) and invoke the installed
 [/collaborate skill](.agents/skills/collaborate/SKILL.md) to discover addressed
 Workshop assignments and coordinate changes at project boundaries.
+
+## Подготовленный вход веб-вики через кабинет · 13 октября
+
+Изолированный кандидат следует совместному browser-session контракту Workshop #13,
+включая отдельные production/staging профили. [Проверки и условия запуска](docs/qa-web-wiki-cabinet-2026-10-13/README.md).
+Кандидат по умолчанию отключён; опубликованный сервер и мобильные сборки не менялись.
+
+Уточнение 14 октября: публичный обзор графа на главной возвращён; клик предлагает
+вход через кабинет. [Локальная проверка, без публикации](docs/qa-site-public-graph-2026-10-14/README.md).
