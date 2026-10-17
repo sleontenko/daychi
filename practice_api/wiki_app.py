@@ -216,7 +216,8 @@ def create_wiki_app(settings=None, access_authorizer=None):
     def material(material_id: str, request: Request):
         for row in load():
             if row['id'] == material_id:
-                if getattr(request.state, 'cabinet_web_authorized', False):
+                if (getattr(request.state, 'cabinet_web_authorized', False)
+                        or getattr(request.state, 'cabinet_native_authorized', False)):
                     # Authenticated recordings are allowed; Zoom remains its own
                     # invitation capability. Public projection defaults stay closed.
                     return public_material(row, content, include_recordings=True)

@@ -208,3 +208,13 @@ source trees match; original local authoring commits are preserved on
 codex/sync-cabinet-local-before-connector-20261017. Earlier access-denial statements
 are historical. No main merge/deployment/new release. Use the source-sync receipt
 for current CI and preserve the separate native-content WIP and root historical WIP.
+
+
+Accepted native content connection: each protected Cabinet-authenticated native
+read forwards the presented bearer to the fixed matching Cabinet GET me. Its
+current native grant/account decision is sufficient; no additional reader role,
+invitation, account replica or positive cache is used. Daychi owns explicit
+coexistence with legacy native transport, downstream protected delivery and
+failure/recovery. Cabinet isolates validated GET me capacity per native grant.
+The [native content contract](https://github.com/dveyarangi/xuanxue-workshop/blob/a07f08747aa7d97e4d3496e87e1d8319db413698/docs/contracts/native-content-session.md) owns exact
+wire, capacity, compatibility and common cases; activation and joint proof remain work.

@@ -260,9 +260,23 @@ export function createAccountSession({ origin, storage, client, random, challeng
     epoch++;
     if (stored.session && !disabled) publish({ status: 'unavailable' });
   }
+  async function readContent<T>(read: (bearer: string) => Promise<T>): Promise<T> {
+    await initialize(); await writes;
+    const expected = epoch, token = stored.session?.token;
+    if (!token || disabled) throw new CabinetError('invalid_token');
+    rateCheck();
+    try {
+      const value = await read(token);
+      if (!matching(expected, token)) throw new CabinetError('interrupted');
+      return value;
+    } catch (error) {
+      await fail(error, expected, token);
+      throw error;
+    }
+  }
   return { getState: () => state, subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener); }; },
-    restore, begin, receive, cancel, logout, suspend,
-    // No token/getPrivateRequest API: this assignment cannot grant content access.
+    restore, begin, receive, cancel, logout, suspend, readContent,
+    // Content credentials stay inside the epoch-bound session wrapper.
     attemptRemaining: () => stored.pending ? Math.max(0, ATTEMPT_MS - (time() - stored.pending.startedAt)) : 0,
   };
 }

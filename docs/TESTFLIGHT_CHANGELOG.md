@@ -266,3 +266,17 @@ their separate outstanding work. [Source/checks/current limits](qa-git-sync-2026
 No Apple query/upload/group change, source-main merge, production activation or
 new release occurred in this source task. The preceding internal TestFlight18 receipt
 remains the latest Apple evidence; new consolidated native visual/release QA remains.
+
+
+## iOS 1.0.0(18) — external TestFlight, 2026-10-17
+
+По явному разрешению оператора существующая сборка18 назначена существующей
+внешней публичной группе и отправлена на Beta App Review. Apple API после записи:
+**APPROVED / external IN_BETA_TESTING**, autoNotifyEnabled=true; внутренняя
+группа по-прежнему содержит18. Ссылка TestFlight не менялась,15 оставлена в группе.
+What to Test и review notes уточнены: staging-вход Cabinet, локальные занятия/
+напоминания, прежний отдельный закрытый доступ. Нового бинарника или source tag нет;
+использован исходный архив12October с manifest d22dbcf и описанными WIP.
+Сегодня проверены metadata/status/group write/readback; исходные build/UI тесты
+остаются в release evidence12October. Новая установка/доставка уведомлений на
+физическом телефоне не подтверждены. [Apple receipt и ограничения](qa-external-testflight18-2026-10-17/README.md).
