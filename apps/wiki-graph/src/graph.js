@@ -17,7 +17,8 @@ const cabinetWeb = !host && document.body.dataset.cabinetWeb === '1';
 const cabinetProfile = cabinetWeb ? document.body.dataset.cabinetProfile : null;
 let token = host || cabinetWeb ? null : store.get();
 let teardown = () => {};
-let resumeScroll = Number(history.state?.wikiScroll) || 0;
+// WKWebView can lose history.state during loadHTMLString; the native checkpoint is authoritative.
+let resumeScroll = Number(host?.resume?.scroll ?? history.state?.wikiScroll) || 0;
 let appTemplate = $("#view-app").innerHTML;
 let blockedLogin = false;
 const webReader = cabinetWeb ? createWebSessionReader({ fetch: (...args) => fetch(...args),
@@ -265,7 +266,7 @@ function start(DATA) {
     labelRenderedSizeThreshold: 7, labelDensity: 0.4, labelGridCellSize: 140,
     defaultEdgeType: "line", zIndex: true, minCameraRatio: 0.05, maxCameraRatio: 6, nodeReducer, edgeReducer,
   });
-  function fitCamera() {
+  function fitCamera(resumedCamera = null) {
     // фиксированная рамка вместо авто-масштаба: иначе живая физика «раскачивает» камеру
     let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
     graph.forEachNode((_, a) => { x0 = Math.min(x0, a.x); x1 = Math.max(x1, a.x); y0 = Math.min(y0, a.y); y1 = Math.max(y1, a.y); });
@@ -277,9 +278,10 @@ function start(DATA) {
     renderer.refresh();
     const cam = renderer.getCamera(), before = cam.getState();
     cam.setState({ x: 0.5, y: 0.5, ratio: 1, angle: 0 });
-    const target = liftAboveSheet({ x: 0.5, y: 0.5, ratio: sheetHeight() ? 1.15 : 1 });
-    cam.setState(before);
-    cam.animate(target, { duration: 400 });
+    const target = resumedCamera || liftAboveSheet({ x: 0.5, y: 0.5, ratio: sheetHeight() ? 1.15 : 1 });
+    cam.setState(resumedCamera || before);
+    // A restored camera replaces any fit animation started by the async layout.
+    cam.animate(target, { duration: resumedCamera ? 1 : 400 });
   }
   // Камера вписывает узел вместе с соседями: плотное кольцо соседей раскрывается и подписи не слипаются
   function centerOn(id) {
@@ -575,7 +577,7 @@ function start(DATA) {
 
   readHash();
   syncControls();
-  rebuild();
+  const initialLayoutReady = rebuild();
   renderPanel();
   renderModes();
   if (state.selected && state.mode !== "local") centerOn(state.selected);
@@ -590,14 +592,21 @@ function start(DATA) {
     if(action==='leave') { saveGraphView(params.hash); return; }
     renderer.resize();
     const savedView = graphViews.get(location.hash);
-    if(!restored) { readHash(); syncControls(); rebuild({refit:!savedView,positions:savedView?.positions}); renderPanel(); renderModes(); }
+    let layoutReady = initialLayoutReady;
+    if(!restored) { readHash(); syncControls(); layoutReady = rebuild({refit:!savedView,positions:savedView?.positions}); renderPanel(); renderModes(); }
     if(savedView) {
 
       for(const n of simNodes) Object.assign(n,savedView.positions.get(n.id)||{});
       syncPositions(); renderer.setCustomBBox(savedView.bbox); renderer.refresh(); renderer.getCamera().setState(savedView.camera);
     } else if (!restored && state.selected && state.mode !== "local") centerOn(state.selected);
     else renderer.refresh();
-    if (!cameraResumed && host?.resume?.camera && location.hash === host.resume.hash) { renderer.getCamera().setState(host.resume.camera); cameraResumed = true; }
+    if (!cameraResumed && host?.resume?.camera && location.hash === host.resume.hash) {
+      const hash = location.hash, generation = layoutGeneration;
+      void layoutReady.then(() => {
+        if (generation !== layoutGeneration || location.hash !== hash || document.body.dataset.wikiView !== 'graph') return;
+        fitCamera(host.resume.camera); cameraResumed = true;
+      });
+    }
   }});
   const cameraState = () => { $("#graph").dataset.camera=JSON.stringify(renderer.getCamera().getState()); if (host?.protectedReader) window.dispatchEvent(new Event("wiki-camera")); };
   renderer.getCamera().on("updated",cameraState);

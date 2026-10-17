@@ -1,0 +1,16 @@
+{
+  "expo_router_entry": true,
+  "temporary_overrides_restored": true,
+  "ios_hermes": {
+    "off": {
+      "sha256": "f28a34204672facde6f76bceb5af463e26195e29c2366c1f90c80c11da394403",
+      "bytes": 3810398,
+      "qa_markers": []
+    },
+    "on": {
+      "sha256": "22e82fb214cceb500ad72088230dd6179aac67568315ebe380aaa7007782009b",
+      "bytes": 3810884,
+      "qa_markers": []
+    }
+  }
+}

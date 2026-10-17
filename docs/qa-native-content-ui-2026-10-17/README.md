@@ -114,3 +114,11 @@ native/TestFlight release is claimed. Existing externally available build18 is u
 Web13 temporary-origin/DNS and shared selections/reminders17 remain separate.
 
 Reproduction: [isolated fixture instructions](../../scripts/qa-native-reader/README.md).
+
+
+## Later full-parent continuation
+
+The [full native navigation report](../qa-native-navigation-2026-10-17/README.md)
+supersedes the earlier full-parent/Android/dragged-camera QA limitations above.
+It records three fixes, actual phone/iPad/Android checks and preserved activation
+gates. The preceding component-only observations retain their original scope.

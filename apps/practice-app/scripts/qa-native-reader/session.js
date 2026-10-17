@@ -9,3 +9,9 @@ export const useCabinetAccount=()=>useSyncExternalStore(session.subscribe,sessio
 export async function signInCabinet(){await fetch(ORIGIN+'/qa/mode/active',{method:'POST'});const attempt=await session.begin();if(attempt)await session.receive(CALLBACK+'?code='+ 'c'.repeat(43)+'&state='+attempt.state+'&iss='+encodeURIComponent('https://staging.xuanxue.su'));}
 export const signOutCabinet=()=>session.logout();
 export const cancelCabinetSignIn=()=>session.cancel();
+// The full Router fixture preserves the production native-intent entry contract.
+export async function redirectCabinetCallback(value) {
+  if (!String(value).startsWith(CALLBACK)) return null;
+  await session.receive(value);
+  return '/cabinet-account';
+}

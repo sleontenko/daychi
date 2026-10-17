@@ -39,3 +39,36 @@ Bookmarks/recent IDs use the ordinary app storage, so use dedicated simulators.
 The fixture does not establish real Cabinet acquisition, HTTPS deployment, capacity,
 provider outage behavior or joint conformance. Do not enable it in normal app/Metro
 configuration or deploy the fixture. See the [executed evidence](../../docs/qa-native-content-ui-2026-10-17/README.md).
+
+
+## Full parent navigation fixture
+
+For the full Router/ScheduleScreen/SettingsScreen run, use
+`main=scripts/qa-native-reader/full-entry.js` and the temporary Metro file
+`module.exports=require('./scripts/qa-native-reader/full-metro.cjs');` instead.
+The full resolver only replaces Cabinet session/transport and observes existing
+reader checkpoints; it retains actual Expo Router and legacy-access modules.
+`full-network.js` supplies28 synthetic school occurrences, correct Asia/Jerusalem
+DST offsets, and blocks all external network. The server adds long synthetic
+structured articles. There is no fixture toolbar in the full parent UI.
+
+Start Metro with `DAYCHI_SYNTHETIC_READER_QA=1`,
+`EXPO_PUBLIC_DAYCHEE_API_URL=https://backend.test`,
+`EXPO_PUBLIC_SCHEDULE_API_URL=https://backend.test`,
+`EXPO_PUBLIC_CABINET_ACCOUNT_ENABLED=1`,
+`EXPO_PUBLIC_CABINET_CONTENT_ENABLED=1`, and
+`EXPO_PUBLIC_CABINET_SCHEDULE_PILOT=0` on localhost8101.
+Use dedicated native devices; Android needs localhost8102 reverse forwarding.
+The existing local Debug container can embed this entry for Android QA; such an
+APK is a synthetic development artifact and must never be distributed.
+
+`control.py schedule full|hide-series|empty|offline` selects only localhost fixture
+data. `control.py account active|invalid|blocked|limited|offline` selects its fake
+provider. These commands never mutate Cabinet. Checkpoints contain only navigation
+metadata and are stored in the printed temporary evidence directory (bounded500
+entries); routes/status remain available at /qa/journal.
+
+Preserve and restore exact original package.json/Metro files, stop test servers,
+and verify normal off/on Router exports have no fixture marker before publication.
+The [full navigation report](../../docs/qa-native-navigation-2026-10-17/README.md)
+records executed devices, precise fixes, successful flows and limits.

@@ -103,3 +103,13 @@ Do not publish private corpus frames to fill that evidence gap.
 содержит снимки только тестовых данных; парные принятые референсы с корпусом
 остаются локальными. Новый референс не принят автоматически. Полная навигация
 родительского экрана и Android Back остаются проверками перед новым бинарником.
+
+
+## Native navigation follow-up · 17 October
+
+[Full installed-parent QA](qa-native-navigation-2026-10-17/README.md) covers iPhone,
+iPad portrait/landscape and Android system Back. Graph camera and WKWebView scroll
+restoration defects found there are fixed; native Cabinet privacy access text is
+corrected conditionally. Synthetic captures and exact numeric receipts are linked.
+Earlier statements about the missing full-parent/Android checks are historical;
+this does not promote a new design reference or establish live content activation.

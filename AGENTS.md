@@ -234,3 +234,15 @@ binary; no production activation, new release or design-reference promotion.
 QA overrides/services were removed/stopped, normal Expo entry restored. Historical
 root520 and occupied old native-content36 inventories remain hash-identical
 apart from intentional root handoff updates.
+
+
+Native navigation preparation (2026-10-17): PR18 full-parent follow-up is documented
+in docs/qa-native-navigation-2026-10-17/README.md. Installed synthetic iPhone/iPad
+portrait+landscape/Android Back checks cover actual Router/ScheduleScreen/Settings.
+Fixed async initial-fit camera overwrite and WKWebView history.state scroll loss;
+Cabinet-enabled native privacy introduction corrected. Exact camera equality on
+three devices and article offsets377/1988/443.4285583496094 recorded. 292backend/
+141app/31wiki, typecheck/lint and normal off/on iOS Hermes exports pass; QA overrides
+restored. Workshop16 mounted-source review6238564666 supports source progress;
+provider15 deployed capacity and authorized joint proof remain. No activation,
+PR merge, production change or new native upload. Existing external18 unchanged.

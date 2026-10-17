@@ -293,3 +293,20 @@ offline recovery and the separate Zoom sheet. [Evidence and remaining checks](qa
 Real provider/joint conformance and full-parent/Android native QA remain separate.
 No new archive/upload/tag or Apple query/group change in this source continuation;
 the preceding external18 status is unchanged.
+
+
+## Unreleased navigation preparation — 17 October 2026
+
+PR18 follow-up, parent85c1812: full Expo Router/parent navigation on installed
+iPhone/iPad/Android synthetic Debug containers. Fix initial-layout graph camera
+overwrite, read WKWebView scroll directly from native resume metadata, and correct
+the native Cabinet-enabled privacy introduction. Keep accepted schedule build5,
+reader design, storage keys, native identity and default-off activation.
+
+292 backend/141 app/31 wiki tests, typecheck/lint and normal off/on iOS Hermes
+exports passed. Exact camera and article scroll restoration, full-parent returns,
+Android Back and iPad portrait/landscape were observed. See
+[QA/source mapping and limitations](qa-native-navigation-2026-10-17/README.md).
+No physical-device notification-delivery claim. Apple status unchanged: this work
+is not uploaded; existing external1.0.0(18) remains the earlier build. Cabinet15
+capacity/authorized joint proof remains a separate activation gate.

@@ -9,6 +9,7 @@ import { useAccess } from '../access/session';
 import CabinetAccountScreen from '../cabinet-account/account-screen';
 import { cabinetAccountEnabled } from '../cabinet-account/session';
 import privacyContent from './privacy-content.json';
+import { cabinetContentEnabled } from '../wiki/cabinet-api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import * as Application from 'expo-application';
@@ -17,6 +18,10 @@ import { type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useSta
 import { KeyboardAvoidingView, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Organic as C } from '../prototype/theme';
+
+const currentPrivacyContent = Platform.OS !== 'web' && cabinetContentEnabled ? privacyContent.map(block => ({ ...block, text: block.text
+  .replace('Редакция от 2 октября 2026.', 'Редакция от 17 октября 2026.')
+  .replace('Расписание, личный выбор занятий и бесплатная вики доступны без входа.', 'Расписание и личный выбор занятий доступны без входа. Для материалов и записей вики нужен вход через Кабинет школы; отдельная заявка не требуется.') })) : privacyContent;
 
 export type SettingsPage = 'settings' | 'reminders' | 'feedback' | 'about' | 'access' | 'access-data' | 'delete-data' | 'privacy' | 'cabinet-account';
 const DRAFT = 'daychee.feedback.draft.v1';
@@ -139,7 +144,7 @@ export default function SettingsScreen({ page, onPage, onBack, backLabel, bottom
           {button('Обратная связь', () => onPage('feedback'))}
         </>}
         {page === 'privacy' && <>
-          {privacyContent.map((block, index) => <View key={index} style={block.draft ? s.panel : undefined}><Text selectable accessibilityRole={block.kind === 'h2' ? 'header' : undefined} style={block.kind === 'h2' ? s.heading : s.body}>{block.kind === 'li' ? '• ' : ''}{block.text}</Text></View>)}
+          {currentPrivacyContent.map((block, index) => <View key={index} style={block.draft ? s.panel : undefined}><Text selectable accessibilityRole={block.kind === 'h2' ? 'header' : undefined} style={block.kind === 'h2' ? s.heading : s.body}>{block.kind === 'li' ? '• ' : ''}{block.text}</Text></View>)}
           {button('Написать на dev@mypraxis.ai', () => void Linking.openURL('mailto:dev@mypraxis.ai').catch(() => setError('Не удалось открыть почту. Адрес: dev@mypraxis.ai')))}
           {!!error && <Text accessibilityRole="alert" style={s.caption}>{error}</Text>}
         </>}
