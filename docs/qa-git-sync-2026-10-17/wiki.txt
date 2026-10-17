@@ -1,0 +1,66 @@
+
+> test
+> node --test *.test.mjs
+
+(node:40247) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/src/articles.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ inline concept slices Unicode code points and escapes every run (0.616709ms)
+✔ body, contents, related and backlinks have direct readable destinations (0.46025ms)
+✔ public source timestamps do not reconstruct a protected recording URL (0.15675ms)
+✔ archive source opens canonical Drive without inventing YouTube seeking (0.099458ms)
+✔ archive articles and concepts disclose text-only scope and escape caveats (0.116375ms)
+✔ public evidence keeps quotes and timecodes without a reconstructible recording URL (0.440792ms)
+✔ authorized recording evidence keeps timecode links only for a valid source identifier (0.441625ms)
+(node:40249) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/src/graph-layout.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ identical catalogues produce identical finite positions (110.867584ms)
+✔ settled layout has no background movement (111.854ms)
+✔ async layout yields, matches the settled result, and can cancel a stale scope (270.178375ms)
+✔ full large local neighborhood is supported with its center pinned (1044.382417ms)
+(node:40250) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/src/native-history.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ reader, graph selection, filters and nested article return to their actual entry (0.425167ms)
+(node:40251) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/src/protected-read.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ every reopen checks again; refused and unavailable reads discard the previous private payload (1.340625ms)
+✔ close/logout/background immediately clears private state; a delayed result cannot reopen it (0.443417ms)
+✔ a new material owns the state even when an earlier request fails or succeeds later (0.184958ms)
+✔ profile, malformed/private material, thrown secrets and invalid IDs never produce a ready state (1.324875ms)
+✔ timeout bounds even a transport that ignores cancellation; retry recovers (3.854792ms)
+✔ dispose clears private state and stops future reads and notifications (0.157333ms)
+✔ each semantic relation displays escaped proof and a fixed timecode URL (0.460958ms)
+✔ claim references do not replace the wiki route hash; each source links back to its material (0.144667ms)
+✔ public semantic evidence keeps text and material navigation without recording URLs (0.127667ms)
+(node:40253) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/src/ui-model.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ updates use annotation revision time without reordering the catalog (0.633708ms)
+✔ opening history is personal, deduplicated and bounded (0.098708ms)
+✔ malformed or unavailable browser storage cannot block wiki (0.568916ms)
+(node:40254) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/src/web-session.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ cookie-only reads recheck after refusal and recover without credential storage (13.215459ms)
+✔ late parallel success cannot restore an invalidated reader or clear a newer session (0.281125ms)
+✔ background invalidation and noncooperative timeout discard pending data (21.726542ms)
+✔ missing article preserves v1 fallback while HTML/profile session witnesses fail closed (0.527167ms)
+✔ Cabinet entry retains exact relative route and logout navigates to Cabinet (0.186125ms)
+✔ fixed staging entry and logout never switch environments from browser paths (0.07925ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1667.766125

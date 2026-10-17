@@ -56,16 +56,37 @@ Simulator не подтверждает установку или доставк
 
 ## Workshop collaboration
 
-Existing boundaries: Daychi app (`apps/practice-app`) and web wiki (`apps/wiki-graph`)
-↔ Daychi backend (`practice_api`); the native schedule also reads the school's public HTML
-(`apps/practice-app/src/features/schedule/load.ts`, `source.ts`). Schedule loading
-applies Telegram corrections (`zoom.ts`); wiki and access clients use Daychi APIs
-(`apps/practice-app/src/features/wiki/api.ts`,
-`apps/practice-app/src/features/access/request-client.ts`, `apps/wiki-graph/src/library.js`).
-Target boundaries, integration unverified: Daychi clients ↔ Cabinet backend;
-Daychi backend ↔ Cabinet backend. The content API remains in Daychi.
-See [current source evidence](https://github.com/dveyarangi/xuanxue-workshop/blob/HEAD/docs/current-system.md#daychi)
-and [target contracts](https://github.com/dveyarangi/xuanxue-workshop/blob/HEAD/docs/boundaries.md#target-connections).
+Existing boundaries: native Daychi (`apps/practice-app`) and shared wiki reader
+(`apps/wiki-graph`) ↔ Daychi content backend (`practice_api`). Native schedule
+also retains its school-HTML and Telegram-correction path. Native/private reader,
+Zoom and owner/import access remain Daychi-owned; Cabinet web authentication does
+not replace them. [Current scope/evidence](https://github.com/dveyarangi/xuanxue-workshop/blob/d689c24af9e848cae8db81e4cc5701f9cb7a610c/docs/current-system.md#daychi).
+
+Knowledge→Daychi editorial/owner import and shared reader→Daychi article/concept/
+graph projections remain existing content boundaries. [Original article issue 9](https://github.com/dveyarangi/xuanxue-workshop/issues/9)
+and Daychi's provider-owned content definitions govern active v1, projection,
+identity/redaction and source consistency. Authentication work does not retire v1
+or change editorial authority.
+
+Accepted target boundaries, joint integration not established: Daychi clients ↔
+Cabinet backend for schedule/account capabilities; Daychi backend ↔ Cabinet backend
+for authoritative access checks. [Target contracts](https://github.com/dveyarangi/xuanxue-workshop/blob/d689c24af9e848cae8db81e4cc5701f9cb7a610c/docs/boundaries.md#target-connections)
+and [native account-session profile](https://github.com/dveyarangi/xuanxue-workshop/blob/3c98d4a5201710f8f777183dd7b61caefe47e2d5/docs/contracts/native-account-session.md) own
+their distinct scopes.
+
+Accepted web-wiki target: Cabinet owns the shared browser session and current-account
+validation; Daychi owns protected web delivery and calls Cabinet for each protected
+read. All and only valid Cabinet-authenticated web readers receive the same content,
+without extra wiki eligibility or persisted reader credentials/accounts.
+[Web-wiki session contract](https://github.com/dveyarangi/xuanxue-workshop/blob/d689c24af9e848cae8db81e4cc5701f9cb7a610c/docs/contracts/web-wiki-session.md) owns common cookie,
+entry/return, renewal/logout, environment separation and failure guarantees.
+Daychi's homepage may expose only the contract's separate limited public graph
+overview without a Cabinet session. Existing reader APIs remain protected;
+entering the reader reuses a valid session or signs in with original-page return.
+Daychi owns preview data/projection and exposure controls. This exception changes
+no Cabinet wire, account authority, native/private or editorial/import scope.
+Coordinated anonymous-access
+cutover, recipient implementation and deployed proof are separate from acceptance.
 
 Use the [/collaborate skill](.agents/skills/collaborate/SKILL.md) at the start of every session,
 before work affecting any boundary described above, and whenever coordinating
@@ -91,3 +112,91 @@ article import; shared reader→Daychi opt-in article/concept/graph projections.
 [Workshop9](https://github.com/dveyarangi/xuanxue-workshop/issues/9) preserve activev1
 and admission. Recording IDs remain authorized-only under the11October protection.
 [Runtime QA](docs/qa-wiki-articles-2026-10-11/README.md); no native release implied.
+
+Local prepared web boundary (2026-10-13): isolated candidate implements Workshop #13
+contract 25def59e with fixed production/staging profiles, per-read cookie validation,
+recording protection, Cabinet entry/logout and reader teardown. 180 backend / 21 web
+tests and synthetic Chrome pairs; default off, no deployment/release. Both real check
+URLs returned 404; staging wiki HTTPS, aliases/caches and actual two-site lifecycle
+remain unverified. Native public-reader migration needs #9 coordination; native/private
+API and owner/import/Zoom authority are retained. [QA/cutover](docs/qa-web-wiki-cabinet-2026-10-13/README.md).
+
+Website follow-up (2026-10-13): operator supplied app.xuanxue.su / app.xuanxue.su/wiki.
+Prepared site links use that origin; enabled wiki entry aliases redirect to the
+contract-fixed wiki origin while retaining query/browser hash. Public homepage
+contains no corpus fetch. Candidate now carries hash-verified published c964041f
+site/Android4/native privacy/session/retention/restore source; 198 backend tests and
+59-file stage. Cabinet checks still 404 at 11:08 UTC, so activation/publication and
+joint acceptance remain outstanding. [QA](docs/qa-site-cabinet-links-2026-10-13/README.md).
+
+Operator graph clarification (2026-10-14): public homepage overview remains visible;
+click/Enter offers Cabinet entry for the full reader. Separate minimal public
+/api/site/wiki-graph exposes sections/counts and anonymous structure only; existing
+reader APIs, material titles/text and recording IDs/URLs stay protected. Local
+201 backend / 21 web tests, Chrome pairs, 59-file stage; no push/deployment/release.
+Workshop exposure reconciliation and inspectable-source/joint proof still pending.
+[QA](docs/qa-site-public-graph-2026-10-14/README.md).
+
+Operator follow-up authorization (2026-10-14): regularly inspect Cabinet/Workshop
+updates and autonomously process ordinary technical tasks/comments, replying in
+the original assignment and reporting meaningful changes. Ask for new product
+decisions; preserve explicit release/publication/destructive approval boundaries.
+Requested cadence preparation is hourly, quiet while unchanged. A saved prompt
+does not establish an active schedule; verify task creation/enabled state before
+claiming unattended execution. Main handoff: docs/handoffs/cabinet-workshop-recurring-check.md.
+
+Cabinet follow-up (2026-10-14 evening): active shared web authority is d689c24;
+public homepage preview exception accepted, not implementation/release acceptance.
+Current staging e0e823c guest entry/login/logout page verified read-only; production
+check still404, staging wiki ConnectError at16:31UTC. Isolated candidate incorporates
+current published c7af6f6 archive changes; 237 backend/23 web tests,61-file stage,
+no push/deployment. Automation is prepared but NOT activated: scheduling tool absent
+and Codex UI access disabled. [QA](docs/qa-cabinet-followup-2026-10-14/README.md).
+
+Published-source review (2026-10-14): Workshop resolved source access at bdc3cf7/
+draft PR13 and found no contract defect in the inspected source/test scope. Local
+Windows cp1252 HTML-read finding is fixed with explicit UTF-8; four emulated-default
+regressions and 43 boundary / 241 backend tests pass. Frontend/design unchanged.
+No merge/deployment; actual hosting/account/cutover proof remains outstanding.
+[Review/fix QA](docs/qa-cabinet-followup-2026-10-14/README.md).
+
+
+## Consolidated source baseline · 17 October 2026
+
+The operator requested a Git/source audit and synchronization before the next design version.
+Use this isolated `codex/sync-cabinet-baseline-20261017` checkout for that candidate;
+root main is occupied by preserved historical WIP. Do not clean/reset/stash it.
+[Source/status inventory](docs/qa-git-sync-2026-10-17/README.md) governs current readiness.
+Historical pending/release statements above retain their dated scope.
+
+Native Cabinet sign-in and full joint #8 were accepted at Workshop baaf00ed under
+full profile18cfe41, tested d1a85fe. [Acceptance](https://github.com/dveyarangi/xuanxue-workshop/issues/8#issuecomment-6234027930).
+Reuse accepted evidence; no successful-case replay or role removal is requested.
+Operator requires retaining the staging Teacher/Developer roles for further testing.
+
+Web #12/13 still needs canonical staging DNS/TLS, authorized two-site session proof,
+reader/cache transition and separately authorized rollout. Native content #15/16 is
+separate: its occupied worktree is `/Users/mac-mini-server/projects/worktrees/daychi-native-content-20261016`.
+Preserve its uncommitted candidate; no common-content activation is included here.
+Public lessons #6 remains a separate read-only source, with partial live evidence;
+shared selections/reminders are pending the full contract requested in Workshop #17.
+Do not invent a shared sync wire or conflate Cabinet account sign-in with content access.
+
+For Workshop reads/comments prefer the available GitHub connector. A recurring
+prompt alone does not establish an active schedule. Release audience remains
+internal TestFlight/staging; current build18 availability is recorded separately.
+A next changed binary needs an unused build number, affected-state visual/native QA,
+source pin and explicit release authorization. This source sync does not release it.
+
+
+Publication blocker for the17October source-sync candidate: local source4ad34ed is
+committed, but push has no valid terminal authentication and GitHub connector Git
+writes returned403. No remote sync branch/PR was created. Restore authorized write
+access before publishing; do not bypass the connector permission denial. Track the
+[publication receipt](docs/qa-git-sync-2026-10-17/publication-status.json).
+
+
+17October publication follow-up: after explicit operator repository reauthorization,
+the previously denied connector Git-blob write succeeds. The preceding block is a
+historical receipt, not a current permission denial. Continue this branch's prepared
+publication through the connector; verify final source-tree identity and CI.

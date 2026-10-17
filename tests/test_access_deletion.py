@@ -70,7 +70,25 @@ def test_legacy_session_proves_deletion_without_content_access(tmp_path, state):
     with sqlite3.connect(invites.path) as con:
         assert not con.execute('SELECT 1 FROM invitation_operations WHERE invite_id=?', (own_id,)).fetchone()
         assert not con.execute('SELECT 1 FROM admin_audit WHERE invite_id=?', (own_id,)).fetchone()
-    assert deletion.delete([key()], key()) is None
+    assert deletion.delete([key()], key()) == {'deleted': True}
+
+
+def test_deletion_before_delayed_submit_prevents_recreation(tmp_path):
+    invites = Invitations(tmp_path / 'access.db')
+    own, operation = key(), key()
+    assert AccessDeletion(invites).delete([own], operation) == {'deleted': True}
+    with pytest.raises(RequestConflict):
+        AccessRequests(invites).submit(own, 'Late', 'Request')
+
+
+def test_deletion_endpoint_rate_limits_receipt_creation(tmp_path, monkeypatch):
+    monkeypatch.setenv('DAYCHEE_DATA_DELETION_ENABLED', '1')
+    cfg = WikiSettings(tmp_path / 'index.json', tmp_path / 'wiki.db', '', '')
+    client = TestClient(create_daychee_app(cfg, Invitations(tmp_path / 'access.db')))
+    for _ in range(10):
+        assert client.post('/api/access/delete', json={'operation_id': key(), 'credentials': [key()]}).status_code == 200
+    response = client.post('/api/access/delete', json={'operation_id': key(), 'credentials': [key()]})
+    assert response.status_code == 429 and response.headers['cache-control'] == 'no-store'
 
 
 def test_session_proof_also_removes_linked_request(tmp_path):

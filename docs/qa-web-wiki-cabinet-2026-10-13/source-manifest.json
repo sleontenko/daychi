@@ -1,0 +1,95 @@
+{
+  "base_commit": "d2cde6b93ef79734e4de0438ddc2e138698214af",
+  "branch": "codex/cabinet-web-wiki",
+  "contract": "25def59e25fc847764cc43de8d963bf62a16512e",
+  "files": [
+    {
+      "path": ".env.example",
+      "sha256": "a3bf64cd74effb4a6a4e4d7ef4fac88b05c37c816855a78038d4c64e2cbeec27"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "e4a87d47e27a4c4024b78d6d8d17ae51a9970db2636e6efd73a6d8576af972b0"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "0bb7c5d3aca001208a7c72acaddc26fb0459854e97a66836a36413b3a991a1e3"
+    },
+    {
+      "path": "README.md",
+      "sha256": "1be355f4cdd934652735fc5364ea0d9a264740726dc98f966cfc324b59a12f28"
+    },
+    {
+      "path": "apps/wiki-graph/src/graph.js",
+      "sha256": "e1c61e7a0fd33ba5623cf6f65d63eacf48c7b8cb76623baf1cee7c1dfc9bf461"
+    },
+    {
+      "path": "apps/wiki-graph/src/library.js",
+      "sha256": "9c443ca82d1ded9bed7462227fbb0ebcc53e0a6638499c3007e4db9a1ee6361d"
+    },
+    {
+      "path": "deploy/daychee/Dockerfile",
+      "sha256": "7fe34d0668297798c06bf6e4703208e782149966920f74ca172059476fef640d"
+    },
+    {
+      "path": "deploy/daychee/dockerignore",
+      "sha256": "c1da2dc55e8b5a5628d64c4fad8ef8417bc6cf6dfe175d36a8da67f482994870"
+    },
+    {
+      "path": "deploy/daychee/requirements.txt",
+      "sha256": "dfdbd263e6cd20191aac37afa4e43d65bc1ee563feee2a11163abfb7f06b9c81"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "sha256": "49eb0b9cb2713131db4ecacacc3c9245bac94267bbb8e7d52361c11bf07b9042"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "sha256": "4fdbaf5266274a5bc18745a5853a1c284a90d929b9a9c6130414b11dee49680b"
+    },
+    {
+      "path": "docs/TESTFLIGHT_CHANGELOG.md",
+      "sha256": "5d076e8df38697bcb5ce064579b1d3480b67d19eb2455fc369bf02a782db9145"
+    },
+    {
+      "path": "practice_api/daychee_app.py",
+      "sha256": "ff8327984f619ae8ef5e66c70114d4782525b545cedc2c72b407d2c374b9d377"
+    },
+    {
+      "path": "practice_api/public_wiki.py",
+      "sha256": "862b885172b9ceca9b84f21c0bd4dce534b4107911e08b66469d3d4247b26281"
+    },
+    {
+      "path": "practice_api/wiki_app.py",
+      "sha256": "0739e5c0819fd13026011dedcb0922367b2c28f03588ae4fe24ce483d972047e"
+    },
+    {
+      "path": "practice_api/wiki_graph_web/graph.js",
+      "sha256": "6ffcb750727696533dae4a2ad6fa73367626d091ab427b0c2cee9d506e3ccba2"
+    },
+    {
+      "path": "scripts/daychee-stage.py",
+      "sha256": "ded69268f0c9b7632f14197f8d440e9f5ed27d0f3345e6d0f753082638bf3e6f"
+    },
+    {
+      "path": "apps/wiki-graph/qa/web-session.py",
+      "sha256": "122b4b13cad976da94586d6d7f8419fa2d4e64e9e1167fd777afdade02733110"
+    },
+    {
+      "path": "apps/wiki-graph/src/web-session.js",
+      "sha256": "7de221df39eb663dc9ade0073508e7c15eea59c11f963d76505f006a9d96acc9"
+    },
+    {
+      "path": "apps/wiki-graph/web-session.test.mjs",
+      "sha256": "c18be5c5de443c8e0fd616eac28f1b4ff78cea4c60b6fa1133262b8a40abadd3"
+    },
+    {
+      "path": "practice_api/web_wiki_session.py",
+      "sha256": "6c48673214323eff798d5728f651b1da7bcc578b70fb3204dfafb7434f68db38"
+    },
+    {
+      "path": "tests/test_web_wiki_session.py",
+      "sha256": "f2868d45d4019ee47efcbc2479db34a00dc64445bcb4b7135802d5334b04c0ca"
+    }
+  ]
+}

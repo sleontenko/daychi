@@ -1,0 +1,63 @@
+{
+  "checked_at": "2026-10-14T19:28:20.993171+00:00",
+  "bound": "Diagnostic requests used Railway HTTPS with canonical Host header. This does not prove canonical DNS/TLS or browser cookies/SSO.",
+  "checks": [
+    {
+      "path": "/wiki?section=integration-test",
+      "cookie_case": "none",
+      "status": 404,
+      "cache_control": "public, max-age=5",
+      "location": null,
+      "set_cookie_present": false,
+      "bytes": 101
+    },
+    {
+      "path": "/api/public/wiki/categories",
+      "cookie_case": "none",
+      "status": 404,
+      "cache_control": "public, max-age=5",
+      "location": null,
+      "set_cookie_present": false,
+      "bytes": 101
+    },
+    {
+      "path": "/api/public/wiki/categories",
+      "cookie_case": "staging_invalid",
+      "status": 404,
+      "cache_control": "public, max-age=5",
+      "location": null,
+      "set_cookie_present": false,
+      "bytes": 101
+    },
+    {
+      "path": "/api/public/wiki/categories",
+      "cookie_case": "production_invalid",
+      "status": 404,
+      "cache_control": "public, max-age=5",
+      "location": null,
+      "set_cookie_present": false,
+      "bytes": 101
+    },
+    {
+      "path": "/api/public/wiki/categories",
+      "cookie_case": "duplicate",
+      "status": 404,
+      "cache_control": "public, max-age=5",
+      "location": null,
+      "set_cookie_present": false,
+      "bytes": 101
+    },
+    {
+      "path": "/api/site/wiki-graph",
+      "cookie_case": "none",
+      "status": 404,
+      "cache_control": "public, max-age=5",
+      "location": null,
+      "set_cookie_present": false,
+      "bytes": 101
+    }
+  ],
+  "canonical_dns": {
+    "error_type": "gaierror"
+  }
+}

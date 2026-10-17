@@ -1,0 +1,140 @@
+{
+  "checked_at": "2026-10-14T19:27:51.013647+00:00",
+  "origin": "https://daychi-wiki-staging.up.railway.app",
+  "checks": [
+    {
+      "path": "/health",
+      "cookie_case": "none",
+      "status": 200,
+      "cache_control": "no-store",
+      "location": null,
+      "set_cookie_present": false,
+      "bytes": 11,
+      "sha256": "4062edaf750fb8074e7e83e0c9028c94e32468a8b6f1614774328ef045150f93"
+    },
+    {
+      "path": "/api/site/wiki-graph",
+      "cookie_case": "none",
+      "status": 200,
+      "cache_control": "no-store",
+      "location": null,
+      "set_cookie_present": false,
+      "bytes": 400,
+      "sha256": "8bea9a0bc49a7463d789b2ade833e237d7a4ec8aa705e1cc1a2184191b3771a7",
+      "synthetic_preview": {
+        "sections": [
+          {
+            "id": "preview-section-00000",
+            "name": "Проверка интеграции",
+            "count": 1
+          }
+        ],
+        "nodes": [
+          {
+            "id": "preview-node-00000",
+            "sec": "preview-section-00000",
+            "type": "section",
+            "label": "Проверка интеграции"
+          },
+          {
+            "id": "preview-node-00001",
+            "sec": "preview-section-00000",
+            "type": "material",
+            "label": ""
+          }
+        ],
+        "edges": [
+          {
+            "s": "preview-node-00001",
+            "t": "preview-node-00000",
+            "k": "structure"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/api/public/wiki/categories",
+      "cookie_case": "none",
+      "status": 401,
+      "cache_control": "no-store",
+      "location": null,
+      "set_cookie_present": false,
+      "bytes": 64,
+      "sha256": "f22469593ed5a64e5f5e5874d021f5ea56a5c5de46ea113821d83bac46ebe0ba"
+    },
+    {
+      "path": "/api/public/wiki/graph",
+      "cookie_case": "none",
+      "status": 401,
+      "cache_control": "no-store",
+      "location": null,
+      "set_cookie_present": false,
+      "bytes": 64,
+      "sha256": "f22469593ed5a64e5f5e5874d021f5ea56a5c5de46ea113821d83bac46ebe0ba"
+    },
+    {
+      "path": "/api/wiki/graph",
+      "cookie_case": "none",
+      "status": 401,
+      "cache_control": "no-store",
+      "location": null,
+      "set_cookie_present": false,
+      "bytes": 125,
+      "sha256": "61168a43a7abc2a109774204fe56d1fa8093774e3a234bcc8e304b878a162486"
+    },
+    {
+      "path": "/api/public/wiki/categories",
+      "cookie_case": "staging_invalid",
+      "status": 401,
+      "cache_control": "no-store",
+      "location": null,
+      "set_cookie_present": false,
+      "bytes": 64,
+      "sha256": "f22469593ed5a64e5f5e5874d021f5ea56a5c5de46ea113821d83bac46ebe0ba"
+    },
+    {
+      "path": "/api/public/wiki/categories",
+      "cookie_case": "production_invalid",
+      "status": 401,
+      "cache_control": "no-store",
+      "location": null,
+      "set_cookie_present": false,
+      "bytes": 64,
+      "sha256": "f22469593ed5a64e5f5e5874d021f5ea56a5c5de46ea113821d83bac46ebe0ba"
+    },
+    {
+      "path": "/wiki?section=integration-test",
+      "cookie_case": "none",
+      "status": 307,
+      "cache_control": "no-store",
+      "location": "https://wiki.staging.xuanxue.su/wiki?section=integration-test",
+      "set_cookie_present": false,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/wiki/graph",
+      "cookie_case": "none",
+      "status": 307,
+      "cache_control": "no-store",
+      "location": "https://wiki.staging.xuanxue.su/wiki/graph",
+      "set_cookie_present": false,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "origin": "https://staging.xuanxue.su",
+      "path": "/api/auth/session",
+      "status": 401,
+      "cache_control": "no-store",
+      "set_cookie_present": false
+    },
+    {
+      "origin": "https://xuanxue.su",
+      "path": "/api/auth/session",
+      "status": 404,
+      "cache_control": null,
+      "set_cookie_present": false
+    }
+  ]
+}

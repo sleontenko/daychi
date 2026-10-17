@@ -17,7 +17,7 @@ def test_release_pages_are_public_only_after_text_approval(tmp_path, monkeypatch
     for route in ('/privacy', '/support'):
         response = public.get(route)
         assert response.status_code == 200 and 'dev@mypraxis.ai' in response.text
-        assert 'Черновик' in response.text or 'подготовлена локально' in response.text
+        assert 'class="draft"' not in response.text
         assert response.headers['cache-control'] == 'no-store'
         assert response.headers['referrer-policy'] == 'no-referrer'
         assert "frame-ancestors 'none'" in response.headers['content-security-policy']

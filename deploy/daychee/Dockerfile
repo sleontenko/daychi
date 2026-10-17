@@ -11,13 +11,16 @@ COPY practice_api/feedback.py /app/practice_api/feedback.py
 COPY practice_api/admin.py /app/practice_api/admin.py
 COPY practice_api/access_requests.py practice_api/access_request_api.py practice_api/access_request_notifications.py /app/practice_api/
 COPY practice_api/admin_web /app/practice_api/admin_web
+COPY practice_api/web_wiki_session.py /app/practice_api/web_wiki_session.py
 COPY practice_api/wiki_graph.py /app/practice_api/wiki_graph.py
 COPY practice_api/wiki_content.py /app/practice_api/wiki_content.py
-COPY practice_api/wiki_semantics.py /app/practice_api/wiki_semantics.py
-COPY practice_api/wiki_article_models.py practice_api/wiki_articles.py /app/practice_api/
+COPY practice_api/wiki_semantics.py practice_api/wiki_articles.py practice_api/wiki_article_models.py /app/practice_api/
 COPY practice_api/wiki_archive_models.py practice_api/wiki_archive_sources.py /app/practice_api/
 COPY practice_api/public_wiki.py /app/practice_api/public_wiki.py
 COPY practice_api/access_deletion.py /app/practice_api/access_deletion.py
+COPY practice_api/access_restore.py /app/practice_api/access_restore.py
+COPY scripts/daychee-restore-access.py /app/scripts/daychee-restore-access.py
+COPY practice_api/retention.py /app/practice_api/retention.py
 COPY practice_api/public_pages.py /app/practice_api/public_pages.py
 COPY practice_api/public_pages /app/practice_api/public_pages
 COPY practice_api/wiki_graph_web /app/practice_api/wiki_graph_web

@@ -1,6 +1,8 @@
 """Personal one-use invitations. Tokens are stored only as SHA-256 hashes."""
 from contextlib import closing
 import hashlib
+import hmac
+import math
 import os
 from pathlib import Path
 import secrets
@@ -9,6 +11,18 @@ import sqlite3
 import time
 
 CODE_ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
+
+
+def review_configuration():
+    hashed = os.getenv('DAYCHEE_REVIEW_CREDENTIAL_SHA256', '')
+    try:
+        expires = float(os.getenv('DAYCHEE_REVIEW_EXPIRES_AT', '0'))
+    except ValueError:
+        return None
+    now = time.time()
+    if not re.fullmatch(r'[a-f0-9]{64}', hashed) or not math.isfinite(expires) or not now < expires <= now + 90 * 86400:
+        return None
+    return hashed, expires
 
 
 def normalize_code(value):
@@ -38,12 +52,18 @@ class Invitations:
         con.execute('INSERT OR IGNORE INTO deletion_keys SELECT token_hash,invite_id FROM access_sessions')
         con.execute('CREATE TABLE IF NOT EXISTS deleted_credentials (token_hash TEXT PRIMARY KEY)')
         con.execute('CREATE TABLE IF NOT EXISTS deletion_receipts (operation_hash TEXT PRIMARY KEY, proof_hash TEXT NOT NULL)')
+        for table in ('deleted_credentials', 'deletion_receipts'):
+            if 'created_at' not in {row[1] for row in con.execute(f'PRAGMA table_info({table})')}:
+                con.execute(f'ALTER TABLE {table} ADD COLUMN created_at REAL')
+            # Unknown legacy dates receive one finite migration grace period.
+            con.execute(f'UPDATE {table} SET created_at=? WHERE created_at IS NULL', (time.time(),))
         con.execute('CREATE TABLE IF NOT EXISTS invitation_operations (id TEXT PRIMARY KEY, invite_id TEXT NOT NULL, label TEXT NOT NULL)')
         con.execute('CREATE TABLE IF NOT EXISTS admin_audit (id INTEGER PRIMARY KEY, action TEXT NOT NULL, invite_id TEXT NOT NULL, created_at REAL NOT NULL)')
         columns = {row[1] for row in con.execute('PRAGMA table_info(invites)')}
         for name, definition in (
             ('label', "TEXT NOT NULL DEFAULT ''"),
-            ('created_at', 'REAL'), ('activated_at', 'REAL'), ('revoked_at', 'REAL'),
+            ('created_at', 'REAL'), ('activated_at', 'REAL'), ('revoked_at', 'REAL'), ('inactive_since', 'REAL'),
+            ('review_key_hash', 'TEXT'), ('review_expires', 'REAL'),
         ):
             if name not in columns:
                 con.execute(f'ALTER TABLE invites ADD COLUMN {name} {definition}')
@@ -71,6 +91,17 @@ class Invitations:
         # The conditional update and session insertion share one write transaction.
         with closing(self.db()) as con, con:
             con.execute('BEGIN IMMEDIATE')
+            review = review_configuration()
+            if review and hmac.compare_digest(digest(token), review[0]):
+                # A fresh grant per installation: account deletion must not
+                # erase the credential used by other Apple review devices.
+                identity, session = secrets.token_hex(16), secrets.token_urlsafe(32)
+                now = time.time()
+                con.execute('INSERT INTO invites (id,token_hash,expires,used,label,created_at,activated_at,review_key_hash,review_expires) VALUES (?,?,?,1,?,?,?,?,?)',
+                            (identity, digest(secrets.token_urlsafe(32)), review[1], 'App Review', now, now, review[0], review[1]))
+                con.execute('INSERT INTO access_sessions VALUES (?,?)', (digest(session), identity))
+                con.execute('INSERT INTO deletion_keys VALUES (?,?)', (digest(session), identity))
+                return session
             row = con.execute('SELECT id FROM invites WHERE token_hash=? AND expires>? AND used=0 AND revoked=0', (digest(token), time.time())).fetchone()
             if not row:
                 return None
@@ -114,7 +145,13 @@ class Invitations:
 
     def authorized(self, session):
         with closing(self.db()) as con:
-            return con.execute('SELECT 1 FROM access_sessions s JOIN invites i ON i.id=s.invite_id WHERE s.token_hash=? AND i.revoked=0', (digest(session),)).fetchone() is not None
+            row = con.execute('SELECT i.review_key_hash,i.review_expires FROM access_sessions s JOIN invites i ON i.id=s.invite_id WHERE s.token_hash=? AND i.revoked=0', (digest(session),)).fetchone()
+            if row is None:
+                return False
+            if row[0] is None:
+                return True
+            review = review_configuration()
+            return bool(review and hmac.compare_digest(row[0], review[0]) and row[1] > time.time())
 
     def rejection_reason(self, credential):
         """Called only after a rate-limited redemption failed; expose no identity."""
@@ -126,8 +163,22 @@ class Invitations:
         if row[0] <= time.time(): return 'expired'
         return 'invalid'
 
+    def session_details(self, session):
+        """Own non-secret display metadata; never the invitation/session credentials."""
+        if not self.authorized(session):
+            return None
+        with closing(self.db()) as con:
+            row = con.execute('''SELECT i.id,i.label,i.created_at,i.activated_at
+                FROM access_sessions s JOIN invites i ON i.id=s.invite_id
+                WHERE s.token_hash=? AND i.revoked=0''', (digest(session),)).fetchone()
+            if row is None:
+                return None
+            return {'active': True, 'invitation_reference': row[0], 'invitation_label': row[1],
+                    'created_at': row[2], 'activated_at': row[3]}
+
     def logout(self, session):
         with closing(self.db()) as con, con:
+            con.execute('UPDATE invites SET inactive_since=? WHERE id IN (SELECT invite_id FROM access_sessions WHERE token_hash=?)', (time.time(), digest(session)))
             con.execute('DELETE FROM access_sessions WHERE token_hash=?', (digest(session),))
 
     def revoke(self, identity):

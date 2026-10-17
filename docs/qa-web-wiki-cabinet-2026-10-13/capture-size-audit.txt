@@ -1,0 +1,84 @@
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/article-360-final.jpg
+  pixelWidth: 360
+  pixelHeight: 800
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/article-360-initial.jpg
+  pixelWidth: 360
+  pixelHeight: 800
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/article-390-final.jpg
+  pixelWidth: 390
+  pixelHeight: 844
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/article-768-final.jpg
+  pixelWidth: 768
+  pixelHeight: 1024
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/article-desktop-final.jpg
+  pixelWidth: 1920
+  pixelHeight: 817
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/article-desktop.jpg
+  pixelWidth: 1920
+  pixelHeight: 873
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/blocked-desktop.jpg
+  pixelWidth: 1920
+  pixelHeight: 873
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/graph-360.jpg
+  pixelWidth: 360
+  pixelHeight: 800
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/graph-390.jpg
+  pixelWidth: 390
+  pixelHeight: 844
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/graph-desktop-final.jpg
+  pixelWidth: 1920
+  pixelHeight: 817
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/invalid-after-read.jpg
+  pixelWidth: 1920
+  pixelHeight: 873
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/library-360-final.jpg
+  pixelWidth: 360
+  pixelHeight: 800
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/library-360-repeat.jpg
+  pixelWidth: 360
+  pixelHeight: 800
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/library-desktop-final.jpg
+  pixelWidth: 1920
+  pixelHeight: 817
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/library-desktop.jpg
+  pixelWidth: 1920
+  pixelHeight: 873
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/signed-out-desktop.jpg
+  pixelWidth: 1920
+  pixelHeight: 873
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/staging-article-390-final.jpg
+  pixelWidth: 390
+  pixelHeight: 844
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/staging-signed-out-390-final.jpg
+  pixelWidth: 390
+  pixelHeight: 844
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/staging-signed-out-final.jpg
+  pixelWidth: 1920
+  pixelHeight: 817
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/unavailable-390.jpg
+  pixelWidth: 390
+  pixelHeight: 844
+docs/qa-web-wiki-cabinet-2026-10-13/runtime/unavailable-desktop.jpg
+  pixelWidth: 1920
+  pixelHeight: 873
+docs/qa-web-wiki-cabinet-2026-10-13/reference/article-390-final.jpg
+  pixelWidth: 390
+  pixelHeight: 844
+docs/qa-web-wiki-cabinet-2026-10-13/reference/article-390.jpg
+  pixelWidth: 390
+  pixelHeight: 844
+docs/qa-web-wiki-cabinet-2026-10-13/reference/article-desktop-final.jpg
+  pixelWidth: 1920
+  pixelHeight: 817
+docs/qa-web-wiki-cabinet-2026-10-13/reference/graph-desktop-final.jpg
+  pixelWidth: 1920
+  pixelHeight: 817
+docs/qa-web-wiki-cabinet-2026-10-13/reference/library-390.jpg
+  pixelWidth: 390
+  pixelHeight: 844
+docs/qa-web-wiki-cabinet-2026-10-13/reference/library-desktop-final.jpg
+  pixelWidth: 1920
+  pixelHeight: 817
+docs/qa-web-wiki-cabinet-2026-10-13/reference/signed-out-desktop.jpg
+  pixelWidth: 1920
+  pixelHeight: 817

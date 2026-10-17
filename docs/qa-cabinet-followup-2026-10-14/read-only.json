@@ -1,0 +1,87 @@
+{
+  "checked_at_utc": "2026-10-14T16:31:46.248307+00:00",
+  "scope": "anonymous/synthetic-invalid only; no account or mutations",
+  "observations": [
+    {
+      "url": "https://staging.xuanxue.su/api/health",
+      "synthetic_invalid_cookie": false,
+      "status": 200,
+      "no_store": false,
+      "tls_verified": true,
+      "location": null,
+      "set_cookie_count": 0,
+      "health": {
+        "status": "ok",
+        "version": "0.1.0",
+        "commit": "e0e823c",
+        "mongo": "up",
+        "uptimeSec": 6264,
+        "scheduler": {
+          "enabled": true,
+          "lastTickFinishedAt": "2026-10-14T16:31:05.546Z",
+          "stale": false
+        }
+      }
+    },
+    {
+      "url": "https://staging.xuanxue.su/api/auth/session",
+      "synthetic_invalid_cookie": false,
+      "status": 401,
+      "no_store": true,
+      "tls_verified": true,
+      "location": null,
+      "set_cookie_count": 0
+    },
+    {
+      "url": "https://staging.xuanxue.su/api/auth/session",
+      "synthetic_invalid_cookie": true,
+      "status": 401,
+      "no_store": true,
+      "tls_verified": true,
+      "location": null,
+      "set_cookie_count": 0
+    },
+    {
+      "url": "https://staging.xuanxue.su/wiki?returnTo=%2Fwiki%3Ftest%3Dsynthetic%23view%3Dgraph",
+      "synthetic_invalid_cookie": false,
+      "status": 303,
+      "no_store": true,
+      "tls_verified": true,
+      "location": "/login?returnTo=%2Fwiki%3FreturnTo%3D%252Fwiki%253Ftest%253Dsynthetic%2523view%253Dgraph",
+      "set_cookie_count": 0
+    },
+    {
+      "url": "https://staging.xuanxue.su/wiki?returnTo=https%3A%2F%2Fevil.example",
+      "synthetic_invalid_cookie": false,
+      "status": 400,
+      "no_store": true,
+      "tls_verified": true,
+      "location": null,
+      "set_cookie_count": 0
+    },
+    {
+      "url": "https://staging.xuanxue.su/logout",
+      "synthetic_invalid_cookie": false,
+      "status": 200,
+      "no_store": false,
+      "tls_verified": true,
+      "location": null,
+      "set_cookie_count": 0
+    },
+    {
+      "url": "https://xuanxue.su/api/auth/session",
+      "synthetic_invalid_cookie": false,
+      "status": 404,
+      "no_store": false,
+      "tls_verified": true,
+      "location": null,
+      "set_cookie_count": 0
+    },
+    {
+      "url": "https://wiki.staging.xuanxue.su/wiki",
+      "synthetic_invalid_cookie": false,
+      "error_type": "ConnectError",
+      "reachability_unverified": true
+    }
+  ]
+}

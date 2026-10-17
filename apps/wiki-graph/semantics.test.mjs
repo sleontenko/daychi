@@ -19,3 +19,9 @@ test('claim references do not replace the wiki route hash; each source links bac
   assert.ok(!html.includes('href="#evidence-1"')&&!html.includes('<script>'));
   assert.ok(html.includes('view=article')&&html.includes('Материалы и подтверждения'));
 });
+test('public semantic evidence keeps text and material navigation without recording URLs',()=>{
+  const {resource_id,...publicLink}=link;
+  const html=conceptBody({kind:'term',aliases:[],claims:[],links:[publicLink]},esc,href);
+  assert.match(html,/1:05/);assert.match(html,/view=article/);
+  assert.doesNotMatch(html,/youtube|youtu\.be|undefined|abcdefghijk/);
+});

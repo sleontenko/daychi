@@ -1,0 +1,38 @@
+{
+  "backend": {
+    "passed": 241,
+    "warning": "Existing Starlette/anyio deprecation"
+  },
+  "app": {
+    "passed": 125,
+    "typecheck": "passed",
+    "lint": "passed",
+    "node": "26.10.0",
+    "loopbackTests": "Passed outside sandbox; initial sandbox EPERM was an environment restriction."
+  },
+  "wiki": {
+    "passed": 30,
+    "webBundle": "rebuilt from merged source",
+    "nativeBundle": "regenerated; UI only"
+  },
+  "iosExport": {
+    "status": "passed",
+    "artifact": "entry-7c58a77a41ca5b715e62a8446f415731.hbc",
+    "scope": "JavaScript/Hermes export with opt-ins disabled; no native install, archive, upload or notification proof"
+  },
+  "browser": {
+    "engine": "Chrome connector",
+    "fixture": "local synthetic DTO/provider only",
+    "viewport": "390x844",
+    "pairs": [
+      "library",
+      "article"
+    ],
+    "states": [
+      "allowed",
+      "401 refusal with original destination",
+      "recovery"
+    ],
+    "limits": "No real Cabinet credentials/browser SSO or new native UI acceptance."
+  }
+}

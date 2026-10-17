@@ -1,0 +1,18 @@
+{
+  "checked_at_utc": "2026-10-14T11:43:17.829626+00:00",
+  "anonymous_checks_only": true,
+  "production_session": {
+    "status": 404,
+    "no_store": false,
+    "tls_verified": true
+  },
+  "staging_session": {
+    "status": 401,
+    "no_store": true,
+    "tls_verified": true
+  },
+  "staging_wiki": {
+    "error_type": "ConnectError",
+    "reachability_unverified": true
+  }
+}

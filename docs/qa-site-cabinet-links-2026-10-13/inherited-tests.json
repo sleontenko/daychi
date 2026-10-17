@@ -1,0 +1,9 @@
+{
+  "reason": "These existing tests match the hash-verified published native/privacy modules. Old checkout tests expected pre-publication draft text and superseded deletion witness behavior.",
+  "files": [
+    "tests/test_access_deletion.py",
+    "tests/test_retention.py",
+    "tests/test_review_access.py",
+    "tests/test_public_pages.py"
+  ]
+}

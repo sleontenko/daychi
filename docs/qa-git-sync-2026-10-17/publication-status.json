@@ -1,0 +1,14 @@
+{
+  "status": "connector_write_restored_publication_in_progress",
+  "localSourceCommit": "4ad34ed55405bde969e81ca7ded5a50a2b4d6e07",
+  "localBranch": "codex/sync-cabinet-baseline-20261017",
+  "remoteBranchPublished": false,
+  "newPullRequestCreated": false,
+  "terminalPush": "Failed: HTTPS credentials unavailable; gh reports invalid saved authentication.",
+  "githubConnectorWrite": "create_blob returned403 Resource not accessible by integration. No alternate write path attempted after the denial.",
+  "requiredAction": "Complete connector publication, confirm source-tree equality and CI.",
+  "rootAndOccupiedContentWip": "Hashes verified unchanged before appending the explicitly documented root handoff.",
+  "previousStatus": "blocked",
+  "connectorWriteRecheckedAt": "2026-10-17T16:05:16.810515+00:00",
+  "connectorWriteRecheck": "Git blob creation succeeded after operator reauthorization."
+}

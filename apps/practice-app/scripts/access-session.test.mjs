@@ -12,6 +12,7 @@ function client(fetch,saved=null,write){
  const storage=new Map(saved?[[KEY,saved]]:[]),exports={};
  vm.runInNewContext(code,{exports,require:name=>({
   './access-errors':{AccessError:Error,invitationErrors:{}},'./invitation-code':{isInvitationCode:()=>false},
+  './deletion-client':{rememberDeletionCredential:async()=>{},withAccessMutation:async action=>action()},
   'expo-secure-store':{getItemAsync:async key=>storage.get(key)??null,setItemAsync:async(key,value)=>{await write?.(value);storage.set(key,value);},deleteItemAsync:async key=>storage.delete(key),WHEN_UNLOCKED_THIS_DEVICE_ONLY:1},
   react:{useSyncExternalStore:(_subscribe,snapshot)=>snapshot()},'react-native':{Platform:{OS:'ios'}},
  }[name]),process:{env:{EXPO_PUBLIC_DAYCHEE_API_URL:'https://example.test'}},fetch,AbortController,setTimeout,clearTimeout});

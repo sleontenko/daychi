@@ -1,0 +1,6 @@
+{
+  "docker_python_files": 22,
+  "all_in_stage_allowlist": true,
+  "source_allowlist_size": 50,
+  "full_docker_build_executed": false
+}

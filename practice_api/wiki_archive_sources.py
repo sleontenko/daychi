@@ -48,7 +48,7 @@ def catalog_rows(sources):
         result.append({'id': source['material_id'], 'title': source['expected_title'],
                        'date': 'Дата записи не проверена', 'timestamp': 0,
                        'category': 'archive:' + origin['collection_id'],
-                       'category_name': 'Архив Нэйдань' if origin['collection_id'] == 'archive-neidan' else 'Архив',
+                       'category_name': 'Архивный Нэйдань' if origin['collection_id'] == 'archive-neidan' else 'Архив',
                        'subtopic': COHORTS[origin['cohort']], 'subtopic_key': origin['cohort'],
                        'description': 'Текст по машинным расшифровкам. Аудио не прослушано.',
                        'links': [{'url': source_url(alias['resource_id']), 'type': 'drive_recording',

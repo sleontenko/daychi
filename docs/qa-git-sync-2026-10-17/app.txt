@@ -1,0 +1,177 @@
+
+> daychi-app@1.0.0 test
+> node --test scripts/*.test.mjs
+
+✔ lost response, concurrent taps and restart retry the exact operation before cleanup (2.4585ms)
+✔ restart finishes confirmed cleanup after proof deletion fails, without sending again (0.826125ms)
+✔ server errors and false confirmation retain keys and never clean personal data (1.101ms)
+✔ never send deletion before its operation is durably saved (0.363458ms)
+✔ proof history fits Keychain values and does not silently discard prior identities (1.476375ms)
+✔ migrate legacy session before unauthorized response and preserve proof after logout (0.916625ms)
+✔ new request retains rejected request secret and deletion proves both identities (1.445666ms)
+✔ deletion waits for an in-flight access grant and includes its persisted proof (0.70175ms)
+✔ a saved deletion prevents later access mutation until its exact retry completes (0.455875ms)
+(node:40866) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/src/features/access/invitation-link.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ cold and warm invitation URLs are captured without putting secrets into routes (0.508625ms)
+✔ malformed invitations clear stale credentials; unrelated links are not consumed (0.071667ms)
+✔ manual codes and full links yield only a credential, never a server override (0.104ms)
+✔ short code deep links use the same cold/warm handoff as legacy invitations (0.048208ms)
+✔ access return resumes once, cancellation clears it, newer entry replaces it (1.779083ms)
+✔ persist credentials before sending, retry after restart without duplicate (2.304875ms)
+✔ do not submit if local storage failed (0.436458ms)
+✔ claim response loss and restart preserve the same session token (0.99025ms)
+✔ reject empty fields and ignore concurrent submit clicks (2.028333ms)
+✔ native Expo network errors do not leak implementation details and remain retryable (1.269625ms)
+✔ own request dates survive claim and restart; unknown DTO fields cannot overwrite credentials (2.183916ms)
+✔ approved request does not replace an existing invitation session (1.753791ms)
+✔ invitation login wins over an older claim verification (0.732667ms)
+✔ serialize Keychain writes so an older claim cannot overwrite a newer login (2.634792ms)
+✔ delayed logout response cannot clear a newer login (0.6205ms)
+✔ foreground restore does not consume and lose an in-flight invitation (0.389208ms)
+✔ old unauthorized response cannot erase a new session whose Keychain write is pending (0.492208ms)
+✔ N01 acquisition securely persists a separate grant; restart reads current full profile (1.72125ms)
+✔ N01 profile requires exact types and normalized hidden tiles; ignores extra fields (0.333083ms)
+✔ N02 authorize entry includes S256, exact registered callback and no secret (0.190042ms)
+✔ N03/N04 callback rejects mismatch, replay shape, normalization, duplicate decoded names and malformed encodings (0.376333ms)
+✔ N04 pending attempt expires at 900 seconds and on backwards local clock (0.270375ms)
+✔ N05 browser cancellation preserves an existing session and rejects its late callback (0.2435ms)
+✔ N05 new attempt supersedes old callback and old browser cancellation (0.187708ms)
+✔ N05/N10 cancelling an in-flight exchange prevents session resurrection (0.166083ms)
+✔ N06/N10 simultaneous callbacks dispatch exactly one exchange and no replay (0.148375ms)
+✔ N07 invalid_grant preserves predecessor and requires a fresh attempt (0.234791ms)
+✔ N08 renew only on authoritative renew_after=0 and retain the stable grant (0.176375ms)
+✔ N09 lost renewal and failed secure write preserve the usable predecessor (0.211417ms)
+✔ N10 crash after exchange dispatch keeps single-use marker and cannot replay on restart (0.117292ms)
+✔ N10 lost exchange response and failed install do not replay or replace predecessor (0.246083ms)
+✔ N11/N17 logout deletes only this issuer record and revokes its current grant (0.100208ms)
+✔ N12/N15 late renewal/read cannot resurrect a logged-out grant (0.204292ms)
+✔ N13 blocked credential is retained and recovers; invalid clears only matching Cabinet session (0.121916ms)
+✔ N13 stale invalid response cannot clear a newer successful sign-in (0.133458ms)
+✔ N14 temporary failures and malformed success preserve stored credential (0.148583ms)
+✔ N14 Retry-After prevents explicit/foreground retry until elapsed (0.124792ms)
+✔ N15 offline logout completes without awaiting revoke and restart stays signed out (0.090792ms)
+✔ N15 secure deletion failure is explicitly incomplete and disables restoration until retry (0.106916ms)
+✔ N15 logout queued behind a native credential write durably removes it (0.096167ms)
+✔ N16 cold callback restores the pending secure attempt for the same issuer (0.10575ms)
+✔ secure read and pending-write failures are explicit and prevent browser/network dispatch (0.085958ms)
+✔ provider cancellation consumes only the matching attempt and preserves account (0.123542ms)
+✔ transport uses exact native paths/media/credentials, no cookies or redirect following (9.450875ms)
+✔ transport malformed 401 is not invalid_token; malformed success never becomes a session (0.53ms)
+✔ transport validates 429 delay and bounded timeout; failures never echo secrets (3.823167ms)
+✔ foreground can recheck immediately while a superseded background read is still pending (0.282209ms)
+✔ N16 release gate strips Cabinet callbacks and preserves legacy invitations on both platforms (7.100375ms)
+✔ Back/cancel during secure preparation cannot open a late browser attempt (0.087125ms)
+(node:40870) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/src/protected-read.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/wiki-graph/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ native prepared reader projects only protected HTTPS links and no credential/profile/annotation (0.887916ms)
+✔ native prepared access clears a URL immediately on invalidation and rechecks admission on reopen (0.354333ms)
+✔ native preparation rejects malformed private DTOs rather than displaying stale links (0.150042ms)
+✔ N01 actual HTTP code/PKCE exchange, complete profile, cold restart and issuer isolation (19.170792ms)
+✔ N04/N07 HTTP code expiry rejects exchange without replacing a predecessor (7.966ms)
+✔ N08/N09 HTTP renewal follows server timing; a lost reply preserves a valid predecessor (5.640833ms)
+✔ N11/N12 two HTTP native grants and browser session survive isolated logout (5.239541ms)
+✔ N13/N14 HTTP block/unblock, malformed profile, outage and recovery retain the proper credential (4.485542ms)
+✔ N15 failed secure deletion stays disabled; retry plus HTTP-backed restart stays signed out (1.945083ms)
+✔ Release Cabinet opt-in signs in, restores and revokes without enabling web or a development-only pilot (40.094916ms)
+✔ N01/N05/N16/N17 ios Expo wrapper uses PKCE over HTTP, restores cold callback and preserves invitations (9.067708ms)
+✔ N01/N05/N16/N17 android Expo wrapper uses PKCE over HTTP, restores cold callback and preserves invitations (9.762875ms)
+(node:40872) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/src/features/schedule/cabinet-pilot.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ fourteen school dates use independent offsets across autumn and spring DST (12.997583ms)
+✔ request uses encoded offsets and only the agreed window operation (17.626542ms)
+✔ reject bad origin configuration before any network read; allow disposable HTTP origin (0.933375ms)
+✔ preserve empty fields, optional absent location, nonempty opaque IDs and shared class relationship (0.105333ms)
+✔ malformed success rejects the entire refresh instead of dropping rows on the client (0.228125ms)
+✔ interval edges include earlier lessons today, reject outside starts and have no 200-row cap (0.673459ms)
+✔ moves and cancellation keep identities; omissions replace instead of merging; repair restores rows (1.253041ms)
+✔ initial transport exposes unavailable; later failure retains prior rows and recovery replaces (0.823041ms)
+✔ initial 400 exposes unavailable; later failure retains prior rows and recovery replaces (0.838875ms)
+✔ initial 401 exposes unavailable; later failure retains prior rows and recovery replaces (0.652208ms)
+✔ initial 429 exposes unavailable; later failure retains prior rows and recovery replaces (0.64225ms)
+✔ initial 500 exposes unavailable; later failure retains prior rows and recovery replaces (0.612917ms)
+✔ initial 503 exposes unavailable; later failure retains prior rows and recovery replaces (0.539375ms)
+✔ initial 201 exposes unavailable; later failure retains prior rows and recovery replaces (0.531125ms)
+✔ initial 204 exposes unavailable; later failure retains prior rows and recovery replaces (0.514167ms)
+✔ initial bad-json exposes unavailable; later failure retains prior rows and recovery replaces (0.528917ms)
+✔ initial bad-item exposes unavailable; later failure retains prior rows and recovery replaces (0.543334ms)
+✔ initial wrong-mime exposes unavailable; later failure retains prior rows and recovery replaces (0.515875ms)
+✔ concurrent refresh clicks share one request and timeouts keep the prior successful result (11.960208ms)
+(node:40873) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/src/features/schedule/cabinet-presentation.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ format filters use provider enum, independently of words in titles (0.358ms)
+✔ presentation preserves exact title and metadata without inventing school content (1.07075ms)
+✔ finite zero/negative/extreme durations cannot crash the read-only display (0.069333ms)
+(node:40874) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/src/features/schedule/attendance.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ weekly subscription persists through reload, DST, future windows and time changes (13.862333ms)
+✔ skip and restore a date, cancel subscription, preserve unrelated one-off choices (0.630458ms)
+✔ old choices remain single-date; malformed subscriptions are rejected (0.375542ms)
+✔ cancelled dates never notify and cancelling subscription removes pending reminders (0.298417ms)
+✔ calendar exports retain Israel wall time across DST, encode text and distinguish recurrence (0.824833ms)
+(node:40875) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/src/features/schedule/class-info.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ hybrid classes appear in both filters; unknown format is not guessed (0.5905ms)
+✔ detail separates metadata and supplies attributed descriptions without promises (0.135375ms)
+(node:40876) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/src/features/schedule/model.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ reject naive timestamps and duplicated occurrence IDs (0.489542ms)
+✔ reject unexpected source and invalid event interval (0.081084ms)
+✔ freshness has explicit boundaries (0.071958ms)
+✔ Israel date handles midnight and winter time (9.165792ms)
+✔ preferences accept only explicit true values (0.435625ms)
+(node:40877) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/src/features/schedule/source.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ native source matches server identity, inline text and all seven weekdays (2.599375ms)
+✔ reject incomplete, ambiguous, invalid or changed source (7.373541ms)
+✔ Israel dates handle DST and device timezone independently (11.376ms)
+✔ time edits keep selection IDs while changing actual reminder dates (6.636417ms)
+✔ one dated reminder, no past/cancelled/unselected reminders; optout empty (0.864667ms)
+✔ reconcile is idempotent, reschedules moves, cancels deselection and preserves unrelated requests (0.428458ms)
+✔ scheduling/cancellation failures surface instead of pretending success (0.409791ms)
+✔ precision permission changes replace an existing reminder once, without duplicating it (0.341875ms)
+(node:40878) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/src/features/schedule/zoom-model.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Zoom matches Jerusalem time in summer/winter and retains original URL (10.189167ms)
+✔ no wrong room for moved, cancelled, different or ambiguous class (0.33175ms)
+✔ reject unexpected protocols, hosts, credentials and paths (0.374042ms)
+✔ Telegram end correction is idempotent, preserves selection identity and other events (0.920417ms)
+✔ native bridge permits only public graph and a single material, never access or arbitrary URL (0.375083ms)
+✔ API text cannot break injected reply or become executable code (0.5925ms)
+✔ external sources require HTTPS and prohibit embedded credentials (0.070834ms)
+✔ public source messages cannot open recordings or Zoom; protected sources need the native authorized path (0.134ms)
+✔ bundled UI has no remote script, network permissions, or corpus snapshot (0.993292ms)
+✔ generated inline JavaScript parses after HTML interpolation (2.983333ms)
+(node:40880) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://$DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/src/features/wiki/catalog-model.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to $DAYCHI_ROOT/data/worktrees/sync-cabinet-baseline-2026-10-17/apps/practice-app/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ offline search normalizes ё/е, paginates and preserves bookmarks without detail-only fields (10.128625ms)
+✔ offline filters, oldest-first, multi-token search and empty results (3.696375ms)
+✔ an older public server cannot send recording URLs or source IDs into the native reader (7.409667ms)
+ℹ tests 125
+ℹ suites 0
+ℹ pass 125
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 464.656042

@@ -1,0 +1,243 @@
+{
+  "count": 59,
+  "deployment": false,
+  "activation": "disabled; no Cabinet cutover",
+  "files": [
+    {
+      "path": ".dockerignore",
+      "sha256": "4f1a62da8d3c9d3fdaf7242641887de02d9143b9ece0d9472deb808768328876"
+    },
+    {
+      "path": "Dockerfile",
+      "sha256": "3eb0468f9321d996c7210f5405c5c512985eebdbb56272f812d90331c4bf7337"
+    },
+    {
+      "path": "deploy/daychee/Dockerfile",
+      "sha256": "3eb0468f9321d996c7210f5405c5c512985eebdbb56272f812d90331c4bf7337"
+    },
+    {
+      "path": "deploy/daychee/requirements.txt",
+      "sha256": "dfdbd263e6cd20191aac37afa4e43d65bc1ee563feee2a11163abfb7f06b9c81"
+    },
+    {
+      "path": "deploy/daychee/run.py",
+      "sha256": "c513dfc8e01f1e886942b4f5cd49fd4856f2ecd1049e1570122df694b660de13"
+    },
+    {
+      "path": "practice_api/__init__.py",
+      "sha256": "fd71ef846ed9816e614cda2fb136f9bbfdb30c54c2c662ac2542b122805a6d3f"
+    },
+    {
+      "path": "practice_api/access_deletion.py",
+      "sha256": "34478e9913702fd4c686428d7f16416fef1b4c9183c4e6c92b42553e5eea3642"
+    },
+    {
+      "path": "practice_api/access_request_api.py",
+      "sha256": "ed50371c6dbf027d63a3f7875490fc6584d289edb6a75a08c737b4d4ed1d50c4"
+    },
+    {
+      "path": "practice_api/access_request_notifications.py",
+      "sha256": "9e16744480cf15c0b662ac2b03f0a0cd2083e97ce15b0e07d07a69c64a190472"
+    },
+    {
+      "path": "practice_api/access_requests.py",
+      "sha256": "3940b668e1d61a6548b2a532f876b84d1bc57c63260aa7a00f025b15cf7d0277"
+    },
+    {
+      "path": "practice_api/access_restore.py",
+      "sha256": "2e2fc59104ecbfa8feb00cd6402e8441fefc0f5b3c56948b96ed41d5d7197f67"
+    },
+    {
+      "path": "practice_api/admin.py",
+      "sha256": "8e052c996f4823406e536b6cbca9101d15884e72205d3102fce3c8a375403707"
+    },
+    {
+      "path": "practice_api/admin_web/admin.css",
+      "sha256": "559006df3db2338e88710e088bc1e26c61127934d1bbcc49e97c07288425565a"
+    },
+    {
+      "path": "practice_api/admin_web/admin.js",
+      "sha256": "c0263a2dd15a4f7f29f0443c6bc5f7f32058dc5080438923c6be456fafe14b65"
+    },
+    {
+      "path": "practice_api/admin_web/index.html",
+      "sha256": "eee77f4c25ee6ed1caeec1a8204d4c8de34d3dd09f5b446222c91869b6a457bc"
+    },
+    {
+      "path": "practice_api/daychee_app.py",
+      "sha256": "fab183fb398951b8252c8d18ff7e9fc6fb2c3b9629e7773daae0edfc4b757dbf"
+    },
+    {
+      "path": "practice_api/downloads/daychee-android.apk",
+      "sha256": "701b65fd9de995c3947c705a938909292a3299621496f1210fbe9bf0c09dc6db"
+    },
+    {
+      "path": "practice_api/feedback.py",
+      "sha256": "bbf95e42a971f3557f162ecaa1abefc57ea867ec497b10fdfdd415852f963004"
+    },
+    {
+      "path": "practice_api/invitation_web/index.html",
+      "sha256": "4d957a40528066993514ce9a28786729b786f49ca0e1247cdc356605ee5e4ac2"
+    },
+    {
+      "path": "practice_api/invitation_web/invitation.css",
+      "sha256": "f5d100027c5658eecfd8e0029a886d245af14b20001e74939a094a5bab526ac5"
+    },
+    {
+      "path": "practice_api/invitation_web/invitation.js",
+      "sha256": "3c38c6377ded3af2518c25fda5e9d3fe36d5a88b01ed1e057fa92649147f37f1"
+    },
+    {
+      "path": "practice_api/invitations.py",
+      "sha256": "75f7b0d2a42d21957994390cf2df0a76a75a4675d853433cdcea3e9f1d1d38e1"
+    },
+    {
+      "path": "practice_api/public_pages/pages.css",
+      "sha256": "187278f4ed5f63eebfde4485fd0c8b6f98a641099a0e0ece43cb407d4cbd84eb"
+    },
+    {
+      "path": "practice_api/public_pages/privacy.html",
+      "sha256": "9c476c450e147afb7cf7128048f10a62db4f0d031c8a8a733eae7df54afc3a02"
+    },
+    {
+      "path": "practice_api/public_pages/support.html",
+      "sha256": "e0cfd6f895e383239872cd98eb0c2a16d653a9d059f7f3c28dfecab4ad830c13"
+    },
+    {
+      "path": "practice_api/public_pages.py",
+      "sha256": "e81d67a0b65930f05922f4149ab90ca1d411966fb9d748bad8329743f8f04742"
+    },
+    {
+      "path": "practice_api/public_wiki.py",
+      "sha256": "820725600f5eb603a175d5aad24d6c35141416b4bd4ff8e34feb0da04e880450"
+    },
+    {
+      "path": "practice_api/retention.py",
+      "sha256": "6aa3c36da7c643fcfd0677031ede1129c42b607f614e6a58daebd4c738ff8690"
+    },
+    {
+      "path": "practice_api/schedule.py",
+      "sha256": "64e2abd10419a02c67f6fd3e89c660115aef33593b05c09ed8b7e37c0def9cc6"
+    },
+    {
+      "path": "practice_api/schedule_source.py",
+      "sha256": "5e21f5cd106aefa8729e98a936b399826c2f9988fbae9855aff6e57cc8b6209d"
+    },
+    {
+      "path": "practice_api/web_wiki_session.py",
+      "sha256": "e75763734d2317fa32654f2db9f3db3178a7e3279abebdf32f8e677fbde75a23"
+    },
+    {
+      "path": "practice_api/website/android.svg",
+      "sha256": "ff571c5e21163f07dd7176d4670411344f55409d36eb6346b402210ad7c02c4b"
+    },
+    {
+      "path": "practice_api/website/apple.svg",
+      "sha256": "2a1509dccd25e6d2bc7a11a8e52941077e1a48555e192ce638699b9f083c2a7c"
+    },
+    {
+      "path": "practice_api/website/caprasimo-OFL.txt",
+      "sha256": "234548134d1880ca94d7203cfb8eab669c9e40eb4a5ff5b87d3b8002322af321"
+    },
+    {
+      "path": "practice_api/website/figtree-OFL.txt",
+      "sha256": "bb272dfcd8801eb31fb98fe51828f76f0e41ac82f89256101df8021aa3d30ce2"
+    },
+    {
+      "path": "practice_api/website/font-0.ttf",
+      "sha256": "5d18d346718f3a116b7ad22488fc25dab1c26a54b32ace42b64e1edff01e8cb1"
+    },
+    {
+      "path": "practice_api/website/font-1.ttf",
+      "sha256": "81f3fc9d8d4e307e5ae0dd43a03d22eb90d50b6cc72241552c460a59b6731b31"
+    },
+    {
+      "path": "practice_api/website/font-2.ttf",
+      "sha256": "b5d3fe714f8283b072579c9318c6cbe9e028ca51d6ba33eed0412a828ec331da"
+    },
+    {
+      "path": "practice_api/website/font-3.ttf",
+      "sha256": "88aad0bfccf47bc631abd1351a0c815be98edf58c2c8706f72deb24a531639d6"
+    },
+    {
+      "path": "practice_api/website/golos-OFL.txt",
+      "sha256": "ff532f9e8789f09a9fdffc3c0954eedfb0a48be77b2e2eb90f5f82e4f347f50c"
+    },
+    {
+      "path": "practice_api/website/golos-text.ttf",
+      "sha256": "17bb58fb69aec2dfb047a2ebf52534023e9b688c97a6b7ac795b0a72912c2063"
+    },
+    {
+      "path": "practice_api/website/graph-layout.mjs",
+      "sha256": "97b46aff277cf1d543dd1d0baefe3f3d65a5c85b958219933d24dc2990814616"
+    },
+    {
+      "path": "practice_api/website/index.html",
+      "sha256": "639c34e219999eb8eab0c8645f566ac5587d6ef908aeaacd3717998931fbacac"
+    },
+    {
+      "path": "practice_api/website/schedule-ios.png",
+      "sha256": "0a97fbec4c32a65757dc894f1bbb166933000e17acede3ce9223643babf0b6b9"
+    },
+    {
+      "path": "practice_api/website/simple-icons-LICENSE.md",
+      "sha256": "e43ad2b5f43c4798f7ceb92c259f4b854d59eb9dee3f4321ea0185758d7dea7b"
+    },
+    {
+      "path": "practice_api/website/site.css",
+      "sha256": "93ab071ec9215c6c03044e73c9165ec8dc5330551cb95e72547c91ea47ab9713"
+    },
+    {
+      "path": "practice_api/website/site.js",
+      "sha256": "6eff27d18706dcf93aa3467714d16ab55bffe806951f4f61b679dfc332b0f793"
+    },
+    {
+      "path": "practice_api/wiki_app.py",
+      "sha256": "0739e5c0819fd13026011dedcb0922367b2c28f03588ae4fe24ce483d972047e"
+    },
+    {
+      "path": "practice_api/wiki_article_models.py",
+      "sha256": "0f40b529688ad210c9b2e67f43821afbd02e44af5165ee83ef97c95153d03372"
+    },
+    {
+      "path": "practice_api/wiki_articles.py",
+      "sha256": "e18437a8cfe6bb7c091f4039515aebfff88499887c7f68fd20dd7cae38efe30a"
+    },
+    {
+      "path": "practice_api/wiki_content.py",
+      "sha256": "09fe1a80d259b1d660f8ad581e1c19d2788ed431977013aa5f0e2c133b9a63c4"
+    },
+    {
+      "path": "practice_api/wiki_graph.py",
+      "sha256": "a0d6b5d22f82a70b9363334dbcc9df82c71ee9f8f6c49c014046a5725d7d9356"
+    },
+    {
+      "path": "practice_api/wiki_graph_web/graph.css",
+      "sha256": "e382c966c6a87d7a3a6be252bb08d1a419f0340639d6d5b5dfd8dc09bb0ef3fa"
+    },
+    {
+      "path": "practice_api/wiki_graph_web/graph.js",
+      "sha256": "6ffcb750727696533dae4a2ad6fa73367626d091ab427b0c2cee9d506e3ccba2"
+    },
+    {
+      "path": "practice_api/wiki_graph_web/index.html",
+      "sha256": "160a09baac9839c6e1694333a41d727d24dea8600f12b752a905e034b4a13ea1"
+    },
+    {
+      "path": "practice_api/wiki_semantics.py",
+      "sha256": "11360a6bef9a287dbd4cb622c8d7b06b095376f6380df772d386fec67e4b6bc5"
+    },
+    {
+      "path": "railway.json",
+      "sha256": "d8e580f97dcf7b627923eed985e31606484809d3cc5a436146dc7de037e14139"
+    },
+    {
+      "path": "scripts/daychee-invite.py",
+      "sha256": "e79451f8e661a90edad09589c9abf05c3ac83e2d5db24cb889a6fa0e80452a88"
+    },
+    {
+      "path": "scripts/daychee-restore-access.py",
+      "sha256": "386eaca29ecfd559e950051903e1586693272abcbe60d76f0fd3ddce8532b660"
+    }
+  ]
+}
