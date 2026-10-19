@@ -84,15 +84,19 @@ def create_fixture_app(folder, *, check=None):
     return ReadOnlyNativeSurface(app)
 
 
-if __name__ == '__main__':
+def prepare_runtime_folder(folder):
     os.umask(0o077)
-    folder = Path('/data/daychi-native-staging')
     folder.mkdir(parents=True, mode=0o700, exist_ok=True)
     if os.getuid() == 0:
-        folder.chown(10001, 10001)
+        os.chown(folder, 10001, 10001)
         os.setgroups([])
         os.setgid(10001)
         os.setuid(10001)
+
+
+if __name__ == '__main__':
+    folder = Path('/data/daychi-native-staging')
+    prepare_runtime_folder(folder)
     app = create_fixture_app(folder)
     print(json.dumps({'event': 'native_staging_ready', 'product_source': SOURCE,
                       'fixture': 'synthetic-v1', 'materials': 2, 'concepts': 1,

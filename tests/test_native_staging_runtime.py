@@ -62,3 +62,17 @@ def test_staging_has_stable_synthetic_ids_without_private_data(tmp_path, monkeyp
     assert [r['id'] for r in first.app.state.wiki_catalog()] == ['1'*32, '2'*32]
     assert [r['id'] for r in second.app.state.wiki_catalog()] == ['1'*32, '2'*32]
     assert (tmp_path/'index.json').stat().st_mode & 0o777 == 0o600
+
+
+def test_container_root_owns_fixture_before_dropping_privileges(tmp_path, monkeypatch):
+    module = runtime()
+    calls = []
+    monkeypatch.setattr(module.os, 'getuid', lambda: 0)
+    for operation in ('umask', 'chown', 'setgroups', 'setgid', 'setuid'):
+        monkeypatch.setattr(module.os, operation,
+                            lambda *args, op=operation: calls.append((op, args)))
+    folder = tmp_path/'ephemeral'
+    module.prepare_runtime_folder(folder)
+    assert folder.is_dir()
+    assert calls == [('umask', (0o077,)), ('chown', (folder, 10001, 10001)),
+                     ('setgroups', ([],)), ('setgid', (10001,)), ('setuid', (10001,))]

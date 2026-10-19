@@ -47,3 +47,8 @@ Cabinet owners must supply the matching authorized account/grant/status/outage
 arrangements before real revocation/block/outage cases. Reuse accepted account8
 proof; browser DNS, reminders17 and restart quota persistence are not new gates.
 Report sanitized mapping and missing arrangements in original Workshop16.
+
+First deployment25e18008 failed before serving: the root bootstrap incorrectly
+called Path.chown. Corrected to os.chown and added a root privilege-drop regression.
+The subsequent four bootstrap tests pass; actual Linux UID/startup and HTTPS proof
+are recorded only after a successful replacement deployment.
