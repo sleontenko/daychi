@@ -1,0 +1,328 @@
+{
+  "format": "daychi-native-staging-fixture/1",
+  "source": "bb7295f824909029ed8a39eb1a12822f662f012d",
+  "index": [
+    {
+      "id": "daychi-synthetic:0",
+      "title": "Урок",
+      "source_timestamp_ms": 1,
+      "source_date_label": "Синтетическая дата",
+      "category_id": "synthetic",
+      "category_name": "Тестовый раздел",
+      "subtopic": "",
+      "subtopic_key": "",
+      "source_text": "Синтетический материал для совместной проверки доступа. Это не материал школы.",
+      "links": [
+        {
+          "url": "https://youtu.be/abcdefghijk",
+          "type": "video",
+          "label": "Синтетическая запись — не открывать"
+        }
+      ]
+    },
+    {
+      "id": "daychi-synthetic:1",
+      "title": "Урок",
+      "source_timestamp_ms": 2,
+      "source_date_label": "Синтетическая дата",
+      "category_id": "synthetic",
+      "category_name": "Тестовый раздел",
+      "subtopic": "",
+      "subtopic_key": "",
+      "source_text": "Синтетический материал для совместной проверки доступа. Это не материал школы.",
+      "links": [
+        {
+          "url": "https://youtu.be/otherid1234",
+          "type": "video",
+          "label": "Синтетическая запись — не открывать"
+        }
+      ]
+    }
+  ],
+  "material_ids": [
+    "11111111111111111111111111111111",
+    "22222222222222222222222222222222"
+  ],
+  "content": {
+    "batch_id": "staging-synthetic-sources",
+    "records": [
+      {
+        "resource_id": "abcdefghijk",
+        "expected_title": "Урок",
+        "revision": 1,
+        "summary": "Краткий конспект содержания записанного занятия.",
+        "points": [
+          {
+            "text": "Точная фраза из расшифровки",
+            "start_seconds": 10,
+            "end_seconds": 15
+          },
+          {
+            "text": "Вторая фраза из расшифровки",
+            "start_seconds": 20,
+            "end_seconds": 25
+          }
+        ],
+        "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "subtitles_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      {
+        "resource_id": "otherid1234",
+        "expected_title": "Урок",
+        "revision": 1,
+        "summary": "Краткий конспект содержания записанного занятия.",
+        "points": [
+          {
+            "text": "Точная фраза из расшифровки",
+            "start_seconds": 10,
+            "end_seconds": 15
+          },
+          {
+            "text": "Вторая фраза из расшифровки",
+            "start_seconds": 20,
+            "end_seconds": 25
+          }
+        ],
+        "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "subtitles_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ]
+  },
+  "articles": {
+    "format": "daychi-wiki-articles/1",
+    "batch_id": "article-fixture",
+    "sources": [
+      {
+        "resource_id": "abcdefghijk",
+        "material_id": "11111111111111111111111111111111",
+        "expected_title": "Урок",
+        "content_revision": 1,
+        "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "subtitles_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      {
+        "resource_id": "otherid1234",
+        "material_id": "22222222222222222222222222222222",
+        "expected_title": "Урок",
+        "content_revision": 1,
+        "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "subtitles_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ],
+    "articles": [
+      {
+        "material_id": "11111111111111111111111111111111",
+        "resource_id": "abcdefghijk",
+        "revision": 1,
+        "introduction_claim_ids": [
+          "intro"
+        ],
+        "sections": [
+          {
+            "id": "first",
+            "heading": "Смысл раздела",
+            "claim_ids": [
+              "body"
+            ]
+          }
+        ],
+        "claims": [
+          {
+            "id": "intro",
+            "text": "Короткое введение.",
+            "evidence_ids": [
+              "e0"
+            ]
+          },
+          {
+            "id": "body",
+            "text": "🪷 Это понятие в контексте урока.",
+            "evidence_ids": [
+              "e0"
+            ],
+            "mentions": [
+              {
+                "start": 6,
+                "end": 13,
+                "link_id": "l0"
+              }
+            ]
+          }
+        ],
+        "related": [
+          {
+            "material_id": "22222222222222222222222222222222",
+            "via_concept_id": "fixture-topic",
+            "supporting_link_ids": [
+              "l0",
+              "l1"
+            ],
+            "reason": "Оба занятия объясняют понятие."
+          }
+        ]
+      },
+      {
+        "material_id": "22222222222222222222222222222222",
+        "resource_id": "otherid1234",
+        "revision": 1,
+        "introduction_claim_ids": [
+          "intro"
+        ],
+        "sections": [
+          {
+            "id": "first",
+            "heading": "Смысл раздела",
+            "claim_ids": [
+              "body"
+            ]
+          }
+        ],
+        "claims": [
+          {
+            "id": "intro",
+            "text": "Короткое введение.",
+            "evidence_ids": [
+              "e1"
+            ]
+          },
+          {
+            "id": "body",
+            "text": "🪷 Это понятие в контексте урока.",
+            "evidence_ids": [
+              "e1"
+            ],
+            "mentions": [
+              {
+                "start": 6,
+                "end": 13,
+                "link_id": "l1"
+              }
+            ]
+          }
+        ],
+        "related": [
+          {
+            "material_id": "11111111111111111111111111111111",
+            "via_concept_id": "fixture-topic",
+            "supporting_link_ids": [
+              "l0",
+              "l1"
+            ],
+            "reason": "Оба занятия объясняют понятие."
+          }
+        ]
+      }
+    ],
+    "concepts": [
+      {
+        "id": "fixture-topic",
+        "kind": "topic",
+        "title": "Понятие",
+        "aliases": [],
+        "revision": 1,
+        "claims": [
+          {
+            "id": "definition",
+            "text": "Описание понятия по двум занятиям.",
+            "evidence_ids": [
+              "e0",
+              "e1"
+            ]
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "id": "l0",
+        "resource_id": "abcdefghijk",
+        "concept_id": "fixture-topic",
+        "relation": "explains",
+        "rationale": "Источник объясняет тему.",
+        "evidence_ids": [
+          "e0"
+        ]
+      },
+      {
+        "id": "l1",
+        "resource_id": "otherid1234",
+        "concept_id": "fixture-topic",
+        "relation": "explains",
+        "rationale": "Источник объясняет тему.",
+        "evidence_ids": [
+          "e1"
+        ]
+      }
+    ],
+    "evidence": [
+      {
+        "id": "e0",
+        "resource_id": "abcdefghijk",
+        "text": "Точная фраза из расшифровки",
+        "start_seconds": 10,
+        "end_seconds": 15
+      },
+      {
+        "id": "e1",
+        "resource_id": "otherid1234",
+        "text": "Точная фраза из расшифровки",
+        "start_seconds": 10,
+        "end_seconds": 15
+      }
+    ],
+    "review": {
+      "editor": "editor",
+      "reviewer": "reviewer",
+      "editorial_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "review_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "decision": "pass",
+      "full_source_read": true
+    }
+  },
+  "semantics": {
+    "batch_id": "semantic-fixture",
+    "review": {
+      "editor": "editor",
+      "reviewer": "reviewer",
+      "editorial_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "review_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "verdict": "pass",
+      "full_text_read": true
+    },
+    "pages": [
+      {
+        "concept_id": "fixture-topic",
+        "kind": "topic",
+        "title": "Тема для проверки",
+        "aliases": [],
+        "revision": 1,
+        "claims": [
+          {
+            "text": "Это описание поддержано опубликованной цитатой из урока.",
+            "evidence_indexes": [
+              0
+            ]
+          }
+        ],
+        "links": [
+          {
+            "resource_id": "abcdefghijk",
+            "expected_title": "Урок",
+            "source_revision": 1,
+            "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "subtitles_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "relation": "explains",
+            "rationale": "Урок объясняет эту тему в указанном проверенном фрагменте.",
+            "points": [
+              {
+                "text": "Точная фраза из расшифровки",
+                "start_seconds": 10,
+                "end_seconds": 15
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

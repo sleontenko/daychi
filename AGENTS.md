@@ -1,5 +1,12 @@
 # Daychi
 
+20October2026 authorized isolated native-material staging is prepared on
+codex/native-materials-staging-20261020 from published PR18 bb7295f.
+Product modules are unchanged; deployment/bootstrap/tests are separate and
+synthetic. [Runtime scope and checks](deploy/native-materials-staging/README.md).
+Only dedicated staging service bdb1c01d is authorized; no production or current
+TestFlight change, account/grant/status/outage mutation or reader release.
+
 Перед продуктовыми изменениями прочитать README.md, docs/PRODUCT.md,
 docs/DESIGN.md и docs/TESTFLIGHT_CHANGELOG.md. Для Expo действуют также
 apps/practice-app/AGENTS.md.
