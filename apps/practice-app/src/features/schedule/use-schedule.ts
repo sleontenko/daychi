@@ -1,6 +1,6 @@
 import { telegramSchedule } from './zoom';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AppState, Platform } from 'react-native';
 import { decodeChoices, decodeSchedule, type Schedule, type Occurrence } from './model';
 import { loadSchedule } from './load';
@@ -12,7 +12,9 @@ import { cancelWeekly, chooseWeekly, decodeSubscriptions, isChosen, toggleDate }
 const CACHE = 'quiet-practice.schedule.v1', PREFS = 'quiet-practice.preferences.v2';
 const initial: Preferences = { choices: {}, enabled: false, lead: 30 };
 
-export function useSchedule() {
+export function useSchedule(enabled = true) {
+  const enabledRef = useRef(enabled);
+  useLayoutEffect(() => { enabledRef.current = enabled; }, [enabled]);
   const [data, setData] = useState<Schedule | null>(null);
   const [prefs, setPrefs] = useState(initial);
   const [ready, setReady] = useState(false), [loading, setLoading] = useState(true), [busy, setBusy] = useState(false);
@@ -29,12 +31,14 @@ export function useSchedule() {
     return next;
   }, []);
   const reconcile = useCallback(async () => {
+    if (!enabledRef.current) return;
     const permission = await notificationPermission();
-    const count = await updateReminders(state.current.data?.occurrences ?? [], state.current.prefs);
+    const count = await updateReminders(state.current.data?.occurrences ?? [], state.current.prefs, () => enabledRef.current);
     if (alive.current) { setAllowed(permission); setScheduled(count); setExactAllowed(exactAlarmsAllowed()); }
   }, []);
 
   const refresh = useCallback(async () => {
+    if (!enabledRef.current) return;
     if (fetchBusy.current) return;
     fetchBusy.current = true;
     if (alive.current) setLoading(true);
@@ -45,7 +49,7 @@ export function useSchedule() {
         if (alive.current) { setData(next); setOffline(false); setNow(Date.now()); }
         try { await AsyncStorage.setItem(CACHE, JSON.stringify(next)); }
         catch { if (alive.current) setError('Не удалось сохранить расписание без сети.'); }
-        try { await reconcile(); }
+        try { if (enabledRef.current) await reconcile(); }
         catch { if (alive.current) setError('Напоминания не обновились. Нажми «Повторить».'); }
       });
     } catch {
@@ -75,20 +79,20 @@ export function useSchedule() {
       if (alive.current) { setReady(true); void refresh(); }
     })();
     return () => { alive.current = false; };
-  }, [refresh, serial, reconcile]);
+  }, [refresh, serial, reconcile, enabled]);
 
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || !enabled) return;
     const subscription = AppState.addEventListener('change', status => {
       if (status === 'active') { setNow(Date.now()); void serial(reconcile).catch(() => setError('Проверь настройки напоминаний.')); void refresh(); }
     });
     const timer = setInterval(() => { if (AppState.currentState === 'active') void refresh(); }, 300000);
     const clock = setInterval(() => setNow(Date.now()), 30000);
     return () => { subscription.remove(); clearInterval(timer); clearInterval(clock); };
-  }, [ready, refresh, reconcile, serial]);
+  }, [ready, enabled, refresh, reconcile, serial]);
 
   const change = async (edit: (current: Preferences) => Preferences, askPermission = false) => {
-    if (!ready || writeBusy.current) return;
+    if (!enabledRef.current || !ready || writeBusy.current) return;
     writeBusy.current = true; setBusy(true); setError('');
     try {
       const permission = askPermission ? await notificationPermission(true) : await notificationPermission();

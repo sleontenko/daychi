@@ -1,0 +1,34 @@
+[
+  {
+    "file": "screenshots/ipad-empty-calendar-preserved-choices.jpg",
+    "sha256": "ce85fcf291a3ae3bd97f226c5dc50956187609e988b4bc33a0d10c7e8f290760"
+  },
+  {
+    "file": "screenshots/ipad-guest-after-logout.jpg",
+    "sha256": "942b3d403deee833630e78d0c46b7dc95b643a09a0cba5264b8cc952074238bd"
+  },
+  {
+    "file": "screenshots/ipad-landscape-selected.jpg",
+    "sha256": "9aaa274dfc88b3d2b8b54535511fe7a04be78063c93d042aafd81ab389f036f3"
+  },
+  {
+    "file": "screenshots/ipad-reminder-queue.jpg",
+    "sha256": "d6cb0998e0e54d645672d141ebef29ad8df65f2e2e9ac9cddc49defe4ace48bf"
+  },
+  {
+    "file": "screenshots/ipad-selected-outside-window.jpg",
+    "sha256": "e72918e7a6b12b12211d8e9713a017aea09004608f4b581e07f528df44114fa9"
+  },
+  {
+    "file": "screenshots/phone-selected-detail.jpg",
+    "sha256": "8d250935a2525e94824a39a9bf2e3577f43fbf433c4101f01db591461e5341d6"
+  },
+  {
+    "file": "screenshots/phone-uncertain-save.jpg",
+    "sha256": "05eb1b7ed4c7f20af0d99c7adb812cf136a5ca5a426b768161ce6155a082ad15"
+  },
+  {
+    "file": "screenshots/reference-schedule-build5.png",
+    "sha256": "a72e3b366bb675e7bde4dc2da2adff8880b522eacbb7b5833b2a9fa6e16d43e1"
+  }
+]

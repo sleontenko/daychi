@@ -20,7 +20,7 @@ export async function notificationPermission(request = false) {
   return request ? (await Notifications.requestPermissionsAsync({ ios: { allowAlert: true, allowSound: true, allowBadge: false } })).granted : false;
 }
 
-export async function updateReminders(events: Occurrence[], prefs: Preferences) {
+export async function updateReminders(events: Occurrence[], prefs: Preferences, current = () => true) {
   if (Platform.OS === 'web') return 0;
   // Existing build-2 users must stop server reminders before enabling local ones.
   // A failed opt-out is visible and retried; never silently double-deliver.
@@ -29,6 +29,7 @@ export async function updateReminders(events: Occurrence[], prefs: Preferences) 
   const exact = exactAlarmsAllowed();
   const plan = reminderPlan(events, { ...prefs, enabled: prefs.enabled && allowed }, Date.now());
   return reconcileReminders(plan, {
+    current,
     pending: async () => (await Notifications.getAllScheduledNotificationsAsync()).map(n => ({
       id: n.identifier, at: Number(n.content.data?.reminderAt), title: String(n.content.data?.classTitle ?? ''),
       stale: Platform.OS === 'android' && n.content.data?.exactAlarmAllowed !== exact,

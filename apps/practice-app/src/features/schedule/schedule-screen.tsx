@@ -27,6 +27,8 @@ import { classInfo, matchesFormat, type FormatFilter } from './class-info';
 import { cabinetPilotEnabled, useCabinetSchedule } from './use-cabinet-schedule';
 import { cabinetMatchesFormat, cabinetPresentation } from './cabinet-presentation';
 import type { PublicLesson } from './cabinet-pilot';
+import { useCabinetReminders } from '../cabinet-reminders/use-reminders';
+import { AccountOverview, AccountLessonDetails, AccountReminderControls, AccountStatus } from '../cabinet-reminders/presentation';
 
 type Tab = 'schedule' | 'mine' | 'wiki';
 const format = (value: string | number, options: Intl.DateTimeFormatOptions) =>
@@ -74,7 +76,8 @@ function ZoomPassword({ password }: { password: string }) {
 
 export default function ScheduleScreen() {
   const access = useAccess();
-  const model = useSchedule();
+  const shared = useCabinetReminders();
+  const model = useSchedule(!shared.accountMode);
   const { data, prefs, now, busy, ready, offline, loading } = model;
   const { width, fontScale } = useWindowDimensions();
   const tablet = Platform.OS === 'ios' && Platform.isPad;
@@ -83,8 +86,8 @@ export default function ScheduleScreen() {
   const params = useLocalSearchParams<{ tab?: string }>();
   const [tab, setTab] = useState<Tab>(params.tab === 'wiki' ? 'wiki' : 'schedule');
   const [cabinetSource, setCabinetSource] = useState(cabinetPilotEnabled);
-  const cabinet = useCabinetSchedule(cabinetPilotEnabled && cabinetSource);
-  const usingCabinet = cabinetPilotEnabled && cabinetSource && tab === 'schedule';
+  const cabinet = useCabinetSchedule(!shared.accountMode && cabinetPilotEnabled && cabinetSource);
+  const usingCabinet = !shared.accountMode && cabinetPilotEnabled && cabinetSource && tab === 'schedule';
   const split = twoPane && !usingCabinet && tab !== 'wiki';
   const tiledWeek = tablet && !split && width - (sidebar ? width < 900 ? 184 : 212 : 0) >= 840 && fontScale <= 1.3;
   const [settingsStack, setSettingsStack] = useState<SettingsPage[]>([]);
@@ -120,6 +123,9 @@ export default function ScheduleScreen() {
   const [formatFilter, setFormatFilter] = useState<FormatFilter>('all');
   const [selectedDay, setSelectedDay] = useState(dayKey(now));
   const [detail, setDetailId] = useState<string | null>(null);
+  // Account identities cannot restore a guest/previous-account detail route.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setDetailId(null); }, [shared.accountMode, shared.scope?.issuer, shared.scope?.accountId]);
   const listOffsets = useRef<Partial<Record<Tab, number>>>({});
   const tabDetails = useRef<Partial<Record<Tab, { id: string | null; offset: number }>>>({});
   const currentOffset = useRef(0);
@@ -172,7 +178,7 @@ export default function ScheduleScreen() {
   const displayDay = usingCabinet && !days.includes(selectedDay) ? days[0] : selectedDay;
   const lesson = all.find(e => e.id === detail);
   const info = lesson ? classInfo(lesson.title) : null;
-  const zoomState = useClassZoom(lesson);
+  const zoomState = useClassZoom(shared.accountMode ? undefined : lesson);
   const zoom = zoomState.room;
   const unavailable = Object.keys(prefs.choices).filter(id => !all.some(e => e.id === id) && id.split(':').at(-1)! >= today);
   const publicRow = (event: PublicLesson, index = 0) => {
@@ -241,7 +247,8 @@ export default function ScheduleScreen() {
     </View>;
   };
   const empty = (text: string) => <View style={s.empty}><Text style={s.body}>{text}</Text></View>;
-  const reminders = <View style={s.section}>
+  const reminders = shared.accountMode ? <View style={s.section}><AccountReminderControls model={shared} />
+    <AccountStatus model={shared} onAccount={() => setSettingsPage('cabinet-account')} /></View> : <View style={s.section}>
     <View style={s.reminderRow}>
       <Icon name="bell" active={prefs.enabled && model.allowed} />
       <View style={s.flex}><Text style={s.lessonTitle}>Напоминать о занятиях</Text>
@@ -298,7 +305,8 @@ export default function ScheduleScreen() {
           <Icon name={key} active={tab === key} /><Text maxFontSizeMultiplier={1.2} style={[s.tabText, tab === key && s.tabOn]}>{label}</Text></Pressable>)}
     </View></SafeAreaView>;
 
-  const overview = <>
+  const overview = shared.accountMode ? <AccountOverview model={shared} tab={tab} onOpen={setDetail} onSchedule={() => selectTab('schedule')}
+    view={view} week={week} onWeek={setWeek} selectedDay={selectedDay} onDay={setSelectedDay} filter={formatFilter} onFilter={setFormatFilter} /> : <>
           <View><Text accessibilityRole="header" style={s.title}>{tab === 'schedule' ? 'Расписание' : 'Мои занятия'}</Text>
             <Text style={[s.caption, tab === 'mine' && { fontSize: 15, lineHeight: 21 }]}>{tab === 'mine' ? 'Личный выбор в приложении — это не запись у преподавателя.' : usingCabinet ? 'Время Израиля · Кабинет' : `Время Израиля${offline ? ' · без сети' : ''}`}</Text></View>
 
@@ -348,7 +356,7 @@ export default function ScheduleScreen() {
               <Pressable accessibilityRole="button" disabled={busy} onPress={() => void model.toggle(id)} style={s.textButton}><Text style={s.link}>Убрать из выбранных</Text></Pressable></View>)}
           </>}
         </>;
-  const lessonDetails = <>
+  const lessonDetails = shared.accountMode && detail ? <AccountLessonDetails id={detail} model={shared} /> : <>
           {lesson ? <>
             <View style={s.filters}><Text style={s.detailTag}>{info!.format}</Text></View>
             <Text style={s.detailTitle}>{info!.title}</Text>
@@ -382,7 +390,7 @@ export default function ScheduleScreen() {
             {isChosen(lesson, prefs) && <Pressable accessibilityRole="button" onPress={() => setSettingsPage('reminders')} style={s.outlineButton}><Text style={s.link}>Напоминания</Text></Pressable>}
           </> : empty('Занятие больше не найдено в расписании.')}
         </>;
-  const status = <>
+  const status = shared.accountMode ? <AccountStatus model={shared} onAccount={() => setSettingsPage('cabinet-account')} /> : <>
         {!usingCabinet && !data && <View style={s.empty}>{loading ? <ActivityIndicator color={C.accent} /> : <>
           <Text style={s.lessonTitle}>Не удалось загрузить занятия</Text><Text style={s.body}>Проверь подключение. Мы попробуем снова.</Text>
           <Pressable accessibilityRole="button" style={s.textButton} onPress={model.refresh}><Text style={s.link}>Повторить загрузку</Text></Pressable></>}</View>}
@@ -397,7 +405,7 @@ export default function ScheduleScreen() {
         </View>}</>;
 
   return <SafeAreaView edges={tablet ? ['top', 'left', 'right', 'bottom'] : ['top']} style={[s.safe, !tablet && s.phoneSafe]}>
-    <SettingsScreen bottomTabs={tablet ? null : bottomTabs} page={settingsPage} onPage={setSettingsPage} onBack={settingsBack} backLabel={settingsStack.length > 1 ? 'Назад' : detail ? 'Назад' : tab === 'mine' ? 'Мои занятия' : tab === 'wiki' ? 'Вики' : 'Расписание'} accessManual={accessManual} accessReturnLabel={accessLabel} onAccessDone={() => { if (!resumeAccessReturn()) settingsBack(); }} onDeleted={() => { clearAccessReturn(); setAccessManual(false); setSettingsStack(['settings']); }} reminders={reminders} reminderLabel={Platform.OS === 'web' ? 'В приложении на телефоне' : prefs.enabled && model.allowed ? prefs.lead === 0 ? 'В начале занятия' : prefs.lead === 60 ? 'За 1 час' : `За ${prefs.lead} мин` : 'Выключены'} view={view} onView={changeView} />
+    <SettingsScreen bottomTabs={tablet ? null : bottomTabs} page={settingsPage} onPage={setSettingsPage} onBack={settingsBack} backLabel={settingsStack.length > 1 ? 'Назад' : detail ? 'Назад' : tab === 'mine' ? 'Мои занятия' : tab === 'wiki' ? 'Вики' : 'Расписание'} accessManual={accessManual} accessReturnLabel={accessLabel} onAccessDone={() => { if (!resumeAccessReturn()) settingsBack(); }} onDeleted={() => { clearAccessReturn(); setAccessManual(false); setSettingsStack(['settings']); }} reminders={reminders} reminderLabel={shared.accountMode ? (shared.device.enabled && shared.device.allowed ? `Кабинет · ${shared.confirmed?.leadMinutes ?? shared.confirmed?.schoolMinutes ?? '…'} мин` : 'На устройстве выключены') : Platform.OS === 'web' ? 'В приложении на телефоне' : prefs.enabled && model.allowed ? prefs.lead === 0 ? 'В начале занятия' : prefs.lead === 60 ? 'За 1 час' : `За ${prefs.lead} мин` : 'Выключены'} view={view} onView={changeView} />
     <View style={[s.shell, sidebar && s.shellRow]}>
       {tablet && <View style={[sidebar ? s.sidebar : s.compactNav, sidebar && width < 900 && { width: 184 }]}>
         {sidebar ? <View style={s.brand}><Text style={s.brandTitle}>Дейчи</Text><Text style={s.caption}>Практика каждый день</Text></View> : <View style={s.compactBrand}><Text style={s.compactBrandTitle}>Дейчи</Text></View>}
@@ -427,7 +435,7 @@ export default function ScheduleScreen() {
               scrollEventThrottle={16} onScroll={event => { if (tab === 'wiki' || (detail && !split)) return; const y = event.nativeEvent.contentOffset.y; if (listRestore.current === null) listOffsets.current[tab] = y; if (!detail) currentOffset.current = y; }}
               onContentSizeChange={() => { if (listRestore.current !== null) { scroll.current?.scrollTo({ y: listRestore.current, animated: false }); listRestore.current = null; } }}
               onLayout={() => { if (listRestore.current !== null) { scroll.current?.scrollTo({ y: listRestore.current, animated: false }); listRestore.current = null; } }}
-              refreshControl={<RefreshControl refreshing={usingCabinet ? cabinet.loading : loading} onRefresh={usingCabinet ? () => void cabinet.refresh() : model.refresh} tintColor={C.accent} />}>
+              refreshControl={<RefreshControl refreshing={shared.accountMode ? shared.loading : usingCabinet ? cabinet.loading : loading} onRefresh={shared.accountMode ? () => void shared.refresh() : usingCabinet ? () => void cabinet.refresh() : model.refresh} tintColor={C.accent} />}>
               <View style={s.screen}>{overview}{status}</View>
             </ScrollView>
           </View>
@@ -435,7 +443,7 @@ export default function ScheduleScreen() {
             {detail ? <BackButton label={split ? 'Закрыть занятие' : tab === 'mine' ? 'Мои занятия' : 'Расписание'} onPress={() => setDetail(null)} /> : null}
             <ScrollView ref={detailScroll} contentContainerStyle={[s.page, tablet && s.tabletPage, !detail && s.detailPlaceholder]} showsVerticalScrollIndicator={false}
               scrollEventThrottle={16} onScroll={event => { if (detail) currentOffset.current = event.nativeEvent.contentOffset.y; }}
-              refreshControl={detail ? <RefreshControl refreshing={loading} onRefresh={model.refresh} tintColor={C.accent} /> : undefined}
+              refreshControl={detail ? <RefreshControl refreshing={shared.accountMode ? shared.loading : loading} onRefresh={shared.accountMode ? () => void shared.refresh() : model.refresh} tintColor={C.accent} /> : undefined}
               onContentSizeChange={() => { if (detail && restoreOffset.current !== null) detailScroll.current?.scrollTo({ y: restoreOffset.current, animated: false }); }}>
               <View style={s.screen}>{detail ? lessonDetails : <View style={s.placeholderContent}><Icon name="schedule" size={36} /><Text style={s.placeholderTitle}>Выберите занятие</Text><Text style={[s.caption, s.placeholderCaption]}>Даты, место и ваш выбор появятся здесь.</Text></View>}{detail && !split && status}</View>
             </ScrollView>

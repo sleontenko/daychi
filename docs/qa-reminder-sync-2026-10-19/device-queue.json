@@ -1,0 +1,25 @@
+{
+  "source": "f9cd053126a996611da9b20044cca92d130ecefa",
+  "platform": "iPadOS 27 Simulator",
+  "nativeBuild": "local Debug 1.0.0(18), source via synthetic Metro",
+  "scope": "actual OS pending-notification API; synthetic Cabinet/account/calendar",
+  "eligibleRows": 100,
+  "queueBefore": 60,
+  "leadBefore": null,
+  "schoolDefault": 45,
+  "queueAfterCancellation": 60,
+  "leadAfter": 120,
+  "cancelledFirstAbsent": true,
+  "replacement61Present": true,
+  "emptyCalendar": {
+    "pending": 0,
+    "retainedClasses": 2,
+    "retainedIndividuals": 2
+  },
+  "logout": {
+    "pending": 0,
+    "status": "signed-out"
+  },
+  "physicalDelivery": false,
+  "jointCabinetProof": false
+}

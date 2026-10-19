@@ -1,6 +1,10 @@
 import { ATTEMPT_MS, CALLBACK, CabinetError, authorizeURL, callback, grantID, issuer,
   opaque, pendingValid, randomValue, record, type Account, type Failure, type Pending, type TokenDTO } from './protocol';
 import type { createAccountClient } from './client';
+import type { ReminderChange } from '../cabinet-reminders/protocol';
+
+export type ReminderContext = { issuer: string; generation: number; logoutVersion: number;
+  grantId: string | null; accountId: string | null; status: AccountState['status']; signIn: AccountState['signIn'] };
 
 type SavedSession = { token: string; grant: string; savedAt: number; expiresAt: number; renewAt: number };
 type Saved = { version: 1; issuer: string; session: SavedSession | null; pending: Pending | null };
@@ -18,6 +22,7 @@ export function createAccountSession({ origin, storage, client, random, challeng
   const empty = (): Saved => ({ version: 1, issuer: base, session: null, pending: null });
   let stored: Saved = empty(), initialized: Promise<void> | null = null;
   let epoch = 0, disabled = false, starting: number | null = null;
+  let logoutVersion = 0;
   let eligibleAttempt: string | null = null;
   let writes: Promise<unknown> = Promise.resolve();
   let check: { epoch: number; promise: Promise<void> } | null = null;
@@ -236,6 +241,7 @@ export function createAccountSession({ origin, storage, client, random, challeng
     } catch (error) { await fail(error, expected); return false; }
   }
   async function logout() {
+    logoutVersion++;
     const expected = ++epoch;
     disabled = true;
     eligibleAttempt = null;
@@ -260,9 +266,33 @@ export function createAccountSession({ origin, storage, client, random, challeng
     epoch++;
     if (stored.session && !disabled) publish({ status: 'unavailable' });
   }
+  function reminderContext(): ReminderContext {
+    return { issuer: base, generation: epoch, logoutVersion, grantId: disabled ? null : stored.session?.grant ?? null,
+      accountId: state.account?.id ?? null, status: state.status, signIn: state.signIn };
+  }
+  async function reminders(changes?: ReminderChange[]): Promise<unknown> {
+    const expected = epoch, accountId = state.account?.id;
+    if (disabled || state.status !== 'active' || state.signIn !== 'idle' || !accountId || !stored.session)
+      throw new CabinetError('interrupted');
+    // Renew before dispatch when due; the actual operation is sent once only.
+    if (time() >= stored.session.renewAt) await restore();
+    const previous = stored.session;
+    if (!previous || !matching(expected) || state.status !== 'active' || state.account?.id !== accountId)
+      throw new CabinetError('interrupted');
+    rateCheck();
+    try {
+      const result = await client.reminders(previous.token, changes);
+      if (!matching(expected, previous.token) || state.account?.id !== accountId) throw new CabinetError('interrupted');
+      return result;
+    } catch (error) {
+      if (error instanceof CabinetError && ['invalid_token', 'account_blocked'].includes(error.kind))
+        await fail(error, expected, previous.token);
+      throw error;
+    }
+  }
   return { getState: () => state, subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener); }; },
     restore, begin, receive, cancel, logout, suspend,
-    // No token/getPrivateRequest API: this assignment cannot grant content access.
+    reminderContext, reminders,
     attemptRemaining: () => stored.pending ? Math.max(0, ATTEMPT_MS - (time() - stored.pending.startedAt)) : 0,
   };
 }

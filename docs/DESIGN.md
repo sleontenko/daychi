@@ -1,5 +1,11 @@
 # Дизайн
 
+Аккаунтные занятия/напоминания20октября: [отдельный кандидат состояний](../design/candidates/cabinet-reminders-2026-10-19/README.md)
+сохраняет существующую оболочку, day groups, колонку времени и iPad split panes.
+[Installed synthetic QA, референс и runtime кадры](qa-reminder-sync-2026-10-19/README.md).
+Кандидат не заменяет принятый дизайн; оставшиеся визуальные/device проверки
+перечислены в отчёте и нужны до приёмки нового бинарника.
+
 Уточнение главной 14 октября: публичный граф сохраняет опубликованное оформление,
 нажатие/Enter ведёт к Cabinet entry. [Состояния](../design/candidates/site-public-graph-2026-10-14/README.md),
 [парные reference/runtime](qa-site-public-graph-2026-10-14/README.md). Это заменяет
