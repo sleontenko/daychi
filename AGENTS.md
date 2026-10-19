@@ -1,5 +1,15 @@
 # Daychi
 
+Current task20October: local implementation f9cd053 on codex/cabinet-reminder-sync-20261019
+supersedes this checkout's protocol-only preparation status below. Workshop17/c270a198
+is settled. Explicit default-off native sync uses the existing credential owner,
+Cabinet calendar and confirmed account settings; guest state remains separate.
+159 app tests, TypeScript/lint, iOS off/on + Android on exports and installed synthetic
+iPhone/iPad/OS-queue proof pass within [documented limits](docs/qa-reminder-sync-2026-10-19/README.md).
+No publication/merge/release/activation or real fixture mutation. Do not repeat accepted
+account8/schedule6; [native-content paired-runtime preparation](docs/qa-reminder-sync-2026-10-19/native-content-next.md)
+reuses PR18 and eligible provider ea42996 under ce4aebc, independently of this sync.
+
 Перед продуктовыми изменениями прочитать README.md, docs/PRODUCT.md,
 docs/DESIGN.md и docs/TESTFLIGHT_CHANGELOG.md. Для Expo действуют также
 apps/practice-app/AGENTS.md.
@@ -208,3 +218,11 @@ source trees match; original local authoring commits are preserved on
 codex/sync-cabinet-local-before-connector-20261017. Earlier access-denial statements
 are historical. No main merge/deployment/new release. Use the source-sync receipt
 for current CI and preserve the separate native-content WIP and root historical WIP.
+
+Reminder preparation (2026-10-19): Workshop17 now assigns implementation against
+accepted reminder-sync67bb5dde5489a8e6594a9d978e5ed8d3ad703724. This isolated
+codex/cabinet-reminder-sync-20261019 checkout contains an unmounted protocol
+foundation only;8 new/133 total app tests, TypeScript and targeted lint pass.
+Credential transport/controller/cache/UI/OS and joint proof remain work. No source
+publication, activation, fixture or release authorization is inferred. Reuse the
+[current preparation receipt](docs/qa-reminder-sync-preparation-2026-10-19/README.md).

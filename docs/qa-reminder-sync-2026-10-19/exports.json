@@ -1,0 +1,26 @@
+[
+  {
+    "export": "final-on",
+    "platform": "ios",
+    "file": "entry-9a8ecffb7cda9d94c7683e3101d57e25.hbc",
+    "sha256": "d7ffd4277bc3ea62d3752d140578d0610495711adf96b0e3e4a0cbfa5ebd108d",
+    "bytes": 3856798,
+    "fixtureMarkers": []
+  },
+  {
+    "export": "final-on",
+    "platform": "android",
+    "file": "entry-df84a5ad4deaa2f194b626f789902d73.hbc",
+    "sha256": "fe1eb9c7647c1112fbf2781a6eb3d76dbee7ebdf3711366cd36711cc499f0de9",
+    "bytes": 4144875,
+    "fixtureMarkers": []
+  },
+  {
+    "export": "final-off",
+    "platform": "ios",
+    "file": "entry-cfd56347274826bec3aa85083b1d8a9e.hbc",
+    "sha256": "0ffe705363c7b9123501d09f997c4769fb32a9e7bcc7e8691e958d22f88ee979",
+    "bytes": 3853697,
+    "fixtureMarkers": []
+  }
+]

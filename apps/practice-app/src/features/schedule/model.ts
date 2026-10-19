@@ -39,9 +39,13 @@ export function decodeSchedule(value: unknown): Schedule {
 }
 
 export function dayKey(value: string | number): string {
-  return new Intl.DateTimeFormat('en-CA', {
+  const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Jerusalem', year: 'numeric', month: '2-digit', day: '2-digit',
-  }).format(new Date(value));
+    calendar: 'gregory', numberingSystem: 'latn',
+  }).formatToParts(new Date(value));
+  // Locale display patterns vary with the OS; storage and API dates must be ISO.
+  const part = (type: 'year' | 'month' | 'day') => parts.find(value => value.type === type)!.value;
+  return `${part('year')}-${part('month')}-${part('day')}`;
 }
 
 export function isFresh(data: Schedule, now: number): boolean {

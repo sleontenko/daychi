@@ -1,4 +1,5 @@
 import { CALLBACK, CLIENT_ID, CabinetError, issuer, meDTO, record, tokenDTO, type Failure } from './protocol';
+import { createReminderClient } from './reminders-client';
 
 // Dedicated transport: never uses the existing Daychi access request/401 handler.
 export function createAccountClient(origin: string, read: typeof fetch = globalThis.fetch, timeoutMs = 12000) {
@@ -36,6 +37,7 @@ export function createAccountClient(origin: string, read: typeof fetch = globalT
     } finally { clearTimeout(timer); }
   }
   return {
+    reminders: createReminderClient(origin, read, timeoutMs),
     async exchange(code: string, verifier: string) {
       return tokenDTO(await request('token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ grant_type: 'authorization_code', client_id: CLIENT_ID, redirect_uri: CALLBACK, code, code_verifier: verifier }).toString() }));
