@@ -1,0 +1,26 @@
+{
+  "product_source": "bb7295f824909029ed8a39eb1a12822f662f012d",
+  "api_origin": "https://daychi-native-materials-test-staging.up.railway.app",
+  "account_issuer": "https://staging.xuanxue.su",
+  "account_enabled": true,
+  "content_enabled": true,
+  "bundle_id": "ai.mypraxis.quietpractice",
+  "version": "1.0.0",
+  "build": "18",
+  "configuration": "Debug",
+  "platform": "iOS27 Simulator",
+  "native_executable_sha256": "40a2bbb7fdace646b0cc6ffb2234b0ee47d511adbbb1bc3973f2dc8491b0b356",
+  "ordinary_export": {
+    "bytes": 3811191,
+    "sha256": "cee31395b6888a48fe9a2ab954b9bbde2e9df2d3a40458a538a5fb151591002c",
+    "qa_marker_check": "passed",
+    "config_scope": "Cabinet account/content flags, matching staging issuer and test API origin; Metro additionally points ordinary schedule/API at the test origin"
+  },
+  "installed": "full Router; actual signed-out protected-reader gate",
+  "native_build": "succeeded,92.9s",
+  "login_performed": false,
+  "real_grant_operation": false,
+  "production_changed": false,
+  "testflight_changed": false,
+  "cleanup": "app stopped; Metro8126 stopped"
+}

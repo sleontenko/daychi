@@ -1,0 +1,24 @@
+{
+  "projectId": "b66820ff-8c51-4e67-b1cd-e0b88220662e",
+  "environmentId": "e26503e9-3bb5-4e30-9397-4acf23733789",
+  "serviceId": "bdb1c01d-4060-4030-bc30-6b2a7e3cebeb",
+  "origin": "https://daychi-native-materials-test-staging.up.railway.app",
+  "pinnedSource": "f8c28dc0d194f7ddff6421672f56b68e093b0131",
+  "latestActualDeployment": {
+    "id": "25e18008-540c-4f30-bf27-dda33ae50832",
+    "source": "93f6d299675f23781b3f7f0117e470be2881bc45",
+    "status": "FAILED",
+    "reason": "Path.chown before serving; corrected in source pin"
+  },
+  "replacementDeployment": null,
+  "pendingWork": [],
+  "triggerError": "Deploys have been paused temporarily",
+  "health": {
+    "status": 404,
+    "cache_control": "public, max-age=5",
+    "applicationHealthy": false
+  },
+  "browserStagingUnchanged": "d8f2d41d-da62-4a37-8d5f-fd419c28ae39",
+  "productionChanged": false,
+  "testflightChanged": false
+}

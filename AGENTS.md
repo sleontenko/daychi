@@ -6,6 +6,12 @@ Product modules are unchanged; deployment/bootstrap/tests are separate and
 synthetic. [Runtime scope and checks](deploy/native-materials-staging/README.md).
 Only dedicated staging service bdb1c01d is authorized; no production or current
 TestFlight change, account/grant/status/outage mutation or reader release.
+Runtime follow-up: published f8c28dc fixes first bootstrap failure;296 backend
+tests pass. Native Debug PR18 client is built/installed and ordinary signed-out
+gate verified. Railway pauses deploys, so corrected API is offline/not queued;
+do not claim joint readiness. [Actual deployment/client status](docs/qa-native-materials-staging-2026-10-20/README.md).
+Retain f8c28dc source pin rather than following docs pushes; use exact staging
+service after capacity returns, preserving browser staging d8f2d41d.
 
 Перед продуктовыми изменениями прочитать README.md, docs/PRODUCT.md,
 docs/DESIGN.md и docs/TESTFLIGHT_CHANGELOG.md. Для Expo действуют также
